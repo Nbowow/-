@@ -5,36 +5,44 @@ import reactRefresh from "eslint-plugin-react-refresh";
 import tseslint from "typescript-eslint";
 import eslintConfigPrettier from "eslint-config-prettier";
 import prettier from "eslint-plugin-prettier";
-import airbnb from "eslint-config-airbnb";
-import airbnbTypescript from "eslint-config-airbnb-typescript";
 
 export default tseslint.config(
-  {
-    ignores: [".config/*", "build/**/*", "dist/**/*"],
-  },
-  {
-    extends: [js.configs.recommended, ...tseslint.configs.recommended],
-    files: ["**/*.{ts,tsx}"],
-    languageOptions: {
-      ecmaVersion: 2020,
-      globals: globals.browser,
+    {
+        ignores: [".config/*", "build/**/*", "dist/**/*"],
     },
-    plugins: {
-      "react-hooks": reactHooks,
-      "react-refresh": reactRefresh,
-      prettier,
-      airbnb,
-      airbnbTypescript,
+    {
+        extends: [js.configs.recommended, ...tseslint.configs.recommended],
+        files: ["**/*.{ts,tsx}"],
+        languageOptions: {
+            ecmaVersion: 2020,
+            globals: globals.browser,
+        },
+        plugins: {
+            "react-hooks": reactHooks,
+            "react-refresh": reactRefresh,
+            prettier,
+        },
+        rules: {
+            ...reactHooks.configs.recommended.rules,
+            "react-refresh/only-export-components": [
+                "warn",
+                { allowConstantExport: true },
+            ],
+            "no-console": "error",
+            "no-var": "error",
+            "prefer-const": "error",
+            "no-undef": "error",
+            "no-unused-vars": ["error", { args: "none" }],
+            eqeqeq: ["error", "always"],
+            "no-debugger": "error",
+            "no-alert": "error",
+            curly: ["error", "all"],
+            "no-multiple-empty-lines": ["error", { max: 1 }],
+            "consistent-return": "error",
+            "no-shadow": "error",
+            "no-else-return": "error",
+        },
     },
-    rules: {
-      ...reactHooks.configs.recommended.rules,
-      "react-refresh/only-export-components": [
-        "warn",
-        { allowConstantExport: true },
-      ],
-      "no-console": "error",
-    },
-  },
 
-  eslintConfigPrettier,
+    eslintConfigPrettier,
 );
