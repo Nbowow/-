@@ -2,7 +2,6 @@ package com.recipe.yorijori.global.handler;
 
 
 import com.recipe.yorijori.data.domain.CustomOAuth2User;
-import com.recipe.yorijori.data.enums.Role;
 import com.recipe.yorijori.repository.UserRepository;
 import com.recipe.yorijori.service.JwtService;
 import jakarta.servlet.ServletException;

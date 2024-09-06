@@ -2,8 +2,6 @@ package com.recipe.yorijori.data.userinfo;
 
 import java.util.Map;
 
-import java.util.Map;
-
 public class NaverOAuth2UserInfo extends OAuth2UserInfo {
 
     public NaverOAuth2UserInfo(Map<String, Object> attributes) {

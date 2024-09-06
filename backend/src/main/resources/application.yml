@@ -1,5 +1,7 @@
+# application.yml
 spring:
-
+  config:
+    import: application-secrets.yml
   h2:
     console:
       enabled: true
@@ -19,8 +21,8 @@ spring:
       client:
         registration:
           naver:
-            client-id: PcKNQaWjZXVjNjYx_OpK
-            client-secret: bBJqwfC9Jy
+            client-id: ${naver.client-id} # application-secrets.yml에서 불러옴
+            client-secret: ${naver.client-secret} # application-secrets.yml에서 불러옴
             redirect-uri: http://localhost:8080/login/oauth2/code/naver
             authorization-grant-type: authorization_code
             client-name: Naver
@@ -33,11 +35,13 @@ spring:
             user-name-attribute: response
 
 jwt:
-    secretKey: "H9xWQ2HuOWfU6HB08WaJRXmBP9A1cuRUwI577GHRpCE"
-    access:
-      expiration: 3600000 # 1시간(60분) (1000L(ms -> s) * 60L(s -> m) * 60L(m -> h))
-      header: Authorization
+  secretKey: ${jwt.secretKey} # application-secrets.yml에서 불러옴
+  access:
+    expiration: 3600000
+    header: Authorization
 
-    refresh:
-      expiration: 1209600000 #  (1000L(ms -> s) * 60L(s -> m) * 60L(m -> h) * 24L(h -> 하루) * 14(2주))
-      header: Authorization-refresh
+  refresh:
+    expiration: 1209600000
+    header: Authorization-refresh
+
+
