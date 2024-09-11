@@ -1,4 +1,4 @@
-import { List, ListItem, MenuBar } from "./style";
+import { List, ListItem, MenuBar } from "./Header.styled";
 
 const Header = () => {
     const imagePath = "./logo/logo_green.svg";
