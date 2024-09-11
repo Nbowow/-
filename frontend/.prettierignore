@@ -2,7 +2,6 @@ dist/
 build/
 node_modules/
 .prettierrc
-eslint.confg.js
 npm-debug.log
 public/
 coverage/
