@@ -3,8 +3,9 @@ import styled from "styled-components";
 export const MenuBar = styled.div`
     display: flex;
     justify-content: space-between;
-    padding: 10px 20px;
     align-items: center;
+
+    height: fit-content;
 `;
 
 export const LogoImage = styled.img`
@@ -16,6 +17,9 @@ export const List = styled.ul`
 `;
 
 export const ListItem = styled.li`
+    font-family: "SuitSemiBold";
+    font-size: ${({ theme }) => theme.fontSize.h3};
+
     cursor: pointer;
     display: inline-block;
     margin-right: 32px;
