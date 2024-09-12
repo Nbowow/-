@@ -6,14 +6,14 @@ export const Section = styled.section`
     justify-content: center;
     align-items: center;
 
-    gap: 20px;
-    padding: 50px;
+    gap: 1.25rem;
+    padding: 3.125rem;
     height: fit-content;
     background-color: ${({ theme }) => theme.color.gray.darker};
 `;
 
 export const FooterLogo = styled.img`
-    width: 101px;
+    width: 6.313rem;
 `;
 
 export const Info = styled.div`
