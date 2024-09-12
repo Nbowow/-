@@ -32,8 +32,7 @@ const fontSize = {
     h2: "1.75rem",
     h3: "1.438rem",
     h4: "1.188rem",
-    h5: "1.125rem",
-    text: "0.0.938rem",
+    text: "0.938rem",
     subText: "0.75rem",
 };
 
