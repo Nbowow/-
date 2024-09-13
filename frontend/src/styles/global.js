@@ -9,6 +9,7 @@ import SUITMedium from "../fonts/SUIT-Medium.ttf";
 import SUITRegular from "../fonts/SUIT-Regular.ttf";
 import SUITSemiBold from "../fonts/SUIT-SemiBold.ttf";
 import SUITThin from "../fonts/SUIT-Thin.ttf";
+import TossFaceFont from "../fonts/TossFaceFontMac.ttf";
 
 const GlobalStyle = createGlobalStyle`
   ${reset}
@@ -74,6 +75,11 @@ const GlobalStyle = createGlobalStyle`
     src: local('SUITThin'), url(${SUITThin}) format('truetype');
     font-style: normal;
     font-weight: normal;
+  }
+
+  @font-face {
+    font-family: 'TossFace';
+    src: local('TossFaceFont'), url(${TossFaceFont}) format('truetype');
   }
 
   body {
