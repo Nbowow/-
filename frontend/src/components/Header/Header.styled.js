@@ -6,10 +6,11 @@ export const MenuBar = styled.div`
     align-items: center;
 
     height: fit-content;
+    padding: 1.875rem 3.125rem 1.875rem 5rem;
 `;
 
 export const LogoImage = styled.img`
-    height: 50px;
+    height: 3.125rem;
 `;
 
 export const List = styled.ul`
@@ -22,5 +23,5 @@ export const ListItem = styled.li`
 
     cursor: pointer;
     display: inline-block;
-    margin-right: 32px;
+    margin-right: 2rem;
 `;
