@@ -14,7 +14,7 @@ import useSearchHistoryStore from "../../store/searchHistoryStore";
  * @param {string} props.userId - 사용자의 ID
  * @param {string} props.purpose - 검색의 목적
  * @param {string} [props.boldPlacehold] - 강조된 placeholder 텍스트
- * @param {string} [props.grayPlaceHold] - 회색 placeholder 텍스트
+ * @param {string} [props.grayPlacehold] - 회색 placeholder 텍스트
  * @param {function} props.onSubmit - 검색어가 제출될 때 호출되는 콜백 함수
  * @returns {JSX.Element} 검색 입력창 UI
  *
@@ -22,14 +22,14 @@ import useSearchHistoryStore from "../../store/searchHistoryStore";
  * const userId = "ssafy";
  * const purpose = "recipe";
  * const boldPlacehold = "오늘은 무슨 요리를 할까요?";
- * const grayPlaceHold = "재료와 요리명으로 추천 레시피를 검색해보세요.";
+ * const grayPlaceghold = "재료와 요리명으로 추천 레시피를 검색해보세요.";
  * const onSubmit = () => {}
  * return (
  *  <SearchInput
  *      userId={userId}
  *      purpose={purpose}
- *      boldPlaceHold={boldPlacehold}
- *      grayPlaceHold={grayPlaceHold}
+ *      boldPlacehold={boldPlacehold}
+ *      grayPlacehold={grayPlacehold}
  *      onSubmit={onSubmit}
  *  />
  * );
@@ -38,7 +38,7 @@ const SearchInput = ({
     userId,
     purpose,
     boldPlacehold,
-    grayPlaceHold,
+    grayPlacehold,
     onSubmit,
 }) => {
     const [isFocused, setIsFocused] = useState(false);
@@ -132,7 +132,7 @@ const SearchInput = ({
                         ) : (
                             <>
                                 <span className="bold">{boldPlacehold}</span>
-                                <span className="gray">{grayPlaceHold}</span>
+                                <span className="gray">{grayPlacehold}</span>
                             </>
                         )}
                     </S.Text>
@@ -146,7 +146,7 @@ SearchInput.propTypes = {
     userId: PropTypes.string.isRequired,
     purpose: PropTypes.string.isRequired,
     boldPlacehold: PropTypes.string,
-    grayPlaceHold: PropTypes.string,
+    grayPlacehold: PropTypes.string,
     onSubmit: PropTypes.func.isRequired,
 };
 
