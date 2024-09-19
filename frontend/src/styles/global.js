@@ -9,75 +9,82 @@ import SUITMedium from "../fonts/SUIT-Medium.ttf";
 import SUITRegular from "../fonts/SUIT-Regular.ttf";
 import SUITSemiBold from "../fonts/SUIT-SemiBold.ttf";
 import SUITThin from "../fonts/SUIT-Thin.ttf";
+import TossFaceFont from "../fonts/TossFaceFontMac.ttf";
+
 const GlobalStyle = createGlobalStyle`
   ${reset}
+
   @font-face {
-        font-family: 'SuitBold';
-        src: local('SuitBold'), local('SuitBold');
-        font-style: normal;
-        font-weight: normal;
-        src: url(${SUITBold}) format('truetype');
+    font-family: 'SUITBold';
+    src: local('SUITBold'), url(${SUITBold}) format('truetype');
+    font-style: normal;
+    font-weight: normal;
   }
+
   @font-face {
-        font-family: 'SuitExtraBold';
-        src: local('SuitExtraBold'), local('SuitExtraBold');
-        font-style: normal;
-        font-weight: normal;
-        src: url(${SUITExtraBold}) format('truetype');
-  }        
+    font-family: 'SUITExtraBold';
+    src: local('SUITExtraBold'), url(${SUITExtraBold}) format('truetype');
+    font-style: normal;
+    font-weight: normal;
+  }
+
   @font-face {
-        font-family: 'SuitExtraLight';
-        src: local('SuitExtraLight'), local('SuitExtraLight');
-        font-style: normal;
-        font-weight: normal;
-        src: url(${SUITExtraLight}) format('truetype');
+    font-family: 'SUITExtraLight';
+    src: local('SUITExtraLight'), url(${SUITExtraLight}) format('truetype');
+    font-style: normal;
+    font-weight: normal;
   }
+
   @font-face {
-        font-family: 'SUITHeavy';
-        src: local('SUITHeavy'), local('SUITHeavy');
-        font-style: normal;
-        font-weight: normal;
-        src: url(${SUITHeavy}) format('truetype');
+    font-family: 'SUITHeavy';
+    src: local('SUITHeavy'), url(${SUITHeavy}) format('truetype');
+    font-style: normal;
+    font-weight: normal;
   }
+
   @font-face {
-        font-family: 'SUITLight';
-        src: local('SUITLight'), local('SUITLight');
-        font-style: normal;
-        font-weight: normal;
-        src: url(${SUITLight}) format('truetype');
+    font-family: 'SUITLight';
+    src: local('SUITLight'), url(${SUITLight}) format('truetype');
+    font-style: normal;
+    font-weight: normal;
   }
+
   @font-face {
-        font-family: 'SUITMedium';
-        src: local('SUITMedium'), local('SUITMedium');
-        font-style: normal;
-        font-weight: normal;
-        src: url(${SUITMedium}) format('truetype');
+    font-family: 'SUITMedium';
+    src: local('SUITMedium'), url(${SUITMedium}) format('truetype');
+    font-style: normal;
+    font-weight: normal;
   }
+
   @font-face {
-        font-family: 'SUITRegular';
-        src: local('SUITRegular'), local('SUITRegular');
-        font-style: normal;
-        font-weight: normal;
-        src: url(${SUITRegular}) format('truetype');
+    font-family: 'SUITRegular';
+    src: local('SUITRegular'), url(${SUITRegular}) format('truetype');
+    font-style: normal;
+    font-weight: normal;
   }
+
   @font-face {
-        font-family: 'SUITSemiBold';
-        src: local('SUITSemiBold'), local('SUITSemiBold');
-        font-style: normal;
-        font-weight: normal;
-        src: url(${SUITSemiBold}) format('truetype');
+    font-family: 'SUITSemiBold';
+    src: local('SUITSemiBold'), url(${SUITSemiBold}) format('truetype');
+    font-style: normal;
+    font-weight: normal;
   }
+
   @font-face {
-        font-family: 'Suit';
-        src: local('SUITThin'), local('SUITThin');
-        font-style: normal;
-        font-weight: normal;
-        src: url(${SUITThin}) format('truetype');
+    font-family: 'SUITThin';
+    src: local('SUITThin'), url(${SUITThin}) format('truetype');
+    font-style: normal;
+    font-weight: normal;
   }
-  body{
-    font-family: 'SuitRegular';
+
+  @font-face {
+    font-family: 'TossFace';
+    src: local('TossFaceFont'), url(${TossFaceFont}) format('truetype');
   }
-}
+
+  body {
+    font-family: 'SUITRegular', sans-serif;
+  }
 `;
 
 export default GlobalStyle;
