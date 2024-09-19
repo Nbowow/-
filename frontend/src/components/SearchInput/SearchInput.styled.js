@@ -49,7 +49,7 @@ export const SearchInputForm = styled.div`
 `;
 
 export const Line = styled.hr`
-    width: 100%;
+    width: 71.25rem;
     border: 0.063rem solid ${({ theme }) => theme.color.gray.lighter};
 `;
 
