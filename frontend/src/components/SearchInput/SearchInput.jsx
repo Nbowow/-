@@ -4,6 +4,36 @@ import PropTypes from "prop-types";
 import SearchHistory from "./SearchHistory";
 import useSearchHistoryStore from "../../store/searchHistoryStore";
 
+/**
+ * SearchInput 컴포넌트
+ * 사용자의 아이디와 검색창의 목적에 따라 분류하여 저장하고 화면에 렌더링하는 컴포넌트입니다.
+ * 검색 기록은 최대 10개까지 기록합니다.
+ *
+ * @component
+ * @param {Object} props - 컴포넌트에 전달되는 props
+ * @param {string} props.userId - 사용자의 ID
+ * @param {string} props.purpose - 검색의 목적
+ * @param {string} [props.boldPlacehold] - 강조된 placeholder 텍스트
+ * @param {string} [props.grayPlaceHold] - 회색 placeholder 텍스트
+ * @param {function} props.onSubmit - 검색어가 제출될 때 호출되는 콜백 함수
+ * @returns {JSX.Element} 검색 입력창 UI
+ *
+ * @example
+ * const userId = "ssafy";
+ * const purpose = "recipe";
+ * const boldPlacehold = "오늘은 무슨 요리를 할까요?";
+ * const grayPlaceHold = "재료와 요리명으로 추천 레시피를 검색해보세요.";
+ * const onSubmit = () => {}
+ * return (
+ *  <SearchInput
+ *      userId={userId}
+ *      purpose={purpose}
+ *      boldPlaceHold={boldPlacehold}
+ *      grayPlaceHold={grayPlaceHold}
+ *      onSubmit={onSubmit}
+ *  />
+ * );
+ */
 const SearchInput = ({
     userId,
     purpose,
