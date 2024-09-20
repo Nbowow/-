@@ -1,21 +1,27 @@
 import styled from "styled-components";
 
-// TODO: 클릭시 쌈무 그린으로 변경
-// TODO: 크기별 버튼 만들기
 export const SubmitButton = styled.button`
     border: none;
     border-radius: 4px;
 
-    width: 150px;
-    height: 40px;
+    width: ${({ width }) => width || "100px"};
+    height: ${({ height }) => height || "40px"};
 
     color: white;
     background-color: ${({ theme }) => theme.color.point.green};
-    padding: 5px;
+    padding: 10px;
+
+    font-family: "SUITMedium";
+    font-size: ${({ theme }) => theme.fontSize.text};
 
     cursor: pointer;
+    transition: background-color 0.3s ease;
 
     &:hover {
-        background-color: #65e68a;
+        background-color: #3e8d55;
+    }
+
+    &:active {
+        background-color: #367a4a;
     }
 `;
