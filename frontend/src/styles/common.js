@@ -16,10 +16,13 @@ export const flexBetweenStyle = createFlexStyle("space-between");
 export const flexAroundStyle = createFlexStyle("space-around");
 export const flexStartStyle = createFlexStyle("flex-start");
 export const flexAlignStartStyle = createFlexStyle("center", "flex-start");
-
+export const flexAlignEndStyle = createFlexStyle("center", "flex-end");
+export const IconClickStyle = css`
+    cursor: pointer;
+    visibility: ${({ isVisible }) => (isVisible ? "visible" : "hidden")};
+`;
 export const IconStyle = css`
     width: 2rem;
     height: 2rem;
-    cursor: pointer;
-    visibility: ${({ isVisible }) => (isVisible ? "visible" : "hidden")};
+    border-radius: 50%;
 `;

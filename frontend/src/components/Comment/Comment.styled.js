@@ -1,22 +1,22 @@
 import styled from "styled-components";
 import UserSvg from "../../assets/icons/User.svg";
+import {
+    IconStyle,
+    flexAlignEndStyle,
+    flexAlignStartStyle,
+    flexStartStyle,
+} from "../../styles/common";
 export const UserIcon = styled(UserSvg)`
-    width: 2rem;
-    height: 2rem;
-    border-radius: 50%;
+    ${IconStyle}
 `;
 export const CommentsWrapper = styled.div``;
 export const CommentWrapper = styled.div`
-    display: flex;
+    ${flexAlignStartStyle}
     flex-direction: column;
-    justify-content: center;
-    align-items: flex-start;
     margin-bottom: 0.5rem;
 `;
 export const Info = styled.div`
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
+    ${flexStartStyle}
     margin-bottom: 0.5rem;
 `;
 export const Text = styled.div`
@@ -32,9 +32,7 @@ export const ReplyButton = styled.button`
     font-family: ${({ theme }) => theme.fontWeight.bold};
 `;
 export const UserImg = styled.img`
-    width: 2rem;
-    height: 2rem;
-    border-radius: 50%;
+    ${IconStyle}
 `;
 export const UserName = styled.p`
     font-family: ${({ theme }) => theme.fontWeight.bold};
@@ -42,9 +40,7 @@ export const UserName = styled.p`
     margin-left: 0.5rem;
 `;
 export const User = styled.div`
-    display: flex;
-    align-items: center;
-    justify-content: start;
+    ${flexStartStyle}
 `;
 
 export const ReplyWrapper = styled.div`
@@ -52,28 +48,29 @@ export const ReplyWrapper = styled.div`
 `;
 
 export const SubmitButton = styled.button`
-    margin-top: 0.5rem;
-    padding: 0.2rem 1rem;
     border: ${({ theme }) => theme.color.point.green};
-    border-radius: 0.5rem;
     color: ${({ theme }) => theme.color.point.lightGreen};
     font-family: ${({ theme }) => theme.fontWeight.bold};
     background-color: ${({ theme }) => theme.color.point.green};
+
+    margin-top: 0.5rem;
+    padding: 0.2rem 1rem;
+    border-radius: 0.5rem;
 `;
 export const TextAreaBox = styled.textarea`
-    padding: 0.5rem;
     font-family: ${({ theme }) => theme.fontWeight.regular};
     background-color: ${({ theme }) => theme.color.gray.lighter};
     border: 1px solid ${({ theme }) => theme.color.gray.lighter};
-    border-radius: 0.3rem;
+
     width: 100%;
-    outline: none;
     height: 4rem;
+
+    padding: 0.5rem;
+    border-radius: 0.3rem;
+    outline: none;
 `;
 
 export const TextAreaWrapper = styled.div`
-    display: flex;
+    ${flexAlignEndStyle}
     flex-direction: column;
-    justify-content: center;
-    align-items: flex-end;
 `;
