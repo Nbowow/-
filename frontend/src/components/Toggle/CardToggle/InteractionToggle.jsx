@@ -23,25 +23,23 @@ import {
  * <InteractionToggle type="heart" size="30px" active={true} />
  */
 const InteractionToggle = ({ type, size, active }) => {
+    type = "heart";
     const [isActive, setIsActive] = useState(active);
 
-    const ActiveToggle = () => {
+    const getToggleIcon = () => {
         switch (type) {
             case "heart":
-                return <ActiveHeartToggle size={size} />;
+                return isActive ? (
+                    <ActiveHeartToggle size={size} />
+                ) : (
+                    <InactiveHeartToggle size={size} />
+                );
             case "bookmark":
-                return <ActiveBookmarkToggle size={size} />;
-            default:
-                return <div></div>;
-        }
-    };
-
-    const InActiveToggle = () => {
-        switch (type) {
-            case "heart":
-                return <InactiveHeartToggle size={size} />;
-            case "bookmark":
-                return <InactiveBookmarkToggle size={size} />;
+                return isActive ? (
+                    <ActiveBookmarkToggle size={size} />
+                ) : (
+                    <InactiveBookmarkToggle size={size} />
+                );
             default:
                 return <div></div>;
         }
@@ -53,7 +51,7 @@ const InteractionToggle = ({ type, size, active }) => {
 
     return (
         <S.InteractionToggle onClick={handleClick}>
-            {isActive ? <ActiveToggle /> : <InActiveToggle />}
+            {getToggleIcon()}
         </S.InteractionToggle>
     );
 };
