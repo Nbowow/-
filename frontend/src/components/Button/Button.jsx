@@ -1,4 +1,4 @@
-import * as S from "./SubmitButton.styled";
+import * as S from "./Button.styled";
 import PropTypes from "prop-types";
 
 /**
@@ -21,21 +21,21 @@ import PropTypes from "prop-types";
  * @param {string} [props.height="40px"] - 버튼의 높이 (optional)
  * @returns {JSX.Element} SubmitButton 컴포넌트
  */
-const SubmitButton = ({ text, onClick, width, height }) => {
+const Button = ({ text, onClick, width, height }) => {
     return (
         <>
-            <S.SubmitButton onClick={onClick} width={width} height={height}>
+            <S.Button onClick={onClick} width={width} height={height}>
                 {text}
-            </S.SubmitButton>
+            </S.Button>
         </>
     );
 };
 
-SubmitButton.propTypes = {
+Button.propTypes = {
     text: PropTypes.string,
     onClick: PropTypes.func,
     width: PropTypes.string,
     height: PropTypes.string,
 };
 
-export default SubmitButton;
+export default Button;

@@ -1,6 +1,6 @@
 import styled from "styled-components";
 
-export const SubmitButton = styled.button`
+export const Button = styled.button`
     border: none;
     border-radius: 4px;
 
