@@ -1,27 +1,21 @@
 import { css } from "styled-components";
 
-export const flexCenterStyle = css`
+const createFlexStyle = (
+    justifyContent = "center",
+    alignItems = "center",
+    flexDirection = "row",
+) => css`
     display: flex;
-    justify-content: center;
-    align-items: center;
-`;
-export const flexBetweenStyle = css`
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-`;
-
-export const flexAroundStyle = css`
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
+    justify-content: ${justifyContent};
+    align-items: ${alignItems};
+    flex-direction: ${flexDirection};
 `;
 
-export const flexStartStyle = css`
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
-`;
+export const flexCenterStyle = createFlexStyle();
+export const flexBetweenStyle = createFlexStyle("space-between");
+export const flexAroundStyle = createFlexStyle("space-around");
+export const flexStartStyle = createFlexStyle("flex-start");
+export const flexAlignStartStyle = createFlexStyle("center", "flex-start");
 
 export const IconStyle = css`
     width: 2rem;
