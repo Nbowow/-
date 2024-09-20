@@ -7,13 +7,11 @@ import com.recipe.yorijori.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/api/v1")
 public class UserController {
 
     private final UserService userService;
@@ -30,7 +28,7 @@ public class UserController {
         return "jwtTest 요청 성공";
     }
 
-    @GetMapping("/api/user")
+    @GetMapping("/user")
     public ResponseEntity<UserResponseDto> getUserInfo(HttpServletRequest request) {
         // 요청 헤더에서 AccessToken 추출
         String accessToken = jwtService.extractAccessToken(request)
