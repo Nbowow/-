@@ -3,6 +3,7 @@ import { useTheme } from "styled-components";
 import { useEffect, useRef, useState } from "react";
 import { CircleNumber } from "./Recipe.styled";
 import * as S from "./RecipeModal.styled";
+import AudioVisualizer from "react-audio-visualize";
 
 function RecipeStepModal({ recipe }) {
     const [blob, setBlob] = useState();
@@ -59,7 +60,7 @@ function RecipeStepModal({ recipe }) {
             <S.RecordWrapper>
                 <S.AudioVisualizerWrapper>
                     {isClicked && blob && (
-                        <S.AudioVisualizer
+                        <AudioVisualizer
                             ref={visualizerRef}
                             blob={blob}
                             width={680}
