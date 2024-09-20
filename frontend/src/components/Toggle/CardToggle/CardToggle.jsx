@@ -4,9 +4,6 @@ import { getButtonIcon } from "../../../util/get-button-icon";
 import PropTypes from "prop-types";
 
 const CardToggle = ({ type, height = "18px", isClicked = false }) => {
-    type = "bookmark";
-    height = "18px";
-
     const [isActive, setIsActive] = useState(isClicked);
 
     const icon = isActive
