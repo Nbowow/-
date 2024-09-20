@@ -74,6 +74,15 @@ const UploadButton = styled.label`
         background-color: #f0f0f0;
     }
 `;
+const TextArea = styled.textarea`
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    resize: vertical;
+    box-sizing: border-box;
+`;
 
 const OrderForm = () => {
     const [orders, setOrders] = useState([
@@ -137,7 +146,7 @@ const OrderForm = () => {
                                     style={{ flex: 1, marginLeft: 20 }}
                                 >
                                     <h3>STEP {index + 1}</h3>
-                                    <InputField
+                                    <TextArea
                                         type="text"
                                         placeholder="조리방법"
                                         value={order.content}
