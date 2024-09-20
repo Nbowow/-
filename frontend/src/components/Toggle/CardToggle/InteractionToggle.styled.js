@@ -1,8 +1,10 @@
 import styled from "styled-components";
 
-export const CardToggle = styled.div`
-    width: 1.563rem;
-    height: 1.563rem;
+export const InteractionToggle = styled.div`
+    width: fit-content;
+    height: fit-content;
+
+    padding: 5px;
 
     display: flex;
     justify-content: center;
