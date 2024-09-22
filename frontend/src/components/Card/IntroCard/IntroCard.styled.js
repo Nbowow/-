@@ -24,8 +24,8 @@ export const IntroCard = styled.div`
     }
 
     &:hover {
-        transform: translateY(-10px) scale(1.04); // Moves the card upward by 10px and slightly scales it
-        box-shadow: 0px 0.4rem 1.5rem rgba(0, 0, 0, 0.3); // Enhances shadow for depth effect
+        transform: translateY(-10px) scale(1.04);
+        box-shadow: 0px 0.4rem 1.5rem rgba(0, 0, 0, 0.3);
     }
 `;
 
