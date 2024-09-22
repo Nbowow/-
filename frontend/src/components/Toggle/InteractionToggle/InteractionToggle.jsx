@@ -6,6 +6,7 @@ import {
     InactiveHeartToggle,
     ActiveBookmarkToggle,
     InactiveBookmarkToggle,
+    CommentButton,
 } from "../../../util/get-button-icon";
 
 /**
@@ -36,6 +37,8 @@ const InteractionToggle = ({ type, size, onClick, isActive }) => {
                 ) : (
                     <InactiveBookmarkToggle size={size} />
                 );
+            case "comment":
+                return <CommentButton size={size} />;
             default:
                 return <div></div>;
         }
