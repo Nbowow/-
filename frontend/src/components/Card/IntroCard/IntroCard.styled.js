@@ -65,7 +65,7 @@ export const Title = styled.div`
 `;
 
 export const Text = styled.div`
-    flex: 1;
+    height: 4.125rem;
     font-family: "SUITRegular";
     line-height: 1.313rem;
     font-size: ${({ theme }) => theme.fontSize.text};
