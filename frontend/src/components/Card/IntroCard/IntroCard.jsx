@@ -4,13 +4,14 @@ import PropTypes from "prop-types";
 const IntroCard = ({ imgUrl, title, text }) => {
     const placeholderImage = "/images/placeholder-img.jpg";
 
-    const handleError = (e) => {
-        e.target.src = placeholderImage;
-    };
-
     return (
         <S.IntroCard>
-            <S.Thumnail src={imgUrl} onError={handleError} />
+            <S.Thumnail
+                src={imgUrl || placeholderImage}
+                onError={(e) =>
+                    (e.target.src = e.target.src = placeholderImage)
+                }
+            />
             <S.TextArea>
                 <S.Title>{title}</S.Title>
                 <S.Text>{text}</S.Text>
@@ -23,6 +24,10 @@ IntroCard.propTypes = {
     imgUrl: PropTypes.string,
     title: PropTypes.string.isRequired,
     text: PropTypes.string.isRequired,
+};
+
+IntroCard.defaultProps = {
+    imgUrl: "",
 };
 
 export default IntroCard;
