@@ -1,18 +1,20 @@
 import styled from "styled-components";
 
+const cardBorderRadius = "1.25rem";
+
 export const IntroCard = styled.div`
-    width: 276px;
-    height: 359px;
-    border-radius: 20px;
+    width: 17.25rem;
+    height: 22.438rem;
+    border-radius: ${cardBorderRadius};
 
     box-sizing: border-box;
     box-shadow: 0px 0.25rem 1.25rem rgba(0, 0, 0, 0.2);
 
     display: flex;
     flex-direction: column;
-    gap: 18px;
+    gap: 1.125rem;
 
-    padding-bottom: 30px;
+    padding-bottom: 1.25rem;
     cursor: pointer;
 
     transition:
@@ -24,30 +26,30 @@ export const IntroCard = styled.div`
     }
 
     &:hover {
-        transform: translateY(-10px) scale(1.04);
+        transform: translateY(-0.625rem) scale(1.04);
         box-shadow: 0px 0.4rem 1.5rem rgba(0, 0, 0, 0.3);
     }
 `;
 
 export const Thumnail = styled.img`
     width: 100%;
-    height: 210px;
+    height: 13.125rem;
     object-fit: cover;
     object-position: center;
 
     flex-shrink: 0;
 
-    border-top-left-radius: 20px;
-    border-top-right-radius: 20px;
+    border-top-left-radius: ${cardBorderRadius};
+    border-top-right-radius: ${cardBorderRadius};
 `;
 
 export const TextArea = styled.div`
     display: flex;
-    padding: 2px 20px 0px 20px;
+    padding: 0.125rem 1.25rem 0px 1.25rem;
     flex-direction: column;
     justify-content: center;
     align-items: flex-start;
-    gap: 15px;
+    gap: 0.938rem;
     align-self: stretch;
     overflow: hidden;
     user-select: none;
@@ -65,7 +67,7 @@ export const Title = styled.div`
 export const Text = styled.div`
     flex: 1;
     font-family: "SUITRegular";
-    line-height: 21px;
+    line-height: 1.313rem;
     font-size: ${({ theme }) => theme.fontSize.text};
     overflow: hidden;
 `;
