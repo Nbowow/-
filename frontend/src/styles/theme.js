@@ -3,7 +3,7 @@ const color = {
         green: "#4CAC67",
         lightGreen: "#EAF0EC",
         yellow: "#FAE640",
-        lightYellow: "#FFF8E1",
+        lightYellow: "#FFEB85",
         red: "#FF4500",
     },
     gray: {
