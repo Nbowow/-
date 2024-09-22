@@ -1,7 +1,6 @@
 import * as S from "./InteractionToggle.styled";
 import PropTypes from "prop-types";
 
-import { useState } from "react";
 import {
     ActiveHeartToggle,
     InactiveHeartToggle,
@@ -22,10 +21,7 @@ import {
  * @example
  * <InteractionToggle type="heart" size="30px" active={true} />
  */
-const InteractionToggle = ({ type, size, active }) => {
-    type = "heart";
-    const [isActive, setIsActive] = useState(active);
-
+const InteractionToggle = ({ type, size, onClick, isActive }) => {
     const getToggleIcon = () => {
         switch (type) {
             case "heart":
@@ -45,12 +41,8 @@ const InteractionToggle = ({ type, size, active }) => {
         }
     };
 
-    const handleClick = () => {
-        setIsActive(!isActive);
-    };
-
     return (
-        <S.InteractionToggle onClick={handleClick}>
+        <S.InteractionToggle onClick={onClick}>
             {getToggleIcon()}
         </S.InteractionToggle>
     );
@@ -59,7 +51,8 @@ const InteractionToggle = ({ type, size, active }) => {
 InteractionToggle.propTypes = {
     type: PropTypes.string.isRequired,
     size: PropTypes.string,
-    active: PropTypes.bool,
+    onClick: PropTypes.func.isRequired,
+    isActive: PropTypes.bool,
 };
 
 export default InteractionToggle;
