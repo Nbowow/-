@@ -1,10 +1,19 @@
 import { ThemeProvider } from "styled-components";
 import theme from "./styles/theme";
 
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import PostRecipe from "./pages/PostRecipe";
+
 function App() {
     return (
         <>
             <ThemeProvider theme={theme}></ThemeProvider>
+            <Router>
+                <Routes>
+                    <Route path="/post" element={<PostRecipe />} />
+                    {/* 다른 Route 추가 */}
+                </Routes>
+            </Router>
         </>
     );
 }
