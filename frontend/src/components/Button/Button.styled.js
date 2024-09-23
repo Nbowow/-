@@ -9,10 +9,19 @@ export const Button = styled.button`
 
     color: white;
     background-color: ${({ theme }) => theme.color.point.green};
-    padding: 10px;
 
+    font-size: ${({ type, theme }) => {
+        if (type === "large") return theme.fontSize.h6;
+        if (type === "small") return theme.fontSize.subText;
+        return theme.fontSize.text;
+    }};
+
+    padding: ${({ type }) => {
+        if (type === "large") return "15px";
+        if (type === "small") return "5px";
+        return "10px";
+    }};
     font-family: "SUITMedium";
-    font-size: ${({ theme }) => theme.fontSize.text};
 
     cursor: pointer;
     transition: background-color 0.3s ease;
