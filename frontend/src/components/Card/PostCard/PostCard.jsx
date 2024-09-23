@@ -7,7 +7,12 @@ const PostCard = ({ postId, imgUrl, title, text }) => {
 
     return (
         <S.PostCard>
-            <S.Thumnail src={imgUrl || placeholderImage} />
+            <S.Thumnail
+                src={imgUrl || placeholderImage}
+                onError={(e) =>
+                    (e.target.src = e.target.src = placeholderImage)
+                }
+            />
             <S.TextArea>
                 <ActionToggleGroup />
                 <S.Title>{title}</S.Title>
