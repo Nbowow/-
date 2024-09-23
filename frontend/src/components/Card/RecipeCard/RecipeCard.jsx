@@ -1,12 +1,12 @@
 import ActionToggleGroup from "../../Toggle/ActionToggleGroup/ActionToggleGroup";
-import * as S from "./PostCard.styled";
+import * as S from "./RecipeCard.styled";
 import PropTypes from "prop-types";
 
-const PostCard = ({ postId, imgUrl, title, text }) => {
+const RecipeCard = ({ recipeId, imgUrl, title, text }) => {
     const placeholderImage = "/images/placeholder-img.jpg";
 
     return (
-        <S.PostCard>
+        <S.RecipeCard>
             <S.Thumnail
                 src={imgUrl || placeholderImage}
                 onError={(e) =>
@@ -18,15 +18,15 @@ const PostCard = ({ postId, imgUrl, title, text }) => {
                 <S.Title>{title}</S.Title>
                 <S.Text>{text}</S.Text>
             </S.TextArea>
-        </S.PostCard>
+        </S.RecipeCard>
     );
 };
 
-PostCard.propTypes = {
-    postId: PropTypes.number.isRequired,
+RecipeCard.propTypes = {
+    recipeId: PropTypes.number.isRequired,
     imgUrl: PropTypes.string,
     title: PropTypes.string,
     text: PropTypes.string,
 };
 
-export default PostCard;
+export default RecipeCard;

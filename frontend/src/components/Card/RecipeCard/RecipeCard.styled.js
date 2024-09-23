@@ -8,7 +8,7 @@ import {
     BaseTextArea,
 } from "../Card.styled";
 
-export const PostCard = styled(BaseCard)`
+export const RecipeCard = styled(BaseCard)`
     width: 322px;
 `;
 
