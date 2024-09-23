@@ -1,6 +1,6 @@
 import PropTypes from "prop-types";
 import * as S from "./Tag.styled";
-import { emoji } from "../constants/emojiConstants";
+import { emoji } from "../../constants/emojiConstant";
 
 /**
  * Tag 컴포넌트
