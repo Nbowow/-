@@ -54,7 +54,7 @@ const InteractionToggle = ({ type, size, onClick, isActive }) => {
 InteractionToggle.propTypes = {
     type: PropTypes.string.isRequired,
     size: PropTypes.string,
-    onClick: PropTypes.func.isRequired,
+    onClick: PropTypes.func,
     isActive: PropTypes.bool,
 };
 
