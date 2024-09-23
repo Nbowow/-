@@ -1,10 +1,6 @@
 import PropTypes from "prop-types";
 import * as S from "./Tag.styled";
-
-const emoji = {
-    간식: "🍡",
-    초스피드: "✈️",
-};
+import { emoji } from "../constants/emojiConstants";
 
 /**
  * Tag 컴포넌트
