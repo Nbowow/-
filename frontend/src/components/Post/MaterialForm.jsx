@@ -87,7 +87,7 @@ const MaterialForm = () => {
             <form>
                 {materialGroups.map((group, groupIndex) => (
                     <GroupContainer key={groupIndex}>
-                        <GroupLabel type="text" placeholder="용류명" />
+                        <GroupLabel type="text" placeholder="음식" />
                         {group.materials.map((material, materialIndex) => (
                             <div
                                 key={materialIndex}

@@ -23,7 +23,7 @@ const PostRecipe = () => {
             <h1>레시피 작성하기</h1>
             <RecipeForm />
             <hr />
-            <h1>재료선택</h1>
+            <h1>재료</h1>
             <MaterialForm />
             <hr />
             <h1>요리 순서</h1>
