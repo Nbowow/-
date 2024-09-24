@@ -1,12 +1,12 @@
 import PropTypes from "prop-types";
 import Button from "../../Button/Button";
-import UserProfile from "../../UserProfile/UserProfile";
+import UserProfileImage from "../../UserProfile/UserProfileImage/UserProfileImage";
 import * as S from "./RecipeUser.styled";
 function RecipeUser({ data }) {
     const handleFollow = () => {};
     return (
         <S.UserContainer>
-            <UserProfile imageUrl={data.imageUrl} size={"4.5rem"} />
+            <UserProfileImage imageUrl={data.imageUrl} size={"4.5rem"} />
             <S.UserDetails>
                 <S.UserInfo>
                     <S.UserName>{data.name}</S.UserName>
