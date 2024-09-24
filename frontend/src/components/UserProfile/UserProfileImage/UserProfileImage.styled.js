@@ -1,5 +1,6 @@
 import styled from "styled-components";
-import UserSvg from "../../assets/icons/user.svg";
+import UserSvg from "../../../assets/icons/user.svg";
+
 export const DefaultIcon = styled(UserSvg)`
     width: ${({ size }) => size};
     height: ${({ size }) => size};
