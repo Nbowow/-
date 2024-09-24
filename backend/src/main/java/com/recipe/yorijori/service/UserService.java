@@ -32,7 +32,6 @@ public class UserService {
                 .email(userSignUpDto.getEmail())
                 .password(userSignUpDto.getPassword())
                 .nickname(userSignUpDto.getNickname())
-                .age(String.valueOf(userSignUpDto.getAge()))
                 .role(Role.USER)
                 .build();
 
@@ -51,10 +50,7 @@ public class UserService {
                 user.getEmail(),
                 user.getNickname(),
                 user.getProfileImage(),
-                user.getGender(),
-                user.getAge(),
-                user.getName(),
-                user.getBirthday()
+                user.getName()
         );
     }
 }

@@ -50,24 +50,6 @@ public class NaverOAuth2UserInfo extends OAuth2UserInfo {
     }
 
     @Override
-    public String getGender() {
-        Map<String, Object> response = (Map<String, Object>) attributes.get("response");
-        if (response == null) {
-            return null;
-        }
-        return (String) response.get("gender");
-    }
-
-    @Override
-    public String getAge() {
-        Map<String, Object> response = (Map<String, Object>) attributes.get("response");
-        if (response == null) {
-            return null;
-        }
-        return (String) response.get("age");
-    }
-
-    @Override
     public String getName() {
         Map<String, Object> response = (Map<String, Object>) attributes.get("response");
         if (response == null) {
@@ -76,12 +58,4 @@ public class NaverOAuth2UserInfo extends OAuth2UserInfo {
         return (String) response.get("name");
     }
 
-    @Override
-    public String getBirthday() {
-        Map<String, Object> response = (Map<String, Object>) attributes.get("response");
-        if (response == null) {
-            return null;
-        }
-        return (String) response.get("birthday");
-    }
 }

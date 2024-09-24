@@ -1,0 +1,146 @@
+pipeline {
+    agent any
+
+    environment {
+        BACKEND_DIR = './backend'
+        DOCKER_IMAGE_BACKEND = 'parkgc0504/backend:latest'
+        CONFIG_FILE_PATH = '/home/backend_config/application-secrets.yml'
+        APPLICATION_YML_PATH = '/home/backend_config/application.yml'
+        TARGET_DIR = 'backend/src/main/resources/'
+        GITLAB_CREDENTIALSID = 'gichangssafy'
+        DOCKERHUB_CREDENTIALS = 'dockerhub-credentials'
+        SSH_CREDENTIALS = 'EC2_SSH'
+        EC2_SERVER_IP = '13.209.82.34'  // 대상 EC2 서버의 IP 주소
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                git credentialsId: GITLAB_CREDENTIALSID, branch: 'develop', url: 'https://lab.ssafy.com/s11-bigdata-dist-sub1/S11P21C206.git'
+            }
+        }
+
+        stage('Notify Start') {
+            steps {
+                script {
+                    def Author_ID = sh(script: "git show -s --pretty=%an", returnStdout: true).trim()
+                    def Author_Name = sh(script: "git show -s --pretty=%ae", returnStdout: true).trim()
+                    mattermostSend(
+                        color: 'warning',
+                        message: "backend 빌드 시작: ${env.JOB_NAME} #${env.BUILD_NUMBER} \n(<${env.BUILD_URL}|Details>)",
+                        endpoint: 'https://meeting.ssafy.com/hooks/rqoymdqdtjr4dqhkai1gmnnunh',
+                        channel: 'C206_deploy'
+                    )
+                }
+            }
+        }
+
+        stage('Copy config files') {
+            steps {
+                script {
+                    def workspaceDir = pwd()
+                    sh "cp ${CONFIG_FILE_PATH} ${workspaceDir}/${TARGET_DIR}"
+                    sh "cp ${APPLICATION_YML_PATH} ${workspaceDir}/${TARGET_DIR}"
+                }
+            }
+        }
+
+        stage('Build Backend') {
+            when {
+                changeset "backend/**"  // backend 폴더에 변경 사항이 있을 때만 실행
+            }
+            steps {
+                dir(BACKEND_DIR) {
+                    sh 'chmod +x gradlew'
+                    sh './gradlew clean build'
+                }
+            }
+        }
+
+        stage('Docker Build and Push Backend to DockerHub') {
+            when {
+                changeset "backend/**"  // backend 폴더에 변경 사항이 있을 때만 실행
+            }
+            steps {
+                dir(BACKEND_DIR) {
+                    script {
+                        docker.withRegistry('https://registry.hub.docker.com', DOCKERHUB_CREDENTIALS) {
+                            def backendImage = docker.build(DOCKER_IMAGE_BACKEND)
+                            backendImage.push()
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('Deploy Backend on Another EC2') {
+            when {
+                changeset "backend/**"  // backend 폴더에 변경 사항이 있을 때만 실행
+            }
+            steps {
+                script {
+                    sshagent (credentials: [SSH_CREDENTIALS]) {
+                        withCredentials([usernamePassword(credentialsId: DOCKERHUB_CREDENTIALS, usernameVariable: 'DOCKERHUB_USERNAME', passwordVariable: 'DOCKERHUB_PASSWORD')]) {
+                            sh '''
+                            ssh -o StrictHostKeyChecking=no ubuntu@${EC2_SERVER_IP} "
+                                docker login -u ${DOCKERHUB_USERNAME} -p ${DOCKERHUB_PASSWORD} &&
+                                docker pull ${DOCKER_IMAGE_BACKEND} &&
+                                docker stop backend || true &&
+                                docker rm backend || true &&
+                                docker run -d --name backend -p 8080:8080 ${DOCKER_IMAGE_BACKEND}
+                            "
+                            '''
+                        }
+                    }
+                }
+            }
+        }
+
+      stage('Deploy Locally') {
+            when {
+                changeset "backend/**"  // backend 폴더에 변경 사항이 있을 때만 실행
+            }
+            steps {
+                dir(BACKEND_DIR) {
+                    script {
+                        if (fileExists('docker-compose.yml')) {
+                            // 기존 컨테이너 중지 및 삭제
+                            sh 'docker-compose down || true'
+                            
+                            // 새로운 컨테이너 실행
+                            sh 'docker-compose up -d'
+                        } else {
+                            error "backend/docker-compose.yml 파일을 찾을 수 없습니다."
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+
+     post {
+        success {
+            script {
+                def Author_ID = sh(script: "git show -s --pretty=%an", returnStdout: true).trim()
+                def Author_Name = sh(script: "git show -s --pretty=%ae", returnStdout: true).trim()
+                mattermostSend(color: 'good',
+                    message: "backend 빌드 성공: ${env.JOB_NAME} #${env.BUILD_NUMBER} by ${Author_ID}\n(<${env.BUILD_URL}|Details>)",
+                    endpoint: 'https://meeting.ssafy.com/hooks/rqoymdqdtjr4dqhkai1gmnnunh',
+                    channel: 'C206_deploy'
+                )
+            }
+        }
+        failure {
+            script {
+                def Author_ID = sh(script: "git show -s --pretty=%an", returnStdout: true).trim()
+                def Author_Name = sh(script: "git show -s --pretty=%ae", returnStdout: true).trim()
+                mattermostSend(color: 'danger',
+                    message: "backend 빌드 실패: ${env.JOB_NAME} #${env.BUILD_NUMBER} by ${Author_ID}\n(<${env.BUILD_URL}|Details>)",
+                    endpoint: 'https://meeting.ssafy.com/hooks/rqoymdqdtjr4dqhkai1gmnnunh',
+                    channel: 'C206_deploy'
+                )
+            }
+        }
+    }
+}

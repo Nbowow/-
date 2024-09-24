@@ -27,6 +27,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
 
 
+
 /**
  * 인증은 CustomJsonUsernamePasswordAuthenticationFilter에서 authenticate()로 인증된 사용자로 처리
  * JwtAuthenticationProcessingFilter는 AccessToken, RefreshToken 재발급
@@ -60,13 +61,14 @@ public class SecurityConfig {
                 // URL별 권한 관리
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/", "/index.html","/css/**", "/images/**", "/js/**", "/favicon.ico", "/h2-console/**").permitAll() // 공용 자원에 대한 접근 허용
-                        .requestMatchers("/sign-up").permitAll() // 회원가입 페이지 접근 허용
-                        .requestMatchers("/home").permitAll() // /home 경로도 인증 없이 접근 허용
+                        .requestMatchers("/api/v1/sign-up").permitAll() // 회원가입 페이지 접근 허용
+                        .requestMatchers("/api/v1/home").permitAll() // /home 경로도 인증 없이 접근 허용
                         .anyRequest().authenticated() // 그 외 모든 요청은 인증된 사용자만 접근 가능
                 )
 
                 // 소셜 로그인 설정
                 .oauth2Login(oauth2 -> oauth2
+                        .loginPage("http://j11c206.p.ssafy.io:8081/oauth2/authorization/naver")  // 커스텀 로그인 페이지 경로 설정
                         .successHandler(oAuth2LoginSuccessHandler) // 로그인 성공 핸들러
                         .failureHandler(oAuth2LoginFailureHandler) // 로그인 실패 핸들러
                         .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService)) // userInfoEndpoint 대신 userService 설정
@@ -138,3 +140,4 @@ public class SecurityConfig {
         return jwtAuthenticationFilter;
     }
 }
+

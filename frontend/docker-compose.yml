@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  frontend:
+    image: frontend  # DockerHub에 푸시된 프론트엔드 이미지
+    container_name: frontend
+    ports:
+      - "3000:80"
+    volumes:
+      - /home/ubuntu/nginx/frontconf:/etc/nginx/conf.d  # Nginx 설정 파일 경로
+    networks:
+      - backendnet
+
+networks:
+  backendnet:
+    external: true  # 외부 네트워크 사용
