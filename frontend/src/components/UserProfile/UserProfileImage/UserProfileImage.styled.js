@@ -14,4 +14,6 @@ export const ProfileImageIcon = styled.img`
     width: ${({ size }) => size};
     height: ${({ size }) => size};
     border-radius: 50%;
+    object-fit: cover;
+    object-position: center;
 `;
