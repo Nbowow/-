@@ -10,7 +10,7 @@ const CardToggle = ({ imgUrl, text }) => {
             isActive={isActive}
             onClick={() => setIsActive(!isActive)}
         >
-            <S.Image src={imgUrl}></S.Image>
+            <S.Image src={imgUrl} />
             <S.Text>{text}</S.Text>
         </S.CardToggle>
     );
