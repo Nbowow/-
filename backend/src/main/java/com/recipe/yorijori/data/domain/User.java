@@ -31,35 +31,33 @@ public class User extends BaseTimeEntity{
     @Column(name = "user_image")
     private String profileImage;
 
-    @Column(name = "user_age")
-    private String age;
-
-    @Column(name = "user_gender")
-    private String gender;
-
     @Column(name = "user_name")
     private String name;
 
-    @Column(name = "user_birthday")
-    private String birthday;
+    @Builder.Default
+    @Column(name = "user_score")
+    private Long score = 0L;
 
     @Builder.Default
     @Column(name = "user_status")
     private boolean status = true;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "user_role")
     private Role role;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "user_socialType")
     private SocialType socialType;
 
+    @Column(name = "user_socialId")
     private String socialId;
 
+    @Column(name = "user_password")
     private String password; // 비밀번호
 
+    @Column(name = "user_refreshToken")
     private String refreshToken;
-
-
 
     public void authorizeUser() {
         this.role = Role.USER;
