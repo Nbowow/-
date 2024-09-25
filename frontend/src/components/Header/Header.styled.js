@@ -10,7 +10,8 @@ export const MenuBar = styled.div`
 `;
 
 export const LogoImage = styled.img`
-    height: 3.125rem;
+    cursor: pointer;
+    user-select: none;
 `;
 
 export const LinkContainer = styled.ul`

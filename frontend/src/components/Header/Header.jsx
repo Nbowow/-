@@ -1,11 +1,13 @@
 import * as S from "./Header.styled";
+import { useNavigate } from "react-router-dom";
 
 const Header = () => {
+    const navigate = useNavigate();
     const imagePath = "./logo/logo_green.svg";
 
     return (
         <S.MenuBar>
-            <img src={imagePath} />
+            <S.LogoImage src={imagePath} onClick={() => navigate("/")} />
             <S.LinkContainer>
                 <S.Link>모든 레시피</S.Link>
                 <S.Link>물가 동향</S.Link>
