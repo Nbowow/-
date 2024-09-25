@@ -3,9 +3,9 @@ import Table from "../../Table/Table";
 import PropTypes from "prop-types";
 import * as S from "./PriceChart.styled";
 import { useMemo } from "react";
-import { options } from "../../../constants/chart";
 import { calculatePriceChangeRange } from "../../../util/priceUtil";
 import { useIngredientPriceColumns } from "../../Table/TableColumn";
+import { lineOptions } from "../../../util/chart";
 
 const PriceDetailModal = ({ name, priceHistory }) => {
     const chartData = priceHistory.map((item) => Number(item.price));
@@ -13,7 +13,7 @@ const PriceDetailModal = ({ name, priceHistory }) => {
     const { yAxisMin, yAxisMax } = calculatePriceChangeRange(chartData);
 
     const tableColumns = useIngredientPriceColumns();
-    const chartOptions = options(yAxisMin, yAxisMax);
+    const chartOptions = lineOptions(yAxisMin, yAxisMax);
     const ChartLabels = priceHistory.map((item) => item.date);
     const tableData = useMemo(() => priceHistory, [priceHistory]);
 

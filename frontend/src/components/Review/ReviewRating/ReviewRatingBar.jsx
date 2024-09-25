@@ -10,7 +10,8 @@ import {
 import ChartDataLabels from "chartjs-plugin-datalabels";
 import { useTheme } from "styled-components";
 import { reviewPercentageArr } from "../../../util/review.js";
-import { barLabels, config, options } from "../../../constants/bar.js";
+import { barLabels } from "../../../constants/bar.js";
+import { barConfig, barOptions } from "../../../util/chart.js";
 
 ChartJS.register(
     CategoryScale,
@@ -25,7 +26,7 @@ import PropTypes from "prop-types";
 function ReviewRatingBar({ rating }) {
     const dataSumPercentage = reviewPercentageArr(rating);
     const labels = barLabels();
-    const barConfig = config();
+    const config = barConfig();
     const theme = useTheme();
 
     const darkColor = theme.color.gray.dark;
@@ -34,14 +35,14 @@ function ReviewRatingBar({ rating }) {
         datasets: [
             {
                 data: dataSumPercentage,
-                ...barConfig,
+                ...config,
             },
         ],
     };
 
-    const barOptions = options(rating, darkColor);
+    const options = barOptions(rating, darkColor);
 
-    return <Bar data={data} options={barOptions} />;
+    return <Bar data={data} options={options} />;
 }
 ReviewRatingBar.propTypes = {
     rating: PropTypes.number.isRequired,
