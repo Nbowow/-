@@ -1,11 +1,12 @@
 import PropTypes from "prop-types";
 import { useState } from "react";
 import PriceDetailModal from "./PriceDetailModal";
-import { monthLabels, options } from "../../../constants/chart";
-import { calculatePriceChangeRange } from "../../../util/priceUtil";
+import { monthLabels } from "../../../constants/chart";
+import { calculatePriceChangeRange } from "../../../util/price-range";
 import Chart from "../../Chart/Chart";
 import Modal from "../../Modal/Modal";
 import * as S from "./PriceChart.styled";
+import { lineOptions } from "../../../util/get-chart-config";
 
 const PriceChart = ({ name, priceHistory }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -27,7 +28,7 @@ const PriceChart = ({ name, priceHistory }) => {
     const labels = monthLabels();
 
     const { yAxisMax, yAxisMin } = calculatePriceChangeRange(priceArr);
-    const chartOptions = options(yAxisMin, yAxisMax);
+    const chartOptions = lineOptions(yAxisMin, yAxisMax);
     return (
         <S.ChartContainer onClick={onClick}>
             {isModalOpen && (

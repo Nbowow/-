@@ -12,7 +12,7 @@ import {
 } from "chart.js";
 import PropTypes from "prop-types";
 import { useTheme } from "styled-components";
-import { config } from "../../constants/chart";
+import { lineConfig } from "../../util/get-chart-config";
 
 ChartJS.register(
     CategoryScale,
@@ -31,7 +31,7 @@ const Chart = ({ labels, data, options }) => {
             point: { green },
         },
     } = useTheme();
-    const chartConfig = config(green);
+    const chartConfig = lineConfig(green);
 
     const chartData = {
         labels,
