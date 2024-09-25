@@ -44,7 +44,7 @@ export const Wrapper = styled.div`
 
     padding: 2rem;
     border-radius: ${({ theme }) => theme.borderRadius.small};
-    box-shadow: 0rem 0.25rem 0.375rem rgba(0, 0, 0, 0.2);
+    border: 0.1rem solid ${({ theme }) => theme.color.gray.lighter};
 `;
 export const FlexLayout = styled.div`
     ${flexStartStyle}

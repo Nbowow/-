@@ -4,7 +4,6 @@ import { flexAlignStartStyle, flexCenterStyle } from "../../../styles/common";
 export const ReviewWrapper = styled.div`
     ${flexAlignStartStyle}
     flex-direction: column;
-
     margin-top: ${({ theme }) => theme.spacing.medium};
 `;
 
@@ -26,18 +25,22 @@ export const ReviewOverviewRight = styled.div`
     margin-left: ${({ theme }) => theme.spacing.medium};
 `;
 
-export const ReviewOverviewWrapper = styled.div`
+export const ReviewOverviewWrapper = styled.div.attrs(() => ({}))`
     ${flexCenterStyle}
     height: 5rem;
 
     border-radius: ${({ theme }) => theme.borderRadius.small};
-    box-shadow: 0rem 0.25rem 0.375rem rgba(0, 0, 0, 0.1);
+    box-shadow: 0rem 0.2rem 0.3rem rgba(0, 0, 0, 0.05);
     padding: 1rem;
     margin-bottom: ${({ theme }) => theme.spacing.medium};
     cursor: pointer;
 
+    border: ${({ isSelected, theme }) =>
+        `0.1rem solid ${theme.color.point.lightGreen}`};
+
     background-color: ${({ isSelected, theme }) =>
         isSelected ? theme.color.point.lightGreen : "transparent"};
+
     transition: background-color 0.3s ease;
 `;
 
