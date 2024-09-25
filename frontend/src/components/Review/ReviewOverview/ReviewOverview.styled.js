@@ -25,7 +25,7 @@ export const ReviewOverviewRight = styled.div`
     margin-left: ${({ theme }) => theme.spacing.medium};
 `;
 
-export const ReviewOverviewWrapper = styled.div.attrs(() => ({}))`
+export const ReviewOverviewWrapper = styled.div`
     ${flexCenterStyle}
     height: 5rem;
 
@@ -35,11 +35,10 @@ export const ReviewOverviewWrapper = styled.div.attrs(() => ({}))`
     margin-bottom: ${({ theme }) => theme.spacing.medium};
     cursor: pointer;
 
-    border: ${({ isSelected, theme }) =>
-        `0.1rem solid ${theme.color.point.lightGreen}`};
+    border: ${({ theme }) => `0.1rem solid ${theme.color.point.lightGreen}`};
 
-    background-color: ${({ isSelected, theme }) =>
-        isSelected ? theme.color.point.lightGreen : "transparent"};
+    background-color: ${({ $isSelected, theme }) =>
+        $isSelected ? theme.color.point.lightGreen : "transparent"};
 
     transition: background-color 0.3s ease;
 `;

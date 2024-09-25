@@ -1,3 +1,4 @@
+import PropTypes from "prop-types";
 import { Bar } from "react-chartjs-2";
 import {
     Chart as ChartJS,
@@ -21,7 +22,6 @@ ChartJS.register(
     Legend,
     ChartDataLabels,
 );
-import PropTypes from "prop-types";
 
 function ReviewRatingBar({ rating }) {
     const dataSumPercentage = reviewPercentageArr(rating);

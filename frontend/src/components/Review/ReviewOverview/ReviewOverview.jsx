@@ -3,7 +3,7 @@ import { Rating } from "react-simple-star-rating";
 import * as S from "./ReviewOverview.styled";
 const ReviewOverview = ({ review, onClick, isSelected }) => {
     return (
-        <S.ReviewOverviewWrapper onClick={onClick} isSelected={isSelected}>
+        <S.ReviewOverviewWrapper onClick={onClick} $isSelected={isSelected}>
             <S.ReviewImg src={review.imgUrl} alt="리뷰 이미지" />
             <S.ReviewOverviewRight>
                 <Rating
