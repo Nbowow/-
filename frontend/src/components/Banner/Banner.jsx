@@ -2,11 +2,23 @@ import * as S from "./Banner.styled";
 import { useNavigate } from "react-router-dom";
 import PropTypes from "prop-types";
 
-const Banner = ({ subTitle, title, navLink, imgUrl }) => {
+const Banner = ({
+    subTitle,
+    title,
+    navLink,
+    imgUrl,
+    backgroundColor = "#fef7e7",
+    pointColor = "#f7da76",
+    fontColor = "#000000",
+}) => {
     const navigate = useNavigate();
 
     return (
-        <S.Banner>
+        <S.Banner
+            backgroundColor={backgroundColor}
+            pointColor={pointColor}
+            fontColor={fontColor}
+        >
             <S.ContentContainer>
                 <S.ContentWrapper>
                     <S.TextSection>
@@ -29,6 +41,9 @@ Banner.propTypes = {
     title: PropTypes.string,
     navLink: PropTypes.string,
     imgUrl: PropTypes.string,
+    backgroundColor: PropTypes.string,
+    pointColor: PropTypes.string,
+    fontColor: PropTypes.string,
 };
 
 export default Banner;

@@ -7,9 +7,10 @@ export const Banner = styled.div`
     position: relative;
     width: 100%;
     height: 370px;
-    background-color: #fef7e7;
+    background-color: ${({ backgroundColor }) => backgroundColor};
     overflow: hidden;
     user-select: none;
+    color: ${({ fontColor }) => fontColor};
 
     &::after {
         content: "";
@@ -18,7 +19,7 @@ export const Banner = styled.div`
         right: -900px;
         width: 100%;
         height: 100%;
-        background-color: #f7da76;
+        background-color: ${({ pointColor }) => pointColor};
         transform: skewX(-20deg);
         transform-origin: top right;
         z-index: 1;
@@ -29,7 +30,7 @@ export const ContentContainer = styled.div`
     display: flex;
     flex-direction: row;
     align-items: center;
-    gap: 30px;
+    gap: 45px;
     position: relative;
     z-index: 2;
 `;
@@ -54,29 +55,29 @@ export const SubTitle = styled.div`
 
 export const Title = styled.div`
     font-family: "LOTTERIADDAG";
-    font-size: 52px;
+    font-size: 60px;
 `;
 
 export const Link = styled.div`
     font-family: "SUITSemiBold";
     display: flex;
     gap: 2.8px;
+    cursor: pointer;
 `;
 
 export const LinkText = styled.div`
     font-size: ${({ theme }) => theme.fontSize.text};
-    cursor: pointer;
-
     border-bottom: 2px solid transparent;
     padding-bottom: 1px;
     transition: border-bottom 0.3s ease;
 
     &:hover {
         padding-bottom: 1px;
-        border-bottom: 2px solid ${({ theme }) => theme.color.gray.darker};
+        border-bottom: 2px solid ${({ fontColor }) => fontColor};
     }
 `;
 
 export const Image = styled.img`
     height: 340px;
+    object-fit: cover;
 `;
