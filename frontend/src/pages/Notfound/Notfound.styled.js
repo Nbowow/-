@@ -6,18 +6,18 @@ export const Notfound = styled.div`
     flex-direction: column;
     align-items: center;
     margin-top: 1.5rem;
-    gap: 3.4rem;
+    gap: 2.4rem;
 `;
 
 export const Icon = styled(CryingIcon)`
-    width: 12.75rem;
+    width: 170px;
 `;
 
 export const ErrorCode = styled.div`
     text-align: center;
     font-family: "SUITHeavy";
     color: #56804a;
-    font-size: 44px;
+    font-size: 34px;
 `;
 
 export const TextContainer = styled.div`
@@ -29,14 +29,14 @@ export const TextContainer = styled.div`
 export const Title = styled.div`
     text-align: center;
     font-family: "SUITSemiBold";
-    font-size: ${({ theme }) => theme.fontSize.h3};
-    line-height: 32px;
+    font-size: ${({ theme }) => theme.fontSize.h4};
+    line-height: 27px;
 `;
 
 export const Text = styled.div`
     text-align: center;
     font-family: "SUITRegular";
-    font-size: ${({ theme }) => theme.fontSize.text};
-    line-height: 24px;
+    font-size: ${({ theme }) => theme.fontSize.subText};
+    line-height: 19.3px;
     color: ${({ theme }) => theme.color.gray.dark};
 `;

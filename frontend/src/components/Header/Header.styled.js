@@ -6,10 +6,11 @@ export const MenuBar = styled.div`
     align-items: center;
 
     height: fit-content;
-    padding: 1.875rem 3.125rem 1.875rem 5rem;
+    padding: 1.7rem 3.125rem 1.7rem 5rem;
 `;
 
 export const LogoImage = styled.img`
+    height: 66px;
     cursor: pointer;
     user-select: none;
 `;
@@ -23,7 +24,7 @@ export const LinkContainer = styled.ul`
 
 export const Link = styled.li`
     font-family: "SuitSemiBold";
-    font-size: ${({ theme }) => theme.fontSize.h4};
+    font-size: ${({ theme }) => theme.fontSize.text};
     list-style: none;
     cursor: pointer;
     user-select: none;
