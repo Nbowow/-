@@ -1,19 +1,14 @@
-import { useState } from "react";
 import PropTypes from "prop-types";
 import * as S from "./Modal.styled";
-function Modal({ context }) {
-    const [isOpen, setIsOpen] = useState(true);
-
-    const handleClose = () => {
-        setIsOpen(false);
+function Modal({ context, onClose }) {
+    const onClick = (event) => {
+        event.stopPropagation();
+        onClose();
     };
-
-    if (!isOpen) return null;
-
     return (
         <S.ModalContainer>
             <S.Modal>
-                <S.CloseButton onClick={handleClose}>닫기</S.CloseButton>
+                <S.CloseButton onClick={onClick}>닫기</S.CloseButton>
                 {context}
             </S.Modal>
         </S.ModalContainer>
@@ -21,7 +16,8 @@ function Modal({ context }) {
 }
 
 Modal.propTypes = {
-    context: PropTypes.node.isRequired,
+    context: PropTypes.node,
+    onClose: PropTypes.func.isRequired,
 };
 
 export default Modal;
