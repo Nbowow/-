@@ -12,7 +12,7 @@ import {
 } from "chart.js";
 import PropTypes from "prop-types";
 import { useTheme } from "styled-components";
-import { lineConfig } from "../../util/chart";
+import { lineConfig } from "../../util/get-chart-config";
 
 ChartJS.register(
     CategoryScale,

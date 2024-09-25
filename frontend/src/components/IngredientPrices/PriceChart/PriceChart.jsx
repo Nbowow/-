@@ -2,11 +2,11 @@ import PropTypes from "prop-types";
 import { useState } from "react";
 import PriceDetailModal from "./PriceDetailModal";
 import { monthLabels } from "../../../constants/chart";
-import { calculatePriceChangeRange } from "../../../util/priceUtil";
+import { calculatePriceChangeRange } from "../../../util/price-range";
 import Chart from "../../Chart/Chart";
 import Modal from "../../Modal/Modal";
 import * as S from "./PriceChart.styled";
-import { lineOptions } from "../../../util/chart";
+import { lineOptions } from "../../../util/get-chart-config";
 
 const PriceChart = ({ name, priceHistory }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);

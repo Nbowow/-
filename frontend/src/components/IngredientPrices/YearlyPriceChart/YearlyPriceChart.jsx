@@ -1,8 +1,8 @@
 import PropTypes from "prop-types";
 import Chart from "../../Chart/Chart";
 import { monthLabels } from "../../../constants/chart";
-import { calculatePriceChangeRange } from "../../../util/priceUtil";
-import { lineOptions } from "../../../util/chart";
+import { calculatePriceChangeRange } from "../../../util/price-range";
+import { lineOptions } from "../../../util/get-chart-config";
 
 function YearlyPriceChart({ priceHistory }) {
     const labels = monthLabels();

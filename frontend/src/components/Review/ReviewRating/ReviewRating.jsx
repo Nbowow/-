@@ -1,7 +1,7 @@
 import PropTypes from "prop-types";
 import { Rating } from "react-simple-star-rating";
 import ReviewRatingBar from "./ReviewRatingBar";
-import { scoreAvg } from "../../../util/review";
+import { scoreAvg } from "../../../util/review-rating";
 import * as S from "./ReviewRating.styled";
 
 const ReviewRating = ({ rating }) => {

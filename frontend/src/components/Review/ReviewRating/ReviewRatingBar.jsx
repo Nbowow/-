@@ -9,9 +9,9 @@ import {
 } from "chart.js";
 import ChartDataLabels from "chartjs-plugin-datalabels";
 import { useTheme } from "styled-components";
-import { reviewPercentageArr } from "../../../util/review.js";
-import { barLabels } from "../../../constants/bar.js";
-import { barConfig, barOptions } from "../../../util/chart.js";
+import { reviewPercentageArr } from "../../../util/review-rating";
+import { barLabels } from "../../../constants/bar";
+import { barConfig, barOptions } from "../../../util/get-chart-config";
 
 ChartJS.register(
     CategoryScale,

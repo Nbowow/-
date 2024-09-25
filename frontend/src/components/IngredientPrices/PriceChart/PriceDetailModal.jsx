@@ -3,9 +3,9 @@ import Table from "../../Table/Table";
 import PropTypes from "prop-types";
 import * as S from "./PriceChart.styled";
 import { useMemo } from "react";
-import { calculatePriceChangeRange } from "../../../util/priceUtil";
+import { calculatePriceChangeRange } from "../../../util/price-range";
 import { useIngredientPriceColumns } from "../../Table/TableColumn";
-import { lineOptions } from "../../../util/chart";
+import { lineOptions } from "../../../util/get-chart-config";
 
 const PriceDetailModal = ({ name, priceHistory }) => {
     const chartData = priceHistory.map((item) => Number(item.price));
