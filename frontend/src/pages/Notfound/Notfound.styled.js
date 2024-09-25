@@ -5,25 +5,25 @@ export const Notfound = styled.div`
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin-top: 24px;
-
-    gap: 32px;
-`;
-
-export const IconContainer = styled.div`
-    font-family: "TossFace";
-    font-size: 205px;
+    margin-top: 1.5rem;
+    gap: 3.4rem;
 `;
 
 export const Icon = styled(CryingIcon)`
-    width: 204px;
+    width: 12.75rem;
 `;
 
 export const ErrorCode = styled.div`
     text-align: center;
     font-family: "SUITHeavy";
     color: #56804a;
-    font-size: 34px;
+    font-size: 44px;
+`;
+
+export const TextContainer = styled.div`
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
 `;
 
 export const Title = styled.div`
