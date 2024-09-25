@@ -29,7 +29,7 @@ const Notfound = () => {
                 </S.TextContainer>
                 <Button
                     text={"홈으로 가기"}
-                    onClick={navigate("/")}
+                    onClick={() => navigate("/")}
                     width="150px"
                     height="40px"
                 />
