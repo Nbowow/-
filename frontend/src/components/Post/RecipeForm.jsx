@@ -1,136 +1,25 @@
 import { useState } from "react";
-import styled from "styled-components";
-
-const Container = styled.div`
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px;
-    font-family: "Arial", sans-serif;
-`;
-
-const Title = styled.h1`
-    grid-area: title;
-    text-align: left;
-    color: #333;
-    margin-bottom: 20px;
-`;
-
-const Form = styled.form`
-    display: grid;
-    grid-template-areas:
-        "title title"
-        "name image"
-        "description image"
-        "category image"
-        "bottom none";
-    gap: 20px;
-`;
-
-const InputGroup = styled.div`
-    grid-area: name;
-    display: flex;
-    flex-direction: column;
-`;
-
-const InputGroup2 = styled.div`
-    grid-area: description;
-    display: flex;
-    flex-direction: column;
-`;
-
-const InputGroup3 = styled.div`
-    grid-area: image;
-    display: flex;
-    flex-direction: column; /* 세로로 정렬 */
-    align-items: center; /* 가운데 정렬 */
-`;
-
-const InputGroup4 = styled.div`
-    grid-area: category;
-    display: flex;
-    flex-direction: column;
-`;
-
-const InputGroup5 = styled.div`
-    display: flex;
-    flex-direction: column;
-`;
-
-const Label = styled.label`
-    font-weight: bold;
-    margin-bottom: 8px;
-`;
-
-const Input = styled.input`
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-`;
-
-const TextArea = styled.textarea`
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    height: 80px;
-    resize: none;
-`;
-
-const Select = styled.select`
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-`;
-
-const CategoryGroup = styled.div`
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
-`;
-
-const ImageUploadButton = styled.label`
-    display: flex;
-    flex-direction: column; /* 세로로 정렬 */
-    justify-content: center;
-    align-items: center;
-    border: 1px dashed #ccc;
-    border-radius: 4px;
-    padding: 20px;
-    background-color: #fafafa;
-    width: 300px;
-    height: 300px;
-    cursor: pointer;
-    position: relative;
-    margin: 20px 0;
-    align-self: center; /* 가로 중앙 정렬 */
-`;
-
-const ImagePreview = styled.img`
-    width: 100%;
-    height: auto;
-    border-radius: 4px;
-`;
-
-const BottomRow = styled.div`
-    grid-area: bottom;
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
-`;
-
-const CloseButton = styled.button`
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    background: none;
-    border: none;
-    color: #ff0000;
-    cursor: pointer;
-    font-size: 16px;
-`;
-
-const ButtonContainer = styled.div`
-    text-align: center; /* 텍스트 중앙 정렬 */
-`;
+import {
+    Container,
+    Title,
+    Form,
+    InputGroup,
+    InputGroup2,
+    InputGroup3,
+    InputGroup4,
+    InputGroup5,
+    Label,
+    Input,
+    TextArea,
+    Select,
+    CategoryGroup,
+    ImageUploadButton,
+    ImagePreview,
+    BottomRow,
+    CloseButton,
+    ButtonContainer,
+    Text,
+} from "./RecipeForm.styeld"; // 스타일드 컴포넌트 임포트
 
 const RecipeForm = () => {
     const [recipeData, setRecipeData] = useState({
@@ -199,7 +88,7 @@ const RecipeForm = () => {
                                 />
                                 <ButtonContainer>
                                     <img src="/src/img/Vector.png" alt="" />
-                                    <p>대표사진 등록</p>
+                                    <Text>대표사진 등록</Text>
                                 </ButtonContainer>
                             </>
                         )}

@@ -5,6 +5,7 @@ import PostRecipe from "./pages/PostRecipe";
 import Recipe from "./pages/Recipe";
 import Notfound from "./pages/Notfound/Notfound";
 import Ranking from "./pages/Ranking";
+import UserProfile from "./components/UserProfile/UserProfile";
 
 function App() {
     return (
@@ -14,6 +15,7 @@ function App() {
                     <Route path="/post" element={<PostRecipe />} />
                     <Route path="/recipe" element={<Recipe />} />
                     <Route path="/ranking" element={<Ranking />} />
+                    <Route path="/profile" element={<UserProfile />} />
                     <Route path="*" element={<Notfound />} />
                     {/* 다른 Route 추가 */}
                 </Routes>
