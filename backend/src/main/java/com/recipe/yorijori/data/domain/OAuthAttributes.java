@@ -63,10 +63,7 @@ public class OAuthAttributes {
                 .email(oauth2UserInfo.getEmail())
                 .nickname(oauth2UserInfo.getNickname())
                 .profileImage(oauth2UserInfo.getImageUrl())
-                .gender(oauth2UserInfo.getGender())
-                .age(oauth2UserInfo.getAge())
                 .name(oauth2UserInfo.getName())  // name 추가
-                .birthday(oauth2UserInfo.getBirthday())  // birthday 추가
                 .role(Role.USER)
                 .build();
     }

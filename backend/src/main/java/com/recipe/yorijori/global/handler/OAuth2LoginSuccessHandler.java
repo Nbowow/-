@@ -31,7 +31,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
             loginSuccess(response, oAuth2User);
 
             // 로그인 성공 후 리다이렉트 URL 설정
-            String redirectUrl = "/home"; // 로그인 성공 후 리다이렉트할 경로
+            String redirectUrl = "/api/v1/home"; // 로그인 성공 후 리다이렉트할 경로
             response.sendRedirect(redirectUrl);
 
         } catch (Exception e) {
@@ -40,7 +40,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
 
     }
 
-   private void loginSuccess(HttpServletResponse response, CustomOAuth2User oAuth2User) throws IOException {
+    private void loginSuccess(HttpServletResponse response, CustomOAuth2User oAuth2User) throws IOException {
         String accessToken = jwtService.createAccessToken(oAuth2User.getEmail());
         String refreshToken = jwtService.createRefreshToken();
         response.addHeader(jwtService.getAccessHeader(), "Bearer " + accessToken);

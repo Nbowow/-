@@ -21,6 +21,13 @@ export const Modal = styled.div`
     box-shadow: 0.2rem 0.2rem 0.2rem rgba(0, 0, 0, 0.25);
     z-index: 101;
     padding: 2rem;
+    overflow-y: scroll;
+
+    ::-webkit-scrollbar {
+        display: none;
+    }
+    -ms-overflow-style: none;
+    scrollbar-width: none;
 `;
 
 export const CloseButton = styled.button`

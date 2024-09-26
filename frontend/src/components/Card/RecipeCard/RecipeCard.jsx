@@ -1,4 +1,5 @@
 import ActionToggleGroup from "../../Toggle/ActionToggleGroup/ActionToggleGroup";
+import UserProfileImage from "../../UserProfile/UserProfileImage/UserProfileImage";
 import * as S from "./RecipeCard.styled";
 import PropTypes from "prop-types";
 
@@ -28,7 +29,10 @@ const RecipeCard = ({
             </S.TextArea>
             {showProfile ? (
                 <S.Profile>
-                    <S.Image src={profileImgUrl} />
+                    <UserProfileImage
+                        imageUrl={profileImgUrl}
+                        size="1.838rem"
+                    />
                     {author}
                 </S.Profile>
             ) : null}

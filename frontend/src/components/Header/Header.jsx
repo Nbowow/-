@@ -1,17 +1,19 @@
 import * as S from "./Header.styled";
+import { useNavigate } from "react-router-dom";
 
 const Header = () => {
+    const navigate = useNavigate();
     const imagePath = "./logo/logo_green.svg";
 
     return (
         <S.MenuBar>
-            <img src={imagePath} />
-            <S.List>
-                <S.ListItem>모든 레시피</S.ListItem>
-                <S.ListItem>물가 동향</S.ListItem>
-                <S.ListItem>레시피 등록</S.ListItem>
-                <S.ListItem>마이 페이지</S.ListItem>
-            </S.List>
+            <S.LogoImage src={imagePath} onClick={() => navigate("/")} />
+            <S.LinkContainer>
+                <S.Link>모든 레시피</S.Link>
+                <S.Link>물가 동향</S.Link>
+                <S.Link>레시피 등록</S.Link>
+                <S.Link>마이 페이지</S.Link>
+            </S.LinkContainer>
         </S.MenuBar>
     );
 };
