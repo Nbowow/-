@@ -30,4 +30,3 @@ class Recipes(Base):
     user_id = Column(BigInteger, ForeignKey("Users.user_id"), nullable=False)
 
     user = relationship("Users", back_populates="recipe")
-    recipe_cooking_tool = relationship("RecipeCookingTools", back_populates="recipe")
