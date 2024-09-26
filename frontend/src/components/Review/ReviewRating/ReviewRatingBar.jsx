@@ -11,7 +11,7 @@ import {
 import ChartDataLabels from "chartjs-plugin-datalabels";
 import { useTheme } from "styled-components";
 import { reviewPercentageArr } from "../../../util/review-rating";
-import { barLabels } from "../../../constants/bar";
+import { barLabels } from "../../../constants/chart.js";
 import { barConfig, barOptions } from "../../../util/get-chart-config";
 
 ChartJS.register(
@@ -25,11 +25,12 @@ ChartJS.register(
 
 function ReviewRatingBar({ rating }) {
     const dataSumPercentage = reviewPercentageArr(rating);
-    const labels = barLabels();
-    const config = barConfig();
     const theme = useTheme();
 
     const darkColor = theme.color.gray.dark;
+    const labels = barLabels();
+    const config = barConfig("#FFBC0B");
+
     const data = {
         labels,
         datasets: [
