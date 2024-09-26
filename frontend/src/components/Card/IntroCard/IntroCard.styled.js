@@ -9,8 +9,10 @@ import {
 } from "../Card.styled";
 
 export const IntroCard = styled(BaseCard)`
+    margin: 20px;
     width: 17.25rem;
     height: 22.438rem;
+    background-color: white;
     border-radius: ${cardBorderRadius};
     box-shadow: 0px 0.25rem 1.25rem rgba(0, 0, 0, 0.2);
     cursor: pointer;
