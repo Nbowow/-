@@ -1,30 +1,5 @@
 import PropTypes from "prop-types";
-import styled from "styled-components";
-
-const PaginationContainer = styled.div`
-    display: flex;
-    justify-content: center;
-    margin: 20px 0;
-`;
-
-const PageButton = styled.button`
-    margin: 0 5px;
-    padding: 10px 15px;
-    cursor: pointer;
-    border: none;
-    border-radius: 5px;
-    background-color: #eaf0ec;
-    color: black;
-
-    &:disabled {
-        background-color: #4cac67; /* 비활성화 색상 */
-        cursor: not-allowed;
-    }
-
-    &:hover {
-        background-color: #d0d0d0;
-    }
-`;
+import { PaginationContainer, PageButton } from "./Pagitnation.styled"; // 스타일드 컴포넌트 임포트
 
 const Pagination = ({ pageCount, onPageChange, currentPage }) => {
     const handlePageClick = (page) => {
