@@ -1,5 +1,6 @@
 import PropTypes from "prop-types";
 import * as S from "./Comment.styled";
+import UserProfileImage from "../UserProfile/UserProfileImage/UserProfileImage";
 function Comment({ setShowReplies, comment, isReply }) {
     const toggleReplies = () => {
         setShowReplies((prev) => !prev);
@@ -9,12 +10,6 @@ function Comment({ setShowReplies, comment, isReply }) {
         ? `${comment.reply.length}개의 답글`
         : "답글 달기";
 
-    const userImage = comment.imgUrl ? (
-        <S.UserImg src={comment.imgUrl} alt={comment.user} />
-    ) : (
-        <S.UserIcon />
-    );
-
     const replyButton = !isReply ? (
         <S.ReplyButton onClick={toggleReplies}>{status}</S.ReplyButton>
     ) : null;
@@ -22,7 +17,7 @@ function Comment({ setShowReplies, comment, isReply }) {
     return (
         <S.CommentWrapper>
             <S.User>
-                {userImage}
+                <UserProfileImage imageUrl={comment.imgUrl} size={"2rem"} />
                 <S.UserName>{comment.user}</S.UserName>
             </S.User>
             <S.Text>{comment.text}</S.Text>
