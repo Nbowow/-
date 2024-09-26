@@ -6,22 +6,20 @@ function RecipeUser({ data }) {
     const handleFollow = () => {};
     return (
         <S.UserContainer>
-            <UserProfileImage imageUrl={data.imageUrl} size={"4.5rem"} />
+            <UserProfileImage imageUrl={data.imgUrl} size={"6rem"} />
             <S.UserDetails>
                 <S.UserInfo>
                     <S.UserName>{data.name}</S.UserName>
-                    <S.UserLabel>님의 레시피입니다.</S.UserLabel>
-                </S.UserInfo>
-                <S.UserFollowSection>
-                    <S.UserLabel>구독자 {data.followCnt}명</S.UserLabel>
+                    <S.UserHome>{"🏠"}</S.UserHome>
                     <Button
-                        width={"4rem"}
+                        width={"3rem"}
                         height={"1.5rem"}
                         text={"구독"}
                         onClick={handleFollow}
                         type={"small"}
                     />
-                </S.UserFollowSection>
+                </S.UserInfo>
+                <S.UserTalk>{data.talk}</S.UserTalk>
             </S.UserDetails>
         </S.UserContainer>
     );
@@ -30,8 +28,9 @@ function RecipeUser({ data }) {
 RecipeUser.propTypes = {
     data: PropTypes.shape({
         name: PropTypes.string.isRequired,
-        imageUrl: PropTypes.string,
+        imgUrl: PropTypes.string,
         followCnt: PropTypes.number.isRequired,
+        talk: PropTypes.string.isRequired,
     }).isRequired,
 };
 
