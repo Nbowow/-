@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 const Header = () => {
     const navigate = useNavigate();
-    const imagePath = "./logo/logo_green.svg";
+    const imagePath = import.meta.env.BASE_URL + "logo/logo_green.svg";
 
     return (
         <S.MenuBar>
