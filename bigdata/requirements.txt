@@ -8,3 +8,5 @@ pymysql
 python-dotenv
 hdfs
 pyspark
+bs4
+pandas
