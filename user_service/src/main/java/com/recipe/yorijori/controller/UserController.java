@@ -29,6 +29,12 @@ public class UserController {
     public ResponseEntity<?> getUser(@PathVariable Long userId) {
         UserRecipeResponseDto userRecipeResponseDto = userService.getUserById(userId);
 
+        return ResponseEntity.status(HttpStatus.OK).body(userRecipeResponseDto);
+    }
+
+    @GetMapping("/{nickname}")
+    public ResponseEntity<?> getUserByNickname(@PathVariable String nickname) {
+        UserRecipeResponseDto userRecipeResponseDto = userService.getUserByNickname(nickname);
 
         return ResponseEntity.status(HttpStatus.OK).body(userRecipeResponseDto);
     }
