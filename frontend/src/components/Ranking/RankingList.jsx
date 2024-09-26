@@ -1,7 +1,5 @@
-/* eslint-disable react/prop-types */
 import { useState, useEffect, useMemo } from "react";
 import { useTable, useSortBy } from "react-table";
-// import PropTypes from 'prop-types';
 import styled from "styled-components";
 import Pagination from "../Pagination";
 
