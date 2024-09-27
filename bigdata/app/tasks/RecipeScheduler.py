@@ -50,6 +50,7 @@ def recipe_back_data_crawling_scheduler(get_type, get_situation, get_ingredient,
                 b_situation = True
             else:
                 now_situation = 0
+                get_situation = 0
 
             for situ_key, situ_value in islice(by_situation.items(), get_situation, None):
                 print(f"{situ_key} 카테고리의 레시피를 처리 중입니다...")
@@ -58,6 +59,7 @@ def recipe_back_data_crawling_scheduler(get_type, get_situation, get_ingredient,
                     b_ingredient = True
                 else:
                     now_ingredient = 0
+                    get_ingredient = 0
 
                 for ing_key, ing_value in islice(by_ingredient.items(), get_ingredient, None):
                     print(f"{ing_key} 카테고리의 레시피를 처리 중입니다...")
@@ -66,6 +68,7 @@ def recipe_back_data_crawling_scheduler(get_type, get_situation, get_ingredient,
                         b_method = True
                     else:
                         now_method = 0
+                        get_method = 0
 
                     for method_key, method_value in islice(by_method.items(), get_method, None):
                         print(f"{method_key} 카테고리의 레시피를 처리 중입니다...")
