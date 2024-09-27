@@ -5,7 +5,6 @@ from itertools import islice
 import pandas as pd
 import requests
 from bs4 import BeautifulSoup
-from sqlalchemy import false
 
 from app.globals import set_recipe_back_crawling_status
 
@@ -226,6 +225,9 @@ def recipe_back_data_crawling_scheduler(get_type, get_situation, get_ingredient,
                                                                   '조회수', '조리시간', '난이도', '인분', '재료', '소개글', '조리순서'])
 
                                 print(recipe_df)
+
+                                if not list4df:
+                                    break
 
                                 save_recipe_fname = os.path.join(data_dir,
                                                                  f"recipe_back_{get_type}_{get_situation}_{get_ingredient}_{get_method}_{get_page}.csv")

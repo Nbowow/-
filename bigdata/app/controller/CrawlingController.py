@@ -1,10 +1,15 @@
-from http import HTTPStatus
-
 from fastapi import APIRouter, HTTPException, BackgroundTasks
 
 from app.globals import get_recipe_back_crawling_status, set_recipe_back_crawling_status, \
     get_price_back_crawling_status, set_price_back_crawling_status
-from app.model.request.PriceBackAPIDto import PriceBackCrawlingDto
+from app.model.request.PriceBackAPIDto import PriceBackAPIDto
+from app.model.request.RecipeBackCrawlingDto import RecipeBackCrawlingDto
+from app.tasks.RecipeScheduler import recipe_back_data_crawling_scheduler
+from fastapi import APIRouter, HTTPException, BackgroundTasks
+
+from app.globals import get_recipe_back_crawling_status, set_recipe_back_crawling_status, \
+    get_price_back_crawling_status, set_price_back_crawling_status
+from app.model.request.PriceBackAPIDto import PriceBackAPIDto
 from app.model.request.RecipeBackCrawlingDto import RecipeBackCrawlingDto
 from app.tasks.RecipeScheduler import recipe_back_data_crawling_scheduler
 
@@ -36,7 +41,7 @@ def start_recipe_back_crawling(data: RecipeBackCrawlingDto, background_tasks: Ba
 
 
 @router.post("/price/back-data")
-def start_price_back_crawling(data: PriceBackCrawlingDto, background_tasks: BackgroundTasks):
+def start_price_back_crawling(data: PriceBackAPIDto, background_tasks: BackgroundTasks):
     if get_price_back_crawling_status():
         raise HTTPException(status_code=429, detail="이미 작업이 진행 중입니다. 작업이 완료된 후 다시 시도하세요.")
 
