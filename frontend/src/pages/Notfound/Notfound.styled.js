@@ -17,7 +17,7 @@ export const ErrorCode = styled.div`
     text-align: center;
     font-family: "SUITHeavy";
     color: #56804a;
-    font-size: 34px;
+    ${({ theme }) => theme.fontSize.h1};
 `;
 
 export const TextContainer = styled.div`
