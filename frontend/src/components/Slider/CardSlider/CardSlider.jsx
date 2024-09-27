@@ -1,5 +1,6 @@
 import IntroCard from "../../Card/IntroCard/IntroCard";
 import * as S from "./CardSlider.styled";
+import PropTypes from "prop-types";
 
 import { Navigation, Pagination, A11y, Autoplay } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -8,12 +9,9 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 
-// TODO: 배경색 props로 받기
-// TODO: 페이지네이션 스크롤바로 변경, 버튼 색상 변경
-
-const CardSlider = () => {
+const CardSlider = ({ color }) => {
     const CardPack = () => (
-        <S.CardPack>
+        <S.CardPack color={color}>
             <IntroCard
                 title="비빔비빔비빔비빔"
                 text="hihihihi"
@@ -65,6 +63,10 @@ const CardSlider = () => {
             </Swiper>
         </S.CardSlider>
     );
+};
+
+CardSlider.propTypes = {
+    color: PropTypes.string,
 };
 
 export default CardSlider;
