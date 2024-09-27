@@ -17,7 +17,7 @@ import {
     InputContainer,
     ImageContainer,
     TextContainer,
-    RemoveButton, // 추가된 스타일드 컴포넌트
+    RemoveButton,
 } from "./OrderForm.styled";
 
 const OrderForm = () => {
