@@ -10,12 +10,12 @@ export const Container = styled.div`
 export const Title = styled.h2`
     display: flex;
     align-items: center;
-    font-size: 18px;
+    font-size: ${({ theme }) => theme.fontSize.h4};
     margin-bottom: 15px;
 `;
 
 export const CookingIcon = styled.span`
-    font-size: 24px;
+    font-size: ${({ theme }) => theme.fontSize.h3};
     margin-right: 10px;
     font-family: "TossFace";
 `;
@@ -42,7 +42,7 @@ export const LevelInfo = styled.p`
 `;
 
 export const Text = styled.div`
-    font-size: 18px;
+    font-size: ${({ theme }) => theme.fontSize.h4};
     color: #333;
     padding: 8px;
 `;

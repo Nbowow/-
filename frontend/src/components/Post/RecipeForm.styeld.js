@@ -9,7 +9,7 @@ export const Container = styled.div`
 `;
 
 export const Title = styled.h1`
-    font-size: 34px;
+    font-size: ${({ theme }) => theme.fontSize.h1};
     color: #333;
     margin-bottom: 10px;
     font-family: "SUITEXTRABOLD";
@@ -59,7 +59,7 @@ export const InputGroup5 = styled.div`
 export const Label = styled.label`
     margin-bottom: 8px;
     font-family: "SUITSEMIBOLD";
-    font-size: 24px;
+    font-size: ${({ theme }) => theme.fontSize.h3};
 `;
 
 export const Input = styled.input`
@@ -83,9 +83,9 @@ export const Select = styled.select`
     padding: 10px;
     border: 1px solid #ddd;
     border-radius: 4px;
-    font-size: 14px;
+    font-size: ${({ theme }) => theme.fontSize.text};
     font-family: "SUITREGULAR";
-    color: #aaaaaa;
+    color: ${({ theme }) => theme.color.gray.light};
 `;
 
 export const CategoryGroup = styled.div`
@@ -141,7 +141,7 @@ export const ButtonContainer = styled.div`
 
 export const Text = styled.p`
     font-size: 22px;
-    color: #aaaaaa;
+    color: ${({ theme }) => theme.color.gray.light};
     margin-top: 10px;
     font-family: "SUITSEMIBOLD";
 `;

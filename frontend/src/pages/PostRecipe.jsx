@@ -29,7 +29,7 @@ const ButtonContainer = styled.div`
 const Hr = styled.hr`
     margin-top: 50px;
     margin-bottom: 50px;
-    border-top: 2px solid #aaaaaa;
+    border-top: 2px solid ${({ theme }) => theme.color.gray.light};
     width: 80%;
 `;
 

@@ -15,7 +15,7 @@ export const TitleContainer = styled.div`
 `;
 
 export const Title = styled.h1`
-    font-size: 34px;
+    font-size: ${({ theme }) => theme.fontSize.h1};
     color: #333;
     margin-bottom: 10px;
     font-family: "SUITEXTRABOLD";
@@ -87,7 +87,7 @@ export const TextArea = styled.textarea`
     margin-bottom: 10px;
     background-color: #f2f2f2;
     font-family: "SUITREgular";
-    font-size: 14px;
+    font-size: ${({ theme }) => theme.fontSize.text};
 `;
 
 export const Input = styled.input`
@@ -96,7 +96,7 @@ export const Input = styled.input`
     border-radius: 4px;
     background-color: #f2f2f2;
     font-family: "SUITREgular";
-    font-size: 14px;
+    font-size: ${({ theme }) => theme.fontSize.text};
 `;
 
 export const SubmitButton = styled.button`
@@ -117,7 +117,7 @@ export const SubmitButton = styled.button`
 
 export const Text = styled.p`
     font-size: 22px;
-    color: #aaaaaa;
+    color: ${({ theme }) => theme.color.gray.light};
     margin-top: 10px;
     font-family: "SUITSEMIBOLD";
 `;
@@ -125,7 +125,7 @@ export const Text = styled.p`
 export const Label = styled.label`
     margin-bottom: 8px;
     font-family: "SUITSEMIBOLD";
-    font-size: 24px;
+    font-size: ${({ theme }) => theme.fontSize.h3};
 `;
 
 export const ImageContainer = styled.div`

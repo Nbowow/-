@@ -4,9 +4,6 @@ export const Container = styled.div`
     max-width: 1200px;
     margin: 0 auto;
     padding: 20px;
-    /* background-color: #ffffff;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); */
 `;
 
 export const TitleContainer = styled.div`
@@ -15,7 +12,7 @@ export const TitleContainer = styled.div`
 `;
 
 export const Title = styled.h1`
-    font-size: 34px;
+    font-size: ${({ theme }) => theme.fontSize.h1};
     color: #333;
     margin-bottom: 10px;
     font-family: "SUITEXTRABOLD";
@@ -44,7 +41,7 @@ export const InputField = styled.input`
     margin-right: 10px;
     border: 1px solid #e0e0e0;
     border-radius: 4px;
-    font-size: 14px;
+    font-size: ${({ theme }) => theme.fontSize.text};
     font-family: "SUITRegular";
     background-color: #f2f2f2;
 
@@ -59,12 +56,12 @@ export const InputField = styled.input`
 
 export const GroupLabel = styled(InputField)`
     background-color: white;
-    border: 1px solid #aaaaaa;
+    border: 1px solid ${({ theme }) => theme.color.gray.light};
     margin-bottom: 10px;
     font-family: "SUITRegular";
 
     &::placeholder {
-        color: #aaaaaa;
+        color: ${({ theme }) => theme.color.gray.light};
     }
 `;
 export const ButtonContainer = styled.div`
@@ -76,7 +73,7 @@ export const AddButton = styled.button`
     background-color: #4cac67;
     color: white;
     padding: 12px 20px;
-    border: solid 1px #aaaaaa;
+    border: solid 1px ${({ theme }) => theme.color.gray.light};
     border-radius: 20px;
     cursor: pointer;
     font-size: 16px;
