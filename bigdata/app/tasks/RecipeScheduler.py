@@ -35,40 +35,15 @@ def recipe_back_data_crawling_scheduler(get_type, get_situation, get_ingredient,
         os.makedirs(data_dir, exist_ok=True)
 
         list4df = []
-        now_type = get_type
-        b_situation = False
-        now_situation = get_situation
-        b_ingredient = False
-        now_ingredient = get_ingredient
-        b_method = False
-        now_method = get_method
 
         for type_key, type_value in islice(by_type.items(), get_type, None):
             print(f"{type_key} 카테고리의 레시피를 처리 중입니다...")
 
-            if not b_situation:
-                b_situation = True
-            else:
-                now_situation = 0
-                get_situation = 0
-
             for situ_key, situ_value in islice(by_situation.items(), get_situation, None):
                 print(f"{situ_key} 카테고리의 레시피를 처리 중입니다...")
 
-                if not b_ingredient:
-                    b_ingredient = True
-                else:
-                    now_ingredient = 0
-                    get_ingredient = 0
-
                 for ing_key, ing_value in islice(by_ingredient.items(), get_ingredient, None):
                     print(f"{ing_key} 카테고리의 레시피를 처리 중입니다...")
-
-                    if not b_method:
-                        b_method = True
-                    else:
-                        now_method = 0
-                        get_method = 0
 
                     for method_key, method_value in islice(by_method.items(), get_method, None):
                         print(f"{method_key} 카테고리의 레시피를 처리 중입니다...")
@@ -242,7 +217,7 @@ def recipe_back_data_crawling_scheduler(get_type, get_situation, get_ingredient,
                                 print(recipe_df)
 
                                 save_recipe_fname = os.path.join(data_dir,
-                                                                 f"recipe_back_{now_type}_{now_situation}_{now_ingredient}_{now_method}_{page}.csv")
+                                                                 f"recipe_back_{get_type}_{get_situation}_{get_ingredient}_{get_method}_{page}.csv")
 
                                 # 데이터프레임을 CSV 파일로 저장 (덮어쓰기 모드)
                                 recipe_df.to_csv(save_recipe_fname, encoding='utf-8', index=False)
@@ -253,10 +228,16 @@ def recipe_back_data_crawling_scheduler(get_type, get_situation, get_ingredient,
                         else:
                             print(f"메인 URL 연결 실패. 상태 코드: {response.status_code}")
 
-                        now_method += 1
-                    now_ingredient += 1
-                now_situation += 1
-            now_type += 1
+                        get_method += 1
+
+                    get_method = 0
+                    get_ingredient += 1
+
+                get_ingredient = 0
+                get_situation += 1
+
+            get_situation = 0
+            get_type += 1
 
     except Exception as e:
         print(f"에러 발생: {e}")
