@@ -72,7 +72,7 @@ pipeline {
 
                         // Run the new recipe-service container
                         sh '''
-                        docker run -d \
+                        docker run -d -p 8082:8082 \
                         --network backendnet \
                         --name recipe-service \
                         -e "eureka.client.registerWithEureka=true" \
