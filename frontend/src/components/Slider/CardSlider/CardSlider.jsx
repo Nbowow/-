@@ -9,31 +9,16 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 
-const CardSlider = ({ color }) => {
-    const CardPack = () => (
-        <S.CardPack color={color}>
-            <IntroCard
-                title="비빔비빔비빔비빔"
-                text="hihihihi"
-                imgUrl="https://cdn.bonif.co.kr/cmdt/20220628_M7O_1656371902441_626Kb.jpg"
-            />
-            <IntroCard
-                title="비빔비빔비빔비빔"
-                text="hihihihi"
-                imgUrl="https://cdn.bonif.co.kr/cmdt/20220628_M7O_1656371902441_626Kb.jpg"
-            />
-            <IntroCard
-                title="비빔비빔비빔비빔"
-                text="hihihihi"
-                imgUrl="https://cdn.bonif.co.kr/cmdt/20220628_M7O_1656371902441_626Kb.jpg"
-            />
-            <IntroCard
-                title="비빔비빔비빔비빔"
-                text="hihihihi"
-                imgUrl="https://cdn.bonif.co.kr/cmdt/20220628_M7O_1656371902441_626Kb.jpg"
-            />
-        </S.CardPack>
-    );
+const CardSlider = ({ color, data }) => {
+    const chunkArray = (array, chunckSize) => {
+        const results = [];
+        for (let i = 0; i < array.length; i += chunckSize) {
+            results.push(array.slice(i, i + chunckSize));
+        }
+        return results;
+    };
+
+    const chunkedData = chunkArray(data, 4);
 
     return (
         <S.CardSlider>
@@ -45,21 +30,20 @@ const CardSlider = ({ color }) => {
                 pagination={{ clickable: true }}
                 loop={true}
             >
-                <SwiperSlide>
-                    <CardPack />
-                </SwiperSlide>
-                <SwiperSlide>
-                    <CardPack />
-                </SwiperSlide>
-                <SwiperSlide>
-                    <CardPack />
-                </SwiperSlide>
-                <SwiperSlide>
-                    <CardPack />
-                </SwiperSlide>
-                <SwiperSlide>
-                    <CardPack />
-                </SwiperSlide>
+                {chunkedData.map((chunk, index) => (
+                    <SwiperSlide key={index}>
+                        <S.CardPack color={color}>
+                            {chunk.map((item, itemIndex) => (
+                                <IntroCard
+                                    key={itemIndex}
+                                    title={item.title}
+                                    text={item.text}
+                                    imgUrl={item.imgUrl}
+                                />
+                            ))}
+                        </S.CardPack>
+                    </SwiperSlide>
+                ))}
             </Swiper>
         </S.CardSlider>
     );
@@ -67,6 +51,13 @@ const CardSlider = ({ color }) => {
 
 CardSlider.propTypes = {
     color: PropTypes.string,
+    data: PropTypes.arrayOf(
+        PropTypes.shape({
+            title: PropTypes.string.isRequired,
+            text: PropTypes.string.isRequired,
+            imgUrl: PropTypes.string.isRequired,
+        }),
+    ).isRequired,
 };
 
 export default CardSlider;
