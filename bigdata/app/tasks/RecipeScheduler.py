@@ -5,6 +5,7 @@ from itertools import islice
 import pandas as pd
 import requests
 from bs4 import BeautifulSoup
+from sqlalchemy import false
 
 from app.globals import set_recipe_back_crawling_status
 
@@ -34,10 +35,6 @@ def recipe_back_data_crawling_scheduler(get_type, get_situation, get_ingredient,
         os.makedirs(data_dir, exist_ok=True)
 
         list4df = []
-        now_type = get_type
-        now_situation = get_situation
-        now_ingredient = get_ingredient
-        now_method = get_method
 
         for type_key, type_value in islice(by_type.items(), get_type, None):
             print(f"{type_key} 카테고리의 레시피를 처리 중입니다...")
@@ -69,13 +66,24 @@ def recipe_back_data_crawling_scheduler(get_type, get_situation, get_ingredient,
                             soup = BeautifulSoup(response.text, 'html.parser')
                             page_len = len(soup.select('#contents_area_full > ul > nav > ul > li'))
 
-                            for page in range(get_page, page_len + 1):
-                                if page != 1:
-                                    main_url = main_url + '&page=' + str(page)
+                            while get_page <= page_len + 1:
+                                if get_page != 1:
+                                    main_url = main_url + '&page=' + str(get_page)
                                     response = requests.get(main_url, headers={'User-Agent': 'Mozilla/5.0'})
+                                    # HTTP 상태 코드 체크
+                                    if response.status_code == 200:  # 정상 응답일 때
+                                        soup = BeautifulSoup(response.text, 'html.parser')
+                                        print(f"다음 페이지로 이동 중: {main_url}")
+                                        time.sleep(2)  # 페이지 변경 후 2초 지연
+
+                                    else:
+                                        print(f"페이지 이동 실패. 상태 코드: {response.status_code} - {main_url}")
+                                        break  # 오류 발생 시 반복문 탈출
+
+                                if get_page % 10 == 1:
+                                    print(f"{main_url} 페이지에서 응답을 성공적으로 받았습니다.")
                                     soup = BeautifulSoup(response.text, 'html.parser')
-                                    time.sleep(2)  # 페이지 변경 후 2초 지연
-                                    print(f"다음 페이지로 이동 중: {main_url}")
+                                    page_len = len(soup.select('#contents_area_full > ul > nav > ul > li'))
 
                                 sources = soup.select(
                                     '#contents_area_full > ul > ul > li > div.common_sp_thumb > a')
@@ -220,7 +228,7 @@ def recipe_back_data_crawling_scheduler(get_type, get_situation, get_ingredient,
                                 print(recipe_df)
 
                                 save_recipe_fname = os.path.join(data_dir,
-                                                                 f"recipe_back_{now_type}_{now_situation}_{now_ingredient}_{now_method}_{page}.csv")
+                                                                 f"recipe_back_{get_type}_{get_situation}_{get_ingredient}_{get_method}_{get_page}.csv")
 
                                 # 데이터프레임을 CSV 파일로 저장 (덮어쓰기 모드)
                                 recipe_df.to_csv(save_recipe_fname, encoding='utf-8', index=False)
@@ -228,13 +236,22 @@ def recipe_back_data_crawling_scheduler(get_type, get_situation, get_ingredient,
                                 print(f"데이터가 {save_recipe_fname}파일로 저장되었습니다.")
                                 list4df = []  # 데이터를 저장했으므로 리스트를 초기화
 
+                                get_page += 1
+
                         else:
                             print(f"메인 URL 연결 실패. 상태 코드: {response.status_code}")
 
-                        now_method += 1
-                    now_ingredient += 1
-                now_situation += 1
-            now_type += 1
+                        get_page = 1
+                        get_method += 1
+
+                    get_method = 0
+                    get_ingredient += 1
+
+                get_ingredient = 0
+                get_situation += 1
+
+            get_situation = 0
+            get_type += 1
 
     except Exception as e:
         print(f"에러 발생: {e}")
