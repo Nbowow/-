@@ -1,6 +1,7 @@
 import * as S from "./UserProfile.styled";
 import UserProfileImage from "./UserProfileImage/UserProfileImage";
 import PropTypes from "prop-types";
+import CookingLevel from "./UserProfileLevel/UserProfileLevel";
 
 const UserProfile = ({
     userId,
@@ -17,6 +18,7 @@ const UserProfile = ({
                 </S.ProfileImage>
                 {UserProfileStat}
             </S.ProfileContainer>
+            <CookingLevel />
         </div>
     );
 };

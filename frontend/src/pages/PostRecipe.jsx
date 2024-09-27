@@ -20,13 +20,12 @@ const RegisterButton = styled.button`
 const PostRecipe = () => {
     return (
         <div>
-            <h1>레시피 작성하기</h1>
             <RecipeForm />
             <hr />
-            <h1>재료</h1>
+
             <MaterialForm />
             <hr />
-            <h1>요리 순서</h1>
+
             <OrderForm />
             <RegisterButton type="button">등록</RegisterButton>
         </div>
