@@ -4,10 +4,9 @@ export const LinkBanner = styled.div`
     display: flex;
     flex-direction: column;
 
-    /* align-items: center; */
-
     box-sizing: border-box;
-    padding: 100px;
+
+    padding-left: 180px;
     justify-content: center;
     gap: 8px;
 
@@ -19,11 +18,11 @@ export const LinkBanner = styled.div`
 
     .title {
         font-family: "SUITSemiBold";
-        font-size: ${({ theme }) => theme.fontSize.h3};
+        font-size: ${({ theme }) => theme.fontSize.h4};
     }
 
     .text {
         font-family: "SUITMedium";
-        font-size: ${({ theme }) => theme.fontSize.h4};
+        font-size: ${({ theme }) => theme.fontSize.text};
     }
 `;
