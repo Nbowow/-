@@ -6,7 +6,7 @@ export const MenuBar = styled.div`
     align-items: center;
 
     height: fit-content;
-    padding: 1.7rem 3.125rem 1.7rem 5rem;
+    padding: 1.4rem 3.125rem 1.2rem 5rem;
 `;
 
 export const LogoImage = styled.img`

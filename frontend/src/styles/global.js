@@ -82,6 +82,13 @@ const GlobalStyle = createGlobalStyle`
     src: local('TossFaceFont'), url(${TossFaceFont}) format('truetype');
   }
 
+  @font-face {
+    font-family: 'LOTTERIADDAG';
+    src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2302@1.0/LOTTERIADDAG.woff2') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+}
+
   body {
     font-family: 'SUITRegular', sans-serif;
   }

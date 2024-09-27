@@ -1,53 +1,16 @@
+/* eslint-disable react/prop-types */
+// UserTable.js
 import { useState, useEffect, useMemo } from "react";
 import { useTable, useSortBy } from "react-table";
-import styled from "styled-components";
-import Pagination from "../Pagination";
-
-const Container = styled.div`
-    padding: 20px;
-    position: relative;
-`;
-
-const SearchInput = styled.input`
-    margin-bottom: 20px;
-    padding: 10px;
-    width: 100%;
-    box-sizing: border-box;
-`;
-
-const Table = styled.table`
-    width: 100%;
-    border-collapse: collapse;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-    border-radius: 5px;
-    overflow: hidden;
-`;
-
-const Th = styled.th`
-    background-color: #eaf0ec;
-    padding: 15px;
-    text-align: left;
-    color: black;
-    cursor: pointer;
-`;
-
-const Td = styled.td`
-    padding: 15px;
-    text-align: left;
-    background-color: rgba(255, 255, 255, 0.2);
-    color: black;
-
-    &:hover {
-        background-color: rgba(255, 255, 255, 0.3);
-    }
-`;
-
-const UserImage = styled.img`
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    margin-right: 10px;
-`;
+import {
+    Container,
+    SearchInput,
+    Table,
+    Th,
+    Td,
+    UserImage,
+} from "./RankingList.styled"; // 스타일드 컴포넌트 임포트
+import Pagination from "../Pagination/Pagination";
 
 const userData = [
     {
