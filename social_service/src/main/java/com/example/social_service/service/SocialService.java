@@ -11,7 +11,6 @@ public class SocialService {
 
     private final UserServiceClient userServiceClient;
 
-
     public UserResponseDto findUserByUserNickname(String nickname) {
 
         UserResponseDto userResponseDto = userServiceClient.getUser(nickname);
