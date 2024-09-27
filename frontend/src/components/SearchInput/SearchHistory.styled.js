@@ -10,7 +10,7 @@ export const HistoryContainer = styled.div`
     font-family: "SUITMedium";
     font-size: ${({ theme }) => theme.fontSize.h4};
 
-    margin-top: ${({ theme }) => theme.fontSize.text};
+    margin-top: 14px;
     padding-left: 18px;
     padding-right: 18px;
 
