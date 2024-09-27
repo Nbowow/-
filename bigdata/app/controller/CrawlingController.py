@@ -4,7 +4,7 @@ from fastapi import APIRouter, HTTPException, BackgroundTasks
 
 from app.globals import get_recipe_back_crawling_status, set_recipe_back_crawling_status, \
     get_price_back_crawling_status, set_price_back_crawling_status
-from app.model.request.PriceBackCrawlingDto import PriceBackCrawlingDto
+from app.model.request.PriceBackAPIDto import PriceBackCrawlingDto
 from app.model.request.RecipeBackCrawlingDto import RecipeBackCrawlingDto
 from app.tasks.RecipeScheduler import recipe_back_data_crawling_scheduler
 
