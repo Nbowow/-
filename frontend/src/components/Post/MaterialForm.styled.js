@@ -4,9 +4,9 @@ export const Container = styled.div`
     max-width: 1200px;
     margin: 0 auto;
     padding: 20px;
-    background-color: #ffffff;
+    /* background-color: #ffffff;
     border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); */
 `;
 
 export const TitleContainer = styled.div`
@@ -18,11 +18,13 @@ export const Title = styled.h1`
     font-size: 34px;
     color: #333;
     margin-bottom: 10px;
+    font-family: "SUITEXTRABOLD";
 `;
 
 export const SubTitle = styled.p`
-    font-size: 16px;
+    font-size: 22px;
     color: #888;
+    font-family: "SUITSEMIBOLD";
 `;
 
 export const GroupContainer = styled.div`
@@ -43,6 +45,8 @@ export const InputField = styled.input`
     border: 1px solid #e0e0e0;
     border-radius: 4px;
     font-size: 14px;
+    font-family: "SUITRegular";
+    background-color: #f2f2f2;
 
     &:last-child {
         margin-right: 0;
@@ -54,14 +58,13 @@ export const InputField = styled.input`
 `;
 
 export const GroupLabel = styled(InputField)`
-    background-color: #4caf50;
-    color: white;
-    border: none;
-    font-weight: bold;
+    background-color: white;
+    border: 1px solid #aaaaaa;
     margin-bottom: 10px;
+    font-family: "SUITRegular";
 
     &::placeholder {
-        color: rgba(255, 255, 255, 0.8);
+        color: #aaaaaa;
     }
 `;
 export const ButtonContainer = styled.div`
@@ -70,14 +73,15 @@ export const ButtonContainer = styled.div`
 `;
 
 export const AddButton = styled.button`
-    background-color: #f0f0f0;
-    color: #333;
+    background-color: #4cac67;
+    color: white;
     padding: 12px 20px;
-    border: none;
-    border-radius: 4px;
+    border: solid 1px #aaaaaa;
+    border-radius: 20px;
     cursor: pointer;
-    font-size: 14px;
-    width: 50%;
+    font-size: 16px;
+    font-family: "SUITSEMIBOLD";
+    width: 20%;
     margin-top: 10px;
 
     &:hover {
@@ -87,10 +91,10 @@ export const AddButton = styled.button`
 
 export const AddGroupButton = styled(AddButton)`
     background-color: white;
-    border: 2px dashed #ccc;
+    /* border: 2px dashed #ccc; */
     color: #888;
     margin-top: 20px;
-
+    color: black;
     &:hover {
         background-color: #f9f9f9;
     }

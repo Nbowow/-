@@ -3,15 +3,16 @@ export const Container = styled.div`
     max-width: 1200px;
     margin: 0 auto;
     padding: 20px;
-    background-color: #ffffff;
+    /* background-color: #ffffff;
     border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); */
 `;
 
 export const Title = styled.h1`
     font-size: 34px;
     color: #333;
     margin-bottom: 10px;
+    font-family: "SUITEXTRABOLD";
 `;
 
 export const Form = styled.form`
@@ -56,14 +57,16 @@ export const InputGroup5 = styled.div`
 `;
 
 export const Label = styled.label`
-    font-weight: bold;
     margin-bottom: 8px;
+    font-family: "SUITSEMIBOLD";
+    font-size: 24px;
 `;
 
 export const Input = styled.input`
     padding: 10px;
     border: 1px solid #ddd;
     border-radius: 4px;
+    background-color: #f2f2f2;
 `;
 
 export const TextArea = styled.textarea`
@@ -72,12 +75,17 @@ export const TextArea = styled.textarea`
     border-radius: 4px;
     height: 80px;
     resize: none;
+    background-color: #f2f2f2;
 `;
 
 export const Select = styled.select`
+    background-color: #f2f2f2;
     padding: 10px;
     border: 1px solid #ddd;
     border-radius: 4px;
+    font-size: 14px;
+    font-family: "SUITREGULAR";
+    color: #aaaaaa;
 `;
 
 export const CategoryGroup = styled.div`
@@ -94,7 +102,7 @@ export const ImageUploadButton = styled.label`
     border: 1px dashed #ccc;
     border-radius: 4px;
     padding: 20px;
-    background-color: #fafafa;
+    background-color: #f2f2f2;
     width: 300px;
     height: 300px;
     cursor: pointer;
@@ -132,7 +140,8 @@ export const ButtonContainer = styled.div`
 `;
 
 export const Text = styled.p`
-    font-size: 16px;
+    font-size: 22px;
     color: #aaaaaa;
     margin-top: 10px;
+    font-family: "SUITSEMIBOLD";
 `;
