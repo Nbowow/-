@@ -76,7 +76,7 @@ public class UserService {
 
     public UserRecipeResponseDto getUserByNickname(String nickname) {
         User user = userRepository.findByNickname(nickname)
-                .orElseThrow(() -> new IllegalArgumentException("해당 닉네임을 가진 사용자를 찾을 수 없습니다."));
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
 
         List<RecipeResponseDto> recipeList = recipeServiceClient.getRecipes(user.getUserId());
 
@@ -85,6 +85,5 @@ public class UserService {
         userRecipeResponseDto.setRecipes(recipeList);
 
         return userRecipeResponseDto;
-
     }
 }

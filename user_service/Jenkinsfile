@@ -85,7 +85,7 @@ pipeline {
 
                     // Run the new user-service container
                     sh '''
-                    docker run -d --network backendnet --name user-service \
+                    docker run -d -p 8081:8081 --network backendnet --name user-service \
                     -e spring.cloud.config.uri=http://config-service:8888 \
                     -e spring.rabbitmq.host=rabbitmq \
                     -e eureka.client.registerWithEureka=true \
