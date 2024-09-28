@@ -18,7 +18,7 @@ export const Thumnail = styled(BaseThumnail)`
 `;
 
 export const TextArea = styled(BaseTextArea)`
-    gap: 14px;
+    gap: ${({ theme }) => theme.fontSize.text};
     padding-left: 12px;
     padding-right: 12px;
 `;
