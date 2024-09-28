@@ -7,6 +7,7 @@ import Notfound from "./pages/Notfound/Notfound";
 import Main from "./pages/Main/Main";
 import Ranking from "./pages/Ranking";
 import UserProfile from "./components/UserProfile/UserProfile";
+import RecipeDetail from "./pages/RecipeDetail";
 
 function App() {
     return (
@@ -17,6 +18,7 @@ function App() {
                         <Route path="/" element={<Main />} />
                         <Route path="/post" element={<PostRecipe />} />
                         <Route path="/recipe" element={<Recipe />} />
+                        <Route path="/recipe/:id" element={<RecipeDetail />} />
                         <Route path="/ranking" element={<Ranking />} />
                         <Route path="/profile" element={<UserProfile />} />
                         <Route path="*" element={<Notfound />} />
