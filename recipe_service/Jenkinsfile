@@ -13,7 +13,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git credentialsId: GITLAB_CREDENTIALSID, branch: 'release', url: 'https://lab.ssafy.com/s11-bigdata-dist-sub1/S11P21C206.git'
+                git credentialsId: GITLAB_CREDENTIALSID, branch: 'develop', url: 'https://lab.ssafy.com/s11-bigdata-dist-sub1/S11P21C206.git'
             }
         }
 
@@ -72,7 +72,7 @@ pipeline {
 
                         // Run the new recipe-service container
                         sh '''
-                        docker run -d \
+                        docker run -d -p 8082:8082 \
                         --network backendnet \
                         --name recipe-service \
                         -e "eureka.client.registerWithEureka=true" \

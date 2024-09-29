@@ -73,4 +73,17 @@ public class UserService {
 
         return userRecipeResponseDto;
     }
+
+    public UserRecipeResponseDto getUserByNickname(String nickname) {
+        User user = userRepository.findByNickname(nickname)
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+
+        List<RecipeResponseDto> recipeList = recipeServiceClient.getRecipes(user.getUserId());
+
+        ModelMapper modelMapper = new ModelMapper();
+        UserRecipeResponseDto userRecipeResponseDto = modelMapper.map(user, UserRecipeResponseDto.class);
+        userRecipeResponseDto.setRecipes(recipeList);
+
+        return userRecipeResponseDto;
+    }
 }

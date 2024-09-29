@@ -4,9 +4,9 @@ export const Container = styled.div`
     max-width: 1200px;
     margin: 0 auto;
     padding: 20px;
-    background-color: #ffffff;
+    /* background-color: #ffffff;
     border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); */
 `;
 
 export const TitleContainer = styled.div`
@@ -15,15 +15,18 @@ export const TitleContainer = styled.div`
 `;
 
 export const Title = styled.h1`
-    font-size: 34px;
+    font-size: ${({ theme }) => theme.fontSize.h1};
     color: #333;
     margin-bottom: 10px;
+    font-family: "SUITEXTRABOLD";
 `;
 
 export const SubTitle = styled.p`
-    font-size: 16px;
+    font-size: 22px;
     color: #888;
+    font-family: "SUITSEMIBOLD";
 `;
+
 export const FormLayout = styled.div`
     display: flex;
     gap: 20px;
@@ -55,10 +58,10 @@ export const ContentArea = styled.div`
         "image content"
         "image tool";
     gap: 20px;
+    margin-left: 100px;
 `;
 
-export const ImageUpload = styled.div`
-    grid-area: image;
+export const ImageUpload = styled.label`
     width: 400px;
     height: 400px;
     border: 1px dashed #ccc;
@@ -68,30 +71,32 @@ export const ImageUpload = styled.div`
     align-items: center;
     cursor: pointer;
     margin-bottom: 20px;
-    margin-left: 100px;
+    background-color: #f2f2f2;
 `;
 export const ButtonContainer = styled.div`
     text-align: center; /* 텍스트 중앙 정렬 */
 `;
 
 export const TextArea = styled.textarea`
-    grid-area: content;
     width: 400px;
-    height: 300px;
+    height: 250px;
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 4px;
     resize: none;
     margin-bottom: 10px;
+    background-color: #f2f2f2;
+    font-family: "SUITREgular";
+    font-size: ${({ theme }) => theme.fontSize.text};
 `;
 
 export const Input = styled.input`
-    grid-area: tool;
-    width: 400px;
     padding: 10px;
-    border: 1px solid #ccc;
+    border: 1px solid #ddd;
     border-radius: 4px;
-    margin-bottom: 20px;
+    background-color: #f2f2f2;
+    font-family: "SUITREgular";
+    font-size: ${({ theme }) => theme.fontSize.text};
 `;
 
 export const SubmitButton = styled.button`
@@ -111,7 +116,48 @@ export const SubmitButton = styled.button`
 `;
 
 export const Text = styled.p`
-    font-size: 16px;
-    color: #aaaaaa;
+    font-size: 22px;
+    color: ${({ theme }) => theme.color.gray.light};
     margin-top: 10px;
+    font-family: "SUITSEMIBOLD";
+`;
+
+export const Label = styled.label`
+    margin-bottom: 8px;
+    font-family: "SUITSEMIBOLD";
+    font-size: ${({ theme }) => theme.fontSize.h3};
+`;
+
+export const ImageContainer = styled.div`
+    display: flex;
+    flex-direction: column;
+    grid-area: image;
+    gap: 10px;
+`;
+export const TextContainer = styled.div`
+    display: flex;
+    flex-direction: column;
+    grid-area: content;
+    gap: 10px;
+`;
+export const InputContainer = styled.div`
+    display: flex;
+    flex-direction: column;
+    grid-area: tool;
+    gap: 10px;
+`;
+
+export const RemoveButton = styled.button`
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background: none;
+    border: none;
+    color: red;
+    cursor: pointer;
+    font-size: 16px;
+
+    &:hover {
+        color: darkred;
+    }
 `;

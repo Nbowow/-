@@ -2,8 +2,8 @@ pipeline {
     agent any
 
     environment {
-        BACKEND_DIR = './apigateway_service'
-        DOCKER_IMAGE_BACKEND = 'parkgc0504/apigateway-service:latest'
+        BACKEND_DIR = './social_service'
+        DOCKER_IMAGE_BACKEND = 'parkgc0504/social-service:latest'
         GITLAB_CREDENTIALSID = 'gichangssafy'
         DOCKERHUB_CREDENTIALS = 'dockerhub-credentials'
         SSH_CREDENTIALS = 'EC2_SSH'
@@ -24,7 +24,7 @@ pipeline {
                     def Author_Name = sh(script: "git show -s --pretty=%ae", returnStdout: true).trim()
                     mattermostSend(
                         color: 'warning',
-                        message: "apigateway_service 빌드 시작: ${env.JOB_NAME} #${env.BUILD_NUMBER} \n(<${env.BUILD_URL}|Details>)",
+                        message: "social-service 빌드 시작: ${env.JOB_NAME} #${env.BUILD_NUMBER} \n(<${env.BUILD_URL}|Details>)",
                         endpoint: 'https://meeting.ssafy.com/hooks/rqoymdqdtjr4dqhkai1gmnnunh',
                         channel: 'C206_deploy'
                     )
@@ -32,9 +32,9 @@ pipeline {
             }
         }
 
-        stage('Build apigateway_service') {
+        stage('Build social-service') {
             when {
-                changeset "apigateway_service/**"  // backend 폴더에 변경 사항이 있을 때만 실행
+                changeset "social_service/**"  // backend 폴더에 변경 사항이 있을 때만 실행
             }
             steps {
                 dir(BACKEND_DIR) {
@@ -44,9 +44,9 @@ pipeline {
             }
         }
 
-        stage('Docker Build and Push apigateway_service to DockerHub') {
+        stage('Docker Build and Push social_service to DockerHub') {
             when {
-                changeset "apigateway_service/**"  // backend 폴더에 변경 사항이 있을 때만 실행
+                changeset "social_service/**"  // backend 폴더에 변경 사항이 있을 때만 실행
             }
             steps {
                 dir(BACKEND_DIR) {
@@ -60,41 +60,43 @@ pipeline {
             }
         }
 
-        stage('Deploy Locally') {
-            when {
-                changeset "apigateway_service/**"  // backend 폴더에 변경 사항이 있을 때만 실행
-            }
+        stage('Deploy Backend on Another EC2') {
+             when {
+                   changeset "social_service/**"  // backend 폴더에 변경 사항이 있을 때만 실행
+             }
             steps {
                 script {
-                    // 기존 컨테이너 중지 및 삭제
-                    sh 'docker stop apigateway-service || true'
-                    sh 'docker rm apigateway-service || true'
-
-                    // 새로운 컨테이너 실행
-                    sh '''
-                    docker run -d -p 8000:8000 --network backendnet \
-                    -e "spring.cloud.config.uri=http://config-service:8888" \
-                    -e "spring.rabbitmq.host=rabbitmq" \
-                    -e "eureka.client.registerWithEureka=true" \
-                    -e "eureka.client.fetchRegistry=true" \
-                    -e "eureka.client.serviceUrl.defaultZone=http://discovery-service:8761/eureka" \
-                    --name apigateway-service \
-                    parkgc0504/apigateway-service:latest
-                    '''
+                    sshagent (credentials: [SSH_CREDENTIALS]) {
+                        withCredentials([usernamePassword(credentialsId: DOCKERHUB_CREDENTIALS, usernameVariable: 'DOCKERHUB_USERNAME', passwordVariable: 'DOCKERHUB_PASSWORD')]) {
+                            sh '''
+                            ssh -o StrictHostKeyChecking=no ubuntu@${EC2_SERVER_IP} "
+                                docker login -u ${DOCKERHUB_USERNAME} -p ${DOCKERHUB_PASSWORD} &&
+                                docker pull ${DOCKER_IMAGE_BACKEND} &&
+                                docker stop social-service || true &&
+                                docker rm social-service || true &&
+                                docker run -d -p 8081:8081 --network backend \
+                                --name social-service \
+                                -e "eureka.client.serviceUrl.defaultZone=http://j11c206.p.ssafy.io:8761/eureka" \
+                                -e "spring.rabbitmq.host=j11c206.p.ssafy.io" \
+                                -e "logging.file=/api-logs/social-ws.log" \
+                                parkgc0504/social-service:latest
+                            "
+                            '''
+                        }
+                    }
                 }
             }
         }
-
-
     }
 
-    post {
+
+     post {
         success {
             script {
                 def Author_ID = sh(script: "git show -s --pretty=%an", returnStdout: true).trim()
                 def Author_Name = sh(script: "git show -s --pretty=%ae", returnStdout: true).trim()
                 mattermostSend(color: 'good',
-                    message: "apigateway_service 빌드 성공: ${env.JOB_NAME} #${env.BUILD_NUMBER} by ${Author_ID}\n(<${env.BUILD_URL}|Details>)",
+                    message: "social_service 빌드 성공: ${env.JOB_NAME} #${env.BUILD_NUMBER} by ${Author_ID}\n(<${env.BUILD_URL}|Details>)",
                     endpoint: 'https://meeting.ssafy.com/hooks/rqoymdqdtjr4dqhkai1gmnnunh',
                     channel: 'C206_deploy'
                 )
@@ -105,7 +107,7 @@ pipeline {
                 def Author_ID = sh(script: "git show -s --pretty=%an", returnStdout: true).trim()
                 def Author_Name = sh(script: "git show -s --pretty=%ae", returnStdout: true).trim()
                 mattermostSend(color: 'danger',
-                    message: "apigateway_service 빌드 실패: ${env.JOB_NAME} #${env.BUILD_NUMBER} by ${Author_ID}\n(<${env.BUILD_URL}|Details>)",
+                    message: "social_service 빌드 실패: ${env.JOB_NAME} #${env.BUILD_NUMBER} by ${Author_ID}\n(<${env.BUILD_URL}|Details>)",
                     endpoint: 'https://meeting.ssafy.com/hooks/rqoymdqdtjr4dqhkai1gmnnunh',
                     channel: 'C206_deploy'
                 )

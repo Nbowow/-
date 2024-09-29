@@ -7,6 +7,9 @@ import org.springframework.boot.actuate.web.exchanges.InMemoryHttpExchangeReposi
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
+import java.util.ArrayDeque;
+import java.util.Queue;
+
 @SpringBootApplication
 public class ApigatewayServiceApplication {
 
@@ -18,4 +21,5 @@ public class ApigatewayServiceApplication {
 	public HttpExchangeRepository httpTraceRepository() {
 		return new InMemoryHttpExchangeRepository();
 	}
+
 }

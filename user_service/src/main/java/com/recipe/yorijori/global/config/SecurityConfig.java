@@ -64,6 +64,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/users/sign-up").permitAll() // 회원가입 페이지 접근 허용
                         .requestMatchers("/api/v1/home").permitAll() // /home 경로도 인증 없이 접근 허용
                         .anyRequest().authenticated() // 그 외 모든 요청은 인증된 사용자만 접근 가능
+
                 )
 
                 // 소셜 로그인 설정

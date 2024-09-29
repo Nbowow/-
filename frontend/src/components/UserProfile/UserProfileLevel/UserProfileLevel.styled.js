@@ -18,7 +18,7 @@ export const Title = styled.h2`
 `;
 
 export const CookingIcon = styled.span`
-    font-size: 24px;
+    font-size: ${({ theme }) => theme.fontSize.h3};
     margin-right: 10px;
     font-family: "TossFace";
 `;
