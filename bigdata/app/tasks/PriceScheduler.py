@@ -1,6 +1,6 @@
+import asyncio
 import csv
 import os
-import time
 from datetime import datetime, timedelta
 
 import requests
@@ -86,7 +86,7 @@ async def price_back_data_api_scheduler(get_start_date):
 
                 # API 요청 보내기
                 response = requests.get(url, params=params)
-                time.sleep(2)
+                await asyncio.sleep(2)
 
                 # 응답 상태 코드 확인
                 if response.status_code == 200:

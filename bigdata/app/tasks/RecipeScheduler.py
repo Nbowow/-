@@ -1,5 +1,5 @@
+import asyncio
 import os
-import time
 from itertools import islice
 
 import pandas as pd
@@ -29,8 +29,8 @@ by_method = {'볶음': '6', '끓이기': '1', '부침': '7', '조림': '36', '�
 # 현재까지 크롤링한 데이터
 
 
-def recipe_back_data_crawling_scheduler(get_type, get_situation, get_ingredient, get_method, get_page,
-                                        recipe_idx):
+async def recipe_back_data_crawling_scheduler(get_type, get_situation, get_ingredient, get_method, get_page,
+                                              recipe_idx):
     try:
         # 경로가 존재하지 않으면 생성
         os.makedirs(data_dir, exist_ok=True)
@@ -66,7 +66,7 @@ def recipe_back_data_crawling_scheduler(get_type, get_situation, get_ingredient,
                         print(f"레시피 목록 페이지 요청 중: {main_url}")
 
                         response = session.get(main_url, headers={'User-Agent': 'Mozilla/5.0'})
-                        time.sleep(2)  # 페이지 리스트 요청 후 2초 지연
+                        await asyncio.sleep(2)  # 페이지 리스트 요청 후 2초 지연
 
                         if response.status_code == 200:  # 정상 연결시
 
@@ -88,7 +88,7 @@ def recipe_back_data_crawling_scheduler(get_type, get_situation, get_ingredient,
                                     if response.status_code == 200:  # 정상 응답일 때
                                         soup = BeautifulSoup(response.text, 'html.parser')
                                         print(f"다음 페이지로 이동 중: {main_url}")
-                                        time.sleep(2)  # 페이지 변경 후 2초 지연
+                                        await asyncio.sleep(2)  # 페이지 변경 후 2초 지연
 
                                     else:
                                         print(f"페이지 이동 실패. 상태 코드: {response.status_code} - {main_url}")
@@ -104,7 +104,7 @@ def recipe_back_data_crawling_scheduler(get_type, get_situation, get_ingredient,
                                     response_r = session.get(recipe_url, headers={'User-Agent': 'Mozilla/5.0'})
                                     soup_r = BeautifulSoup(response_r.text, 'html.parser')
                                     print(f"레시피 URL: {recipe_url}")
-                                    time.sleep(2)  # 레시피 상세 요청 후 2초 지연
+                                    await asyncio.sleep(2)  # 레시피 상세 요청 후 2초 지연
 
                                     # 글제목
                                     try:

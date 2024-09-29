@@ -13,9 +13,9 @@ def set_recipe_back_crawling_status(status: bool):
 
 
 def get_price_back_crawling_status():
-    return is_recipe_back_crawling_in_progress
+    return is_price_back_crawling_in_progress
 
 
 def set_price_back_crawling_status(status: bool):
-    global is_recipe_back_crawling_in_progress
-    is_recipe_back_crawling_in_progress = status
+    global is_price_back_crawling_in_progress
+    is_price_back_crawling_in_progress = status
