@@ -5,8 +5,8 @@ export const UserProfile = styled.div`
     align-items: flex-end;
     justify-content: center;
     gap: 20px;
-    margin: 0 auto;
-    width: 80%;
+    margin: 0 auto 24px;
+    width: 90%;
 `;
 
 export const ProfileImage = styled.div`
@@ -32,7 +32,7 @@ export const TextWrapper = styled.div`
     padding-right: 46px;
     padding-bottom: 46px;
     margin-bottom: 14px;
-    border-bottom: 1px solid ${({ theme }) => theme.color.gray.light};
+    border-bottom: 1px solid ${({ theme }) => theme.color.gray.lighter};
     font-size: ${({ theme }) => theme.fontSize.subText};
 
     .nickname {

@@ -5,9 +5,6 @@ export const Container = styled.div`
     border-radius: 10px;
     padding: 30px;
 
-    box-shadow: 0 5px 5px rgba(0, 0, 0, 0.05);
-
-    border: 0.01rem solid ${({ theme }) => theme.color.gray.lighter};
     width: 70%;
     margin: 0 auto;
 `;
