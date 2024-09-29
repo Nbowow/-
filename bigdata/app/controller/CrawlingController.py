@@ -4,13 +4,7 @@ from app.globals import get_recipe_back_crawling_status, set_recipe_back_crawlin
     get_price_back_crawling_status, set_price_back_crawling_status
 from app.model.request.PriceBackAPIDto import PriceBackAPIDto
 from app.model.request.RecipeBackCrawlingDto import RecipeBackCrawlingDto
-from app.tasks.RecipeScheduler import recipe_back_data_crawling_scheduler
-from fastapi import APIRouter, HTTPException, BackgroundTasks
-
-from app.globals import get_recipe_back_crawling_status, set_recipe_back_crawling_status, \
-    get_price_back_crawling_status, set_price_back_crawling_status
-from app.model.request.PriceBackAPIDto import PriceBackAPIDto
-from app.model.request.RecipeBackCrawlingDto import RecipeBackCrawlingDto
+from app.tasks.PriceScheduler import price_back_data_api_scheduler
 from app.tasks.RecipeScheduler import recipe_back_data_crawling_scheduler
 
 router = APIRouter(
@@ -47,7 +41,10 @@ def start_price_back_crawling(data: PriceBackAPIDto, background_tasks: Backgroun
 
     set_price_back_crawling_status(True)
 
-    background_tasks.add_task()
+    background_tasks.add_task(
+        price_back_data_api_scheduler,
+        data.p_regday
+    )
 
 # 저장된 데이터 local에 다운받는 api
 
