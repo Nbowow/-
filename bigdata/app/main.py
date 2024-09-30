@@ -1,14 +1,23 @@
-import os
-import sys
-
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+# sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 import uvicorn
 from fastapi import FastAPI
+from sqlalchemy import inspect
 
 from app.controller import RecipeController, PriceController, CrawlingController
+from app.database.config import engine, Base
 
-app = FastAPI()
+
+async def lifespan(app: FastAPI):
+    inspector = inspect(engine)
+    tables = inspector.get_table_names()
+
+    Base.metadata.create_all(bind=engine)
+
+    yield
+
+
+app = FastAPI(lifespan=lifespan)
 
 app.include_router(RecipeController.router)
 app.include_router(PriceController.router)

@@ -28,5 +28,10 @@ class Recipes(Base):
     user_status = Column(Boolean, default=True, nullable=False)
 
     user_id = Column(BigInteger, ForeignKey("Users.user_id"), nullable=False)
-
     user = relationship("Users", back_populates="recipe")
+
+    recipe_orders = relationship("RecipeOrders", back_populates="recipe")
+
+    recipe_materials = relationship("RecipeMaterials", back_populates="recipe")
+
+    recipe_nutrient = relationship("RecipeNutrient", back_populates="recipe")
