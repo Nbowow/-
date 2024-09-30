@@ -4,11 +4,11 @@ import PropTypes from "prop-types";
 
 const RecipeCardList = ({ recipes }) => {
     return (
-        <S.RecipeCardList>
+        <S.CardList>
             {recipes.map((recipe) => (
                 <RecipeCard key={recipe.recipeId} {...recipe} />
             ))}
-        </S.RecipeCardList>
+        </S.CardList>
     );
 };
 
