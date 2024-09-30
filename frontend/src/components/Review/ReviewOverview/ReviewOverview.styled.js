@@ -27,12 +27,9 @@ export const ReviewOverviewRight = styled.div`
 
 export const ReviewOverviewWrapper = styled.div`
     ${flexCenterStyle}
-    height: 5rem;
+    height: 8rem;
 
-    border-radius: ${({ theme }) => theme.borderRadius.small};
-    box-shadow: 0rem 0.2rem 0.3rem rgba(0, 0, 0, 0.05);
-    padding: 1rem;
-    margin-bottom: ${({ theme }) => theme.spacing.medium};
+    border-radius: ${({ theme }) => theme.borderRadius.large};
     cursor: pointer;
 
     border: ${({ theme }) => `0.1rem solid ${theme.color.point.lightGreen}`};
@@ -41,11 +38,12 @@ export const ReviewOverviewWrapper = styled.div`
         $isSelected ? theme.color.point.lightGreen : "transparent"};
 
     transition: background-color 0.3s ease;
+    margin-left: ${({ theme }) => theme.spacing.large};
 `;
 
 export const ReviewImg = styled.img`
     width: 40%;
-    height: 100%;
+    height: 80%;
     border-radius: ${({ theme }) => theme.borderRadius.small};
     object-fit: cover;
 `;

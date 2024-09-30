@@ -1,8 +1,8 @@
 import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
 import ReviewOverview from "../ReviewOverview/ReviewOverview";
-import Review from "../ReviewDetail/ReviewDetail";
 import * as S from "./ReviewModal.styled";
+import ReviewDetail from "../ReviewDetail/ReviewDetail";
 
 const ReviewModal = ({ recipe, reviews }) => {
     const [selectedReviewId, setSelectedReviewId] = useState(null);
@@ -32,7 +32,7 @@ const ReviewModal = ({ recipe, reviews }) => {
                         ))}
                     </S.Reviews>
 
-                    <Review
+                    <ReviewDetail
                         review={reviews[selectedReviewId]}
                         recipe={recipe}
                     />

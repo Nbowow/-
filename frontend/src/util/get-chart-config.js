@@ -73,13 +73,10 @@ export const lineConfig = (color) => {
 
 export const barConfig = (color) => {
     return {
-        barThickness: 8,
+        barThickness: 5,
         borderRadius: 10,
-        borderSkipped: false,
         backgroundColor: color,
         borderColor: color,
-        borderWidth: 1,
-        maintainAspectRatio: false,
     };
 };
 
@@ -110,6 +107,12 @@ export const barOptions = (data, color) => {
                 stacked: true,
                 grid: {
                     display: false,
+                },
+                ticks: {
+                    display: true,
+                    font: {
+                        size: 11,
+                    },
                 },
             },
         },

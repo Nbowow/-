@@ -3,28 +3,26 @@ import styled from "styled-components";
 import { flexCenterStyle } from "../../../styles/common";
 export const BarWrapper = styled.div`
     ${flexCenterStyle}
-    height: 100%;
     width: 60%;
-
-    margin-left: ${({ theme }) => theme.spacing.large};
+    padding: ${({ theme }) => theme.spacing.small};
+    margin-left: ${({ theme }) => theme.spacing.medium};
+    margin-right: -0.5rem;
 `;
 export const RatingWrapper = styled.div`
     ${flexCenterStyle}
     flex-direction: column;
-    width: 50%;
-    height: 70%;
-
-    padding: ${({ theme }) => theme.spacing.medium};
+    width: 40%;
+    padding: ${({ theme }) => theme.spacing.small};
     border-right: 0.05rem solid ${({ theme }) => theme.color.gray.light};
 `;
 export const RatingLabel = styled.div`
-    font-size: ${({ theme }) => theme.fontSize.h1};
-    font-family: ${({ theme }) => theme.fontWeight.extraBold};
+    font-size: ${({ theme }) => theme.fontSize.h2};
+    font-family: ${({ theme }) => theme.fontWeight.bold};
     margin: ${({ theme }) => theme.spacing.medium};
 `;
 export const Wrapper = styled.div`
     ${flexCenterStyle}
-    width: 20rem;
+    width: 18rem;
     height: 8rem;
 
     background-color: ${({ theme }) => theme.color.gray.lighter};
