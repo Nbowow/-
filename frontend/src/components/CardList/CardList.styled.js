@@ -1,6 +1,6 @@
 import styled from "styled-components";
 
-export const RecipeCardList = styled.div`
+export const CardList = styled.div`
     display: flex;
     flex-wrap: wrap;
     gap: 1rem;
