@@ -1,29 +1,68 @@
 import styled from "styled-components";
 
 export const UserProfile = styled.div`
-    width: 100%;
-    height: fit-content;
-    margin: 0 auto;
-    border-radius: 0.75rem;
-    overflow: hidden;
-`;
-
-export const BackgroundImage = styled.div`
-    width: 100%;
-    height: 18.05rem;
-    background-image: url(${({ $backgroundImgUrl }) => $backgroundImgUrl});
-    background-size: cover;
-    background-position: center;
-    box-shadow: 0px 0.25rem 1.25rem rgba(0, 0, 0, 0.1);
-`;
-
-export const ProfileContainer = styled.div`
     display: flex;
-    align-items: center;
-    margin-top: -11.25rem;
-    padding: 7.5rem;
+    align-items: flex-end;
+    justify-content: center;
+    gap: 20px;
+    margin: 0 auto 24px;
+    width: 90%;
 `;
 
 export const ProfileImage = styled.div`
-    margin: 0 auto;
+    width: fit-content;
+`;
+
+export const UserStat = styled.div`
+    height: fit-content;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+`;
+
+export const TextWrapper = styled.div`
+    display: flex;
+    flex-direction: column;
+    height: 60%;
+    width: 600px;
+    box-sizing: border-box;
+    gap: 12px;
+
+    padding-left: 46px;
+    padding-right: 46px;
+    padding-bottom: 46px;
+    margin-bottom: 14px;
+    border-bottom: 1px solid ${({ theme }) => theme.color.gray.lighter};
+    font-size: ${({ theme }) => theme.fontSize.subText};
+
+    .nickname {
+        font-family: "SUITSemiBold";
+        font-size: ${({ theme }) => theme.fontSize.h3};
+    }
+
+    .discription {
+        font-family: "SUITRegular";
+        font-size: ${({ theme }) => theme.fontSize.text};
+        line-height: 19px;
+    }
+`;
+
+export const StatWrapper = styled.div`
+    display: flex;
+    gap: 12px;
+`;
+
+export const Stat = styled.div`
+    display: flex;
+    gap: 6px;
+
+    .stat {
+        font-family: "SUITSemiBold";
+    }
+`;
+
+export const ButtonWrapper = styled.div`
+    display: flex;
+    margin-top: 40px;
+    justify-content: center;
 `;
