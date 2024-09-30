@@ -2,6 +2,7 @@ import * as S from "./UserProfile.styled";
 import UserProfileImage from "./UserProfileImage/UserProfileImage";
 import Button from "../Button/Button";
 import PropTypes from "prop-types";
+import { useNavigate } from "react-router-dom";
 import { formatNumber } from "../../util/format-number";
 
 const UserProfile = ({
@@ -14,6 +15,12 @@ const UserProfile = ({
     const buttonText = "정보 수정";
     const follow = formatNumber(0);
     const following = formatNumber(2000000);
+
+    const navigate = useNavigate();
+
+    const onClickModifyButton = () => {
+        navigate("/modify");
+    };
 
     return (
         <S.UserProfile>
@@ -41,6 +48,7 @@ const UserProfile = ({
                         width="80px"
                         height="32px"
                         type="small"
+                        onClick={onClickModifyButton}
                     />
                 </S.UserStat>
             )}
