@@ -52,7 +52,8 @@ p_category_item_name = {
 
 seen = {}
 filtered_items = []
-data_dir = "../data/price/"
+# data_dir = "../data/price/"
+data_dir = "/app/data/price/"
 
 
 async def price_back_data_api_scheduler(get_start_date):

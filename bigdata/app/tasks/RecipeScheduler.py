@@ -10,7 +10,8 @@ from urllib3.util.retry import Retry
 
 from app.globals import set_recipe_back_crawling_status
 
-data_dir = "../data/recipe/"
+# data_dir = "../data/recipe/"
+data_dir = "/app/data/recipe/"
 
 by_type = {'밑반찬': '63', '메인반찬': '56', '국/탕': '54', '찌개': '55', '디저트': '60', '면/만두': '53',
            '밥/죽/떡': '52', '퓨전': '61', '양념/잼/소스': '58', '양식': '65', '샐러드': '64', '스프': '68',
