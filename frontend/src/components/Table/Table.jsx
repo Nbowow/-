@@ -1,11 +1,18 @@
 import PropTypes from "prop-types";
 import { useTable } from "react-table";
 import * as S from "./Table.styled";
+import { useState } from "react";
 
-const Table = ({ columns, data }) => {
+const Table = ({ columns, data: initialData, onClick }) => {
+    const [data, setData] = useState(initialData);
+
     const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
         useTable({ columns, data });
 
+    const handleRemoveRow = (rowIdx) => {
+        const newData = data.filter((_, index) => index !== rowIdx);
+        setData(newData);
+    };
     return (
         <S.TableSheet {...getTableProps()}>
             <S.TableHead>
@@ -23,12 +30,21 @@ const Table = ({ columns, data }) => {
                 {rows.map((row, rowIndex) => {
                     prepareRow(row);
                     return (
-                        <S.Tr key={rowIndex} {...row.getRowProps()}>
+                        <S.Tr
+                            onClick={() => onClick(rowIndex)}
+                            key={rowIndex}
+                            {...row.getRowProps()}
+                        >
                             {row.cells.map((cell, cellIndex) => (
                                 <S.Td key={cellIndex} {...cell.getCellProps()}>
                                     {cell.render("Cell")}
                                 </S.Td>
                             ))}
+                            <S.RemoveTd
+                                onClick={() => handleRemoveRow(rowIndex)}
+                            >
+                                X
+                            </S.RemoveTd>
                         </S.Tr>
                     );
                 })}
@@ -40,6 +56,7 @@ const Table = ({ columns, data }) => {
 Table.propTypes = {
     columns: PropTypes.arrayOf(PropTypes.object).isRequired,
     data: PropTypes.arrayOf(PropTypes.object).isRequired,
+    onClick: PropTypes.func,
     cell: PropTypes.shape({
         value: PropTypes.any,
     }),

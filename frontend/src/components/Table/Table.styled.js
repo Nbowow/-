@@ -16,7 +16,12 @@ export const Header = styled.tr`
 `;
 
 export const Th = styled.th`
-    padding: 1rem;
+    padding: 1.25rem;
+`;
+
+export const Tbody = styled.tbody``;
+export const Tr = styled.tr`
+    border-bottom: 1px solid #ddd;
 `;
 
 export const Td = styled.td`
@@ -26,12 +31,14 @@ export const Td = styled.td`
     text-align: center;
     vertical-align: middle;
     font-family: ${({ theme }) => theme.fontWeight.regular};
-    font-size: ${({ theme }) => theme.fontSize.h6};
+    font-size: ${({ theme }) => theme.fontSize.text};
     img {
         border-radius: ${({ theme }) => theme.borderRadius.small};
     }
 `;
-export const Tbody = styled.tbody``;
-export const Tr = styled.tr`
-    border-bottom: 1px solid #ddd;
+
+export const RemoveTd = styled.td`
+    text-align: center;
+    vertical-align: middle;
+    width: 5%;
 `;
