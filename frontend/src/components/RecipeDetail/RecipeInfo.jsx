@@ -6,7 +6,7 @@ import * as S from "./RecipeInfo.styled";
 const RecipeInfo = ({ data, allergies }) => {
     return (
         <S.Wrapper>
-            <S.Thumbnail src={data.imgUrl} />
+            <S.Thumbnail src={data.recipe.imgUrl} />
             <S.Layout>
                 <S.RecipeIngredientLabel>
                     <S.Title>재료</S.Title>
@@ -20,7 +20,6 @@ const RecipeInfo = ({ data, allergies }) => {
 };
 RecipeInfo.propTypes = {
     data: PropTypes.shape({
-        imgUrl: PropTypes.string.isRequired,
         recipe: PropTypes.object.isRequired,
         ingredients: PropTypes.array.isRequired,
     }).isRequired,
