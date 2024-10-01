@@ -1,7 +1,7 @@
 from sqlalchemy import BigInteger, Column, String, Integer, ForeignKey
 from sqlalchemy.orm import relationship
 
-from app.database.config import Base
+from app.database.base import Base
 
 
 class RecipeOrders(Base):

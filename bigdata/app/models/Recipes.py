@@ -3,7 +3,7 @@ from datetime import datetime
 from sqlalchemy import BigInteger, Column, String, Integer, DateTime, Boolean, ForeignKey
 from sqlalchemy.orm import relationship
 
-from app.database.config import Base
+from app.database.base import Base
 
 
 class Recipes(Base):

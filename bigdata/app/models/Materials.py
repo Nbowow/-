@@ -1,7 +1,7 @@
 from sqlalchemy import Column, BigInteger, String, Boolean
 from sqlalchemy.orm import relationship
 
-from app.database.config import Base
+from app.database.base import Base
 
 
 class Materials(Base):

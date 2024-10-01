@@ -6,6 +6,21 @@ from hdfs import InsecureClient
 hdfs_client = InsecureClient('http://master:9870', user='root')
 
 
+async def upload_recipe_file_to_mysql(what_do):
+    # spark 정제코드 요청
+
+    if what_do == 1:
+        print("1(recipe) : 정제 후 mysql 실행")
+
+    elif what_do == 2:
+        print("2(price) : 정제 후 mysql 실행")
+
+    elif what_do == 3:
+        print("3(nutrients) : 정제 후 mysql 실행")
+
+    return
+
+
 async def upload_recipe_file_to_hdfs():
     # 업로드 할 파일 경로
     # local_directory = "../data/recipe/"

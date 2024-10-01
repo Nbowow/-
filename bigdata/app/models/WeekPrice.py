@@ -1,7 +1,7 @@
 from sqlalchemy import Column, BigInteger, DateTime, ForeignKey
 from sqlalchemy.orm import relationship
 
-from app.database.config import Base
+from app.database.base import Base
 
 
 class WeekPrice(Base):

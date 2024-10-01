@@ -2,8 +2,8 @@ from fastapi import APIRouter, HTTPException, BackgroundTasks
 
 from app.globals import get_recipe_back_crawling_status, set_recipe_back_crawling_status, \
     get_price_back_crawling_status, set_price_back_crawling_status, get_hdfs_upload_status, set_hdfs_upload_status
-from app.model.request.PriceBackAPIDto import PriceBackAPIDto
-from app.model.request.RecipeBackCrawlingDto import RecipeBackCrawlingDto
+from app.models.request.PriceBackAPIDto import PriceBackAPIDto
+from app.models.request.RecipeBackCrawlingDto import RecipeBackCrawlingDto
 from app.service.HadoopService import upload_recipe_file_to_hdfs
 from app.tasks.PriceScheduler import price_back_data_api_scheduler
 from app.tasks.RecipeScheduler import recipe_back_data_crawling_scheduler

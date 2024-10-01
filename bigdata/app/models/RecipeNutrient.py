@@ -1,7 +1,7 @@
 from sqlalchemy import Column, String, BigInteger, Double, ForeignKey
 from sqlalchemy.orm import relationship
 
-from app.database.config import Base
+from app.database.base import Base
 
 
 class RecipeNutrient(Base):

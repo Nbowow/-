@@ -41,7 +41,7 @@ RUN echo 'export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64' >> ~/.bashrc && \
 
 # FastAPI 및 필수 라이브러리 설치
 RUN pip3 install --upgrade pip && \
-    pip3 install fastapi uvicorn pandas hdfs python-multipart apscheduler sqlalchemy databases aiomysql pymysql python-dotenv pyspark bs4 pydantic requests beautifulsoup4 urllib3 && \
+    pip3 install fastapi uvicorn pandas hdfs python-multipart apscheduler sqlalchemy databases aiomysql pymysql python-dotenv pyspark bs4 pydantic requests beautifulsoup4 urllib3 cryptography && \
     pip3 install --target=/usr/local/lib/python3.8/dist-packages pyspark
 
 # shared-data 디렉토리 및 하위 디렉토리 생성
