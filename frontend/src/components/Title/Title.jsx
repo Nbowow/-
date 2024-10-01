@@ -1,5 +1,5 @@
 import PropTypes from "prop-types";
-import { emoji } from "../../constants/emojiConstant";
+import { emoji } from "../../constants/emoji";
 import * as S from "./Title.styled";
 const Title = ({ title }) => {
     return (
