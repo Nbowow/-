@@ -1,14 +1,14 @@
-import * as S from "./RecipeCardList.styled";
+import * as S from "./CardList.styled";
 import RecipeCard from "../Card/RecipeCard/RecipeCard";
 import PropTypes from "prop-types";
 
 const RecipeCardList = ({ recipes }) => {
     return (
-        <S.RecipeCardList>
+        <S.CardList>
             {recipes.map((recipe) => (
                 <RecipeCard key={recipe.recipeId} {...recipe} />
             ))}
-        </S.RecipeCardList>
+        </S.CardList>
     );
 };
 
