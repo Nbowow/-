@@ -1,5 +1,4 @@
 /* eslint-disable react/prop-types */
-// UserTable.js
 import { useState, useEffect, useMemo } from "react";
 import { useTable, useSortBy } from "react-table";
 import {
@@ -9,8 +8,8 @@ import {
     Th,
     Td,
     UserImage,
-} from "./RankingList.styled"; // 스타일드 컴포넌트 임포트
-import Pagination from "../Pagination/Pagination";
+} from "./UserTable.styled"; // 스타일드 컴포넌트 가져오기
+import Pagination from "./../Pagination/Pagination";
 
 const userData = [
     {
