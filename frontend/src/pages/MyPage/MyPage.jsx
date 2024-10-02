@@ -4,14 +4,17 @@ import UserProfileLevel from "../../components/UserProfile/UserProfileLevel/User
 import Tab from "../../components/Tab/Tab";
 import RecipeCardList from "../../components/CardList/RecipeCardList";
 
-const testProfile = {
-    profileImgUrl:
-        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQC3mWTEKRD3X8xKRx2mx9RGBWk072IZFdJIg&s",
-    nickName: "흑종원",
-    discription: "조보아씨 일루 내려와바유",
-};
-
 const MyPage = () => {
+    const member = {
+        nickname: "듀오링고",
+        profileImage:
+            "https://blog.kakaocdn.net/dn/Vu9AF/btsI0dWR1sR/Lapf73QjpozmkzZv1a5aF0/img.jpg",
+        score: 0,
+        summary: "영어로 살려달라고 빌어보세요.",
+        followers: [],
+        following: [],
+    };
+
     //TODO : 테스트용 데이터
     const recipes = [
         {
@@ -223,14 +226,8 @@ const MyPage = () => {
     return (
         <S.MyPage>
             <div>
-                <UserProfile
-                    showInfo={true}
-                    profileImgUrl={testProfile.profileImgUrl}
-                    UserProfileStat={testProfile.profileStat}
-                    nickName={testProfile.nickName}
-                    discription={testProfile.discription}
-                />
-                <UserProfileLevel />
+                <UserProfile showInfo={true} member={member} />
+                <UserProfileLevel score={member.score} />
             </div>
             <Tab tabs={tabs} />
         </S.MyPage>
