@@ -7,6 +7,7 @@ import com.recipe.yorijori.service.JwtService;
 import com.recipe.yorijori.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/users")
+@Slf4j
 public class UserController {
 
     private final UserService userService;
@@ -29,9 +31,18 @@ public class UserController {
     public ResponseEntity<?> getUser(@PathVariable Long userId) {
         UserRecipeResponseDto userRecipeResponseDto = userService.getUserById(userId);
 
-
         return ResponseEntity.status(HttpStatus.OK).body(userRecipeResponseDto);
     }
+
+    @GetMapping("/{nickname}/test")
+    public UserRecipeResponseDto getUserByNickname(@PathVariable String nickname) {
+        log.info("nickname: " + nickname);
+        UserRecipeResponseDto userRecipeResponseDto = userService.getUserByNickname(nickname);
+
+        log.info("userRecipeResponseDto: " + userRecipeResponseDto.getEmail());
+        return userRecipeResponseDto;
+    }
+
 
     @GetMapping("/jwt-test")
     public String jwtTest() {
@@ -54,4 +65,5 @@ public class UserController {
         // 사용자 정보 응답
         return ResponseEntity.ok(userDto);
     }
+
 }

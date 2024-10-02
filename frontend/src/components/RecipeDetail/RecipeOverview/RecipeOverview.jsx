@@ -26,10 +26,10 @@ function RecipeOverview({ recipe }) {
 
 RecipeOverview.propTypes = {
     recipe: PropTypes.shape({
-        minute: PropTypes.string,
+        minute: PropTypes.number,
         difficulty: PropTypes.string,
-        calories: PropTypes.string,
-        cost: PropTypes.string,
+        calories: PropTypes.number,
+        cost: PropTypes.number,
     }).isRequired,
 };
 

@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 const Header = () => {
     const navigate = useNavigate();
-    const imagePath = "./logo/logo_green.svg";
+    const imagePath = import.meta.env.BASE_URL + "logo/logo_green.svg";
 
     return (
         <S.MenuBar>
@@ -12,7 +12,10 @@ const Header = () => {
                 <S.Link onClick={() => navigate("/recipe")}>모든 레시피</S.Link>
                 <S.Link>물가 동향</S.Link>
                 <S.Link onClick={() => navigate("/post")}>레시피 등록</S.Link>
-                <S.Link>마이 페이지</S.Link>
+                <S.Link onClick={() => navigate("/ingredient")}>
+                    모든 식재료
+                </S.Link>
+                <S.Link onClick={() => navigate("/mypage")}>마이 페이지</S.Link>
             </S.LinkContainer>
         </S.MenuBar>
     );

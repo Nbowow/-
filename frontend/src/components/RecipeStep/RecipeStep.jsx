@@ -1,5 +1,5 @@
 import PropTypes from "prop-types";
-import * as S from "./Recipe.styled";
+import * as S from "./RecipeStep.styled";
 function RecipeStep({ recipe }) {
     return (
         <S.StepContainer>

@@ -1,14 +1,17 @@
+import asyncio
 import os
-import time
 from itertools import islice
 
 import pandas as pd
 import requests
 from bs4 import BeautifulSoup
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
 
 from app.globals import set_recipe_back_crawling_status
 
-data_dir = "../data/recipe/"
+# data_dir = "../data/recipe/"
+data_dir = "/app/data/recipe/"
 
 by_type = {'밑반찬': '63', '메인반찬': '56', '국/탕': '54', '찌개': '55', '디저트': '60', '면/만두': '53',
            '밥/죽/떡': '52', '퓨전': '61', '양념/잼/소스': '58', '양식': '65', '샐러드': '64', '스프': '68',
@@ -27,17 +30,22 @@ by_method = {'볶음': '6', '끓이기': '1', '부침': '7', '조림': '36', '�
 # 현재까지 크롤링한 데이터
 
 
-def recipe_back_data_crawling_scheduler(get_type, get_situation, get_ingredient, get_method, get_page,
-                                        recipe_idx):
+async def recipe_back_data_crawling_scheduler(get_type, get_situation, get_ingredient, get_method, get_page,
+                                              recipe_idx):
+    recipe_url = None  # 기본값으로 None 설정
+
     try:
         # 경로가 존재하지 않으면 생성
         os.makedirs(data_dir, exist_ok=True)
 
+        # 세션, 리트라이
+        session = requests.Session()
+        retry = Retry(total=5, backoff_factor=2, status_forcelist=[500, 502, 503, 504])
+        adapter = HTTPAdapter(max_retries=retry)
+        session.mount('http://', adapter)
+        session.mount('https://', adapter)
+
         list4df = []
-        now_type = get_type
-        now_situation = get_situation
-        now_ingredient = get_ingredient
-        now_method = get_method
 
         for type_key, type_value in islice(by_type.items(), get_type, None):
             print(f"{type_key} 카테고리의 레시피를 처리 중입니다...")
@@ -60,8 +68,8 @@ def recipe_back_data_crawling_scheduler(get_type, get_situation, get_ingredient,
 
                         print(f"레시피 목록 페이지 요청 중: {main_url}")
 
-                        response = requests.get(main_url, headers={'User-Agent': 'Mozilla/5.0'})
-                        time.sleep(2)  # 페이지 리스트 요청 후 2초 지연
+                        response = session.get(main_url, headers={'User-Agent': 'Mozilla/5.0'})
+                        await asyncio.sleep(2)  # 페이지 리스트 요청 후 2초 지연
 
                         if response.status_code == 200:  # 정상 연결시
 
@@ -69,13 +77,25 @@ def recipe_back_data_crawling_scheduler(get_type, get_situation, get_ingredient,
                             soup = BeautifulSoup(response.text, 'html.parser')
                             page_len = len(soup.select('#contents_area_full > ul > nav > ul > li'))
 
-                            for page in range(get_page, page_len + 1):
-                                if page != 1:
-                                    main_url = main_url + '&page=' + str(page)
-                                    response = requests.get(main_url, headers={'User-Agent': 'Mozilla/5.0'})
+                            while get_page <= page_len + 1:
+
+                                if get_page % 10 == 1 and get_page != 1:
+                                    print(f"{main_url} 페이지에서 응답을 성공적으로 받았습니다.")
                                     soup = BeautifulSoup(response.text, 'html.parser')
-                                    time.sleep(2)  # 페이지 변경 후 2초 지연
-                                    print(f"다음 페이지로 이동 중: {main_url}")
+                                    page_len = len(soup.select('#contents_area_full > ul > nav > ul > li'))
+
+                                if get_page != 1:
+                                    main_url = main_url + '&page=' + str(get_page)
+                                    response = session.get(main_url, headers={'User-Agent': 'Mozilla/5.0'})
+                                    # HTTP 상태 코드 체크
+                                    if response.status_code == 200:  # 정상 응답일 때
+                                        soup = BeautifulSoup(response.text, 'html.parser')
+                                        print(f"다음 페이지로 이동 중: {main_url}")
+                                        await asyncio.sleep(2)  # 페이지 변경 후 2초 지연
+
+                                    else:
+                                        print(f"페이지 이동 실패. 상태 코드: {response.status_code} - {main_url}")
+                                        break  # 오류 발생 시 반복문 탈출
 
                                 sources = soup.select(
                                     '#contents_area_full > ul > ul > li > div.common_sp_thumb > a')
@@ -84,10 +104,10 @@ def recipe_back_data_crawling_scheduler(get_type, get_situation, get_ingredient,
                                     # 상세정보 크롤링 시작
                                     recipe_url = 'https://www.10000recipe.com' + \
                                                  str(source).split('href')[1].split('"')[1]
-                                    response_r = requests.get(recipe_url, headers={'User-Agent': 'Mozilla/5.0'})
+                                    response_r = session.get(recipe_url, headers={'User-Agent': 'Mozilla/5.0'})
                                     soup_r = BeautifulSoup(response_r.text, 'html.parser')
                                     print(f"레시피 URL: {recipe_url}")
-                                    time.sleep(2)  # 레시피 상세 요청 후 2초 지연
+                                    await asyncio.sleep(2)  # 레시피 상세 요청 후 2초 지연
 
                                     # 글제목
                                     try:
@@ -99,6 +119,14 @@ def recipe_back_data_crawling_scheduler(get_type, get_situation, get_ingredient,
                                         title = 'None'
                                         print("제목을 찾을 수 없습니다.")
 
+                                    # 이미지
+                                    try:
+                                        dish_image = soup_r.select_one('#main_thumbs')['src']
+                                        print(f"레시피 이미지 URL: {dish_image}")
+                                    except Exception as e:
+                                        print(f"Error occurred: {e}")
+                                        dish_image = 'None'
+
                                     # 레시피 이름
                                     dish_title_element = soup_r.find('b', {
                                         'style': 'color:#74b243;'})  # 'b' 태그에서 특정 style 속성을 가진 요소 찾기
@@ -108,6 +136,9 @@ def recipe_back_data_crawling_scheduler(get_type, get_situation, get_ingredient,
                                     else:
                                         dish_title = 'None'
                                         print("요리제목을 찾을 수 없습니다.")
+
+                                    if title == 'None' and dish_title_element == 'None':
+                                        continue
 
                                     # 조회수
                                     views_element = soup_r.select('span.hit.font_num')
@@ -164,6 +195,8 @@ def recipe_back_data_crawling_scheduler(get_type, get_situation, get_ingredient,
                                         print(f"Error occurred: {e}")
                                         intro = None
 
+                                    cooking_order = []
+                                    
                                     # 조리순서
                                     try:
                                         # 단계별 조리법과 이미지를 저장할 리스트
@@ -206,7 +239,7 @@ def recipe_back_data_crawling_scheduler(get_type, get_situation, get_ingredient,
                                     # 상세정보 크롤링 끝
                                     list4df.append(
                                         [recipe_idx, type_key, situ_key, ing_key, method_key, title, dish_title,
-                                         views,
+                                         dish_image, views,
                                          cooking_time, difficulty, servings, ingredient, intro, cooking_order])
                                     recipe_idx += 1
 
@@ -214,13 +247,16 @@ def recipe_back_data_crawling_scheduler(get_type, get_situation, get_ingredient,
                                 # 데이터프레임 생성 및 저장
                                 recipe_df = pd.DataFrame(list4df,
                                                          columns=['index', '종류별', '상황별', '재료별', '방법별', '글 제목',
-                                                                  '레시피이름',
+                                                                  '레시피이름', '레시피이미지',
                                                                   '조회수', '조리시간', '난이도', '인분', '재료', '소개글', '조리순서'])
 
                                 print(recipe_df)
 
+                                if not list4df:
+                                    break
+
                                 save_recipe_fname = os.path.join(data_dir,
-                                                                 f"recipe_back_{now_type}_{now_situation}_{now_ingredient}_{now_method}_{page}.csv")
+                                                                 f"recipe_back_{get_type}_{get_situation}_{get_ingredient}_{get_method}_{get_page}.csv")
 
                                 # 데이터프레임을 CSV 파일로 저장 (덮어쓰기 모드)
                                 recipe_df.to_csv(save_recipe_fname, encoding='utf-8', index=False)
@@ -228,13 +264,22 @@ def recipe_back_data_crawling_scheduler(get_type, get_situation, get_ingredient,
                                 print(f"데이터가 {save_recipe_fname}파일로 저장되었습니다.")
                                 list4df = []  # 데이터를 저장했으므로 리스트를 초기화
 
+                                get_page += 1
+
                         else:
                             print(f"메인 URL 연결 실패. 상태 코드: {response.status_code}")
 
-                        now_method += 1
-                    now_ingredient += 1
-                now_situation += 1
-            now_type += 1
+                        get_page = 1
+                        get_method += 1
+
+                    get_method = 0
+                    get_ingredient += 1
+
+                get_ingredient = 0
+                get_situation += 1
+
+            get_situation = 0
+            get_type += 1
 
     except Exception as e:
         print(f"에러 발생: {e}")

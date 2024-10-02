@@ -2,8 +2,6 @@ import PropTypes from "prop-types";
 import * as S from "./RecipeIngredient.styled";
 
 function RecipeIngredient({ ingredients }) {
-    // 재료 목록
-
     const midIndex = Math.ceil(ingredients.length / 2);
     const leftItems = ingredients.slice(0, midIndex);
     const rightItems = ingredients.slice(midIndex);

@@ -21,7 +21,9 @@ function Comments({ comments: initialComments }) {
 
     return (
         <>
-            <CommentInput addFunc={addComment} />
+            <S.CommentInputWrapper>
+                <CommentInput addFunc={addComment} />
+            </S.CommentInputWrapper>
             {comments.map((comment, index) => (
                 <S.CommentsWrapper key={comment.id}>
                     <Comment

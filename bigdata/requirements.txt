@@ -10,3 +10,9 @@ hdfs
 pyspark
 bs4
 pandas
+pydantic
+requests
+beautifulsoup4
+urllib3
+python-multipart
+cryptography
