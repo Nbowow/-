@@ -8,7 +8,7 @@ import {
     Th,
     Td,
     UserImage,
-} from "./UserTable.styled"; // 스타일드 컴포넌트 가져오기
+} from "./RankingList.styled"; // 스타일드 컴포넌트 가져오기
 import Pagination from "./../Pagination/Pagination";
 
 const userData = [
