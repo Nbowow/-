@@ -1,17 +1,20 @@
 import styled from "styled-components";
-import {
-    flexAlignStartStyle,
-    flexCenterStyle,
-    flexStartStyle,
-} from "../../styles/common";
+import { flexCenterStyle, flexStartStyle } from "../../styles/common";
 
 export const IngredientLikeSection = styled.div`
     width: 70%;
     border-radius: ${({ theme }) => theme.borderRadius.medium};
+    padding: ${({ theme }) => theme.spacing.large};
+    height: 25rem;
 `;
 
 export const Wrapper = styled.div`
-    ${flexAlignStartStyle}
+    ${flexStartStyle}
+`;
+
+export const TabWrapper = styled.div`
+    ${flexStartStyle}
+    width: 50%;
 `;
 
 export const RelatedRecipe = styled.div`

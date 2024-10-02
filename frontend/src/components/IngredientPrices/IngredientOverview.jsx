@@ -4,6 +4,8 @@ import IntroCard from "../Card/IntroCard/IntroCard";
 import YearlyPriceChart from "./YearlyPriceChart/YearlyPriceChart";
 import Title from "../Title/Title";
 import LikeIngredient from "./LikeIngredient/LikeIngredient";
+import Tab from "../Tab/Tab";
+import LowestPrice from "./LowestPrice/LowestPrice";
 const like = [
     {
         name: "상품 A",
@@ -163,16 +165,37 @@ const IngredientOverview = () => {
     const clickHandler = (rowIdx) => {
         setIngredient(rowIdx);
     };
+    const tabs = [
+        {
+            label: "물가동향",
+            content: (
+                <YearlyPriceChart
+                    priceHistory={like[ingredient].priceHistory}
+                />
+            ),
+        },
+        {
+            label: "최저가",
+            content: (
+                <>
+                    <LowestPrice />
+                    <LowestPrice />
+                    <LowestPrice />
+                </>
+            ),
+        },
+    ];
 
     return (
         <>
             <S.IngredientLikeSection>
                 <Title title={"나의 식재료"} />
+
                 <S.Wrapper>
                     <LikeIngredient onClick={clickHandler} ingredients={like} />
-                    <YearlyPriceChart
-                        priceHistory={like[ingredient].priceHistory}
-                    />
+                    <S.TabWrapper>
+                        <Tab tabs={tabs} />
+                    </S.TabWrapper>
                 </S.Wrapper>
             </S.IngredientLikeSection>
             <S.RelatedRecipeWrapper>
