@@ -10,9 +10,9 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # 환경 변수 읽기
-cert_key = os.getenv('CERT_KEY')
-cert_id = os.getenv('CERT_ID')
-api_url = os.getenv('API_URL')
+cert_key = os.getenv('PRICE_CERT_KEY')
+cert_id = os.getenv('PRICE_CERT_ID')
+api_url = os.getenv('PRICE_API_URL')
 
 # 소매우선, 그 후 도매
 p_cls_code = ["01", "02"]
@@ -52,7 +52,8 @@ p_category_item_name = {
 
 seen = {}
 filtered_items = []
-data_dir = "../data/price/"
+# data_dir = "../data/price/"
+data_dir = "/app/data/price/"
 
 
 async def price_back_data_api_scheduler(get_start_date):
@@ -155,12 +156,12 @@ async def price_back_data_api_scheduler(get_start_date):
                     print(
                         f"API 요청 실패. 상태 코드: {response.status_code} - 날짜: {start_date.strftime('%Y-%m-%d')}, 상품 구분 코드: {cls_code}, 카테고리 코드: {category_code}")
 
-        # 날짜를 하루씩 증가시킴
-        start_date += timedelta(days=1)
-
         save_to_csv(filtered_items, start_date.strftime("%Y-%m-%d"))
         seen = {}
         filtered_items = []
+
+        # 날짜를 하루씩 증가시킴
+        start_date += timedelta(days=1)
 
 
 def process_item(item, item_name):

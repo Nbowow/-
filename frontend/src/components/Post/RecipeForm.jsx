@@ -19,7 +19,7 @@ import {
     CloseButton,
     ButtonContainer,
     Text,
-} from "./RecipeForm.styeld"; // 스타일드 컴포넌트 임포트
+} from "./RecipeForm.styled";
 
 const RecipeForm = () => {
     const [recipeData, setRecipeData] = useState({
