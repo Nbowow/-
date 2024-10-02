@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import cook from "../../assets/icons/cook.svg";
+import sleeping from "../../assets/icons/sleeping.svg";
 
 export const Login = styled.div`
     display: flex;
@@ -46,4 +47,22 @@ export const LoginButton = styled.button`
 
 export const LoginButtonImage = styled.img`
     height: 50px;
+`;
+
+export const Loading = styled.section`
+    height: 300px;
+    display: flex;
+    flex-direction: column;
+    gap: 2.14rem;
+    justify-content: center;
+    align-items: center;
+`;
+
+export const LoadingIcon = styled(sleeping)`
+    width: 170px;
+`;
+
+export const LoadingText = styled(Title)`
+    white-space: nowrap;
+    overflow: hidden;
 `;

@@ -11,6 +11,7 @@ import RecipeDetail from "./pages/RecipeDetail/RecipeDetail";
 import MyPage from "./pages/MyPage/MyPage";
 import ModifyProfile from "./pages/ModifyProfile/ModifyProfile";
 import Login from "./pages/Login/Login";
+import LoginLoading from "./pages/Login/LoginLoding";
 import Footer from "./components/Footer/Footer";
 
 function App() {
@@ -28,6 +29,10 @@ function App() {
                         <Route path="/modify" element={<ModifyProfile />} />
                         <Route path="/mypage" element={<MyPage />} />
                         <Route path="/login" element={<Login />} />
+                        <Route
+                            path="/login-loading"
+                            element={<LoginLoading />}
+                        />
                         <Route path="*" element={<Notfound />} />
                     </Routes>
                     <Footer />
