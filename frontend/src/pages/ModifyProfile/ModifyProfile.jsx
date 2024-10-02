@@ -1,4 +1,3 @@
-import Header from "../../components/Header/Header";
 import Tab from "../../components/Tab/Tab";
 import UserProfile from "../../components/UserProfile/UserProfile";
 import ModifyUserInfoForm from "../../components/ModifyProfile/ModifyUserInfoForm/ModifyUserInfoForm";
@@ -17,7 +16,6 @@ const ModifyProfile = () => {
 
     return (
         <S.ModifyProfile>
-            <Header />
             <UserProfile />
             <Tab tabs={tabs} />
             <Footer />

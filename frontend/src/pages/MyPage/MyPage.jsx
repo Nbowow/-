@@ -1,5 +1,4 @@
 import * as S from "./MyPage.styled";
-import Header from "../../components/Header/Header";
 import UserProfile from "../../components/UserProfile/UserProfile";
 import UserProfileLevel from "../../components/UserProfile/UserProfileLevel/UserProfileLevel";
 import Tab from "../../components/Tab/Tab";
@@ -224,7 +223,6 @@ const MyPage = () => {
     return (
         <S.MyPage>
             <div>
-                <Header />
                 <UserProfile
                     showInfo={true}
                     profileImgUrl={testProfile.profileImgUrl}

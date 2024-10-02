@@ -1,4 +1,3 @@
-import Header from "../../components/Header/Header";
 import BannerSlider from "../../components/Slider/BannerSlider/BannerSlider";
 import SearchBar from "../../components/SearchBar/SearchBar";
 import CardSlider from "../../components/Slider/CardSlider/CardSlider";
@@ -218,7 +217,6 @@ const Main = () => {
     return (
         <S.Main>
             <div>
-                <Header />
                 <BannerSlider />
                 <SearchBar
                     userId={"test"}
