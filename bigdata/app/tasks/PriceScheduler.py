@@ -156,12 +156,12 @@ async def price_back_data_api_scheduler(get_start_date):
                     print(
                         f"API 요청 실패. 상태 코드: {response.status_code} - 날짜: {start_date.strftime('%Y-%m-%d')}, 상품 구분 코드: {cls_code}, 카테고리 코드: {category_code}")
 
-        # 날짜를 하루씩 증가시킴
-        start_date += timedelta(days=1)
-
         save_to_csv(filtered_items, start_date.strftime("%Y-%m-%d"))
         seen = {}
         filtered_items = []
+
+        # 날짜를 하루씩 증가시킴
+        start_date += timedelta(days=1)
 
 
 def process_item(item, item_name):
