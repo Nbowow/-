@@ -11,7 +11,9 @@ export const RecommendSection = styled.div`
     margin-top: 3rem;
 `;
 
-export const Hot = styled.div``;
+export const Hot = styled.div`
+    margin-right: ${({ theme }) => theme.spacing.small};
+`;
 export const Label = styled.div`
     margin-left: 1rem;
     font-family: ${({ theme }) => theme.fontWeight.bold};

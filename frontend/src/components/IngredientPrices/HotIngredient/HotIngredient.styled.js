@@ -26,6 +26,8 @@ export const Wrapper = styled.div`
     ${flexCenterStyle};
     width: 20rem;
     height: 5rem;
+    box-shadow: 0rem 0.25rem 0.375rem rgba(0, 0, 0, 0.1);
+    border-radius: ${({ theme }) => theme.borderRadius.medium};
     padding: ${({ theme }) => theme.spacing.large};
 `;
 export const Info = styled.div`

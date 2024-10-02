@@ -6,6 +6,7 @@ import Slider from "../../components/IngredientPrices/LivePriceTracker/Slider";
 import HotIngredient from "../../components/IngredientPrices/HotIngredient/HotIngredient";
 
 import * as S from "./Ingredient.styled";
+import Title from "../../components/Title/Title";
 const Ingredient = () => {
     return (
         <>
@@ -15,19 +16,22 @@ const Ingredient = () => {
                 <SearchBar />
                 <IngredientOverview />
                 <S.RecommendSection>
+                    <S.Hot>
+                        <Title title={"주간 인기 재료"} />
+                        <HotIngredient />
+                        <HotIngredient />
+                        <HotIngredient />
+                    </S.Hot>
+                    <S.Hot>
+                        <Title title={"월간 인기 재료"} />
+                        <HotIngredient />
+                        <HotIngredient />
+                        <HotIngredient />
+                    </S.Hot>
                     <S.Live>
+                        <Title title={"실시간 물가 변동"} />
                         <Slider />
                     </S.Live>
-                    <S.Hot>
-                        <HotIngredient />
-                        <HotIngredient />
-                        <HotIngredient />
-                    </S.Hot>
-                    <S.Hot>
-                        <HotIngredient />
-                        <HotIngredient />
-                        <HotIngredient />
-                    </S.Hot>
                 </S.RecommendSection>
             </S.Container>
 

@@ -16,7 +16,7 @@ const mock = {
 };
 const Slider = () => {
     return (
-        <div style={{ height: "17rem" }}>
+        <div style={{ height: "21.5rem" }}>
             <Swiper
                 spaceBetween={10}
                 centeredSlides={false}

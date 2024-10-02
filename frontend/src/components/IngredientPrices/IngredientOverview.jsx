@@ -6,7 +6,6 @@ import PieChart from "../Chart/PieChart";
 import YearlyPriceChart from "./YearlyPriceChart/YearlyPriceChart";
 import Title from "../Title/Title";
 import LikeIngredient from "./LikeIngredient/LikeIngredient";
-
 const like = [
     {
         name: "상품 A",
@@ -189,18 +188,26 @@ const IngredientOverview = () => {
                     </S.TabWrapper>
                 </S.Wrapper>
             </S.IngredientLikeSection>
-            <S.RelatedRecipe>
-                <IntroCard
-                    title={item.title}
-                    text={item.text}
-                    imgUrl={item.imgUrl}
-                />
-                <IntroCard
-                    title={item.title}
-                    text={item.text}
-                    imgUrl={item.imgUrl}
-                />
-            </S.RelatedRecipe>
+            <S.RelatedRecipeWrapper>
+                <Title title={"관련 레시피"} />
+                <S.RelatedRecipe>
+                    <IntroCard
+                        title={item.title}
+                        text={item.text}
+                        imgUrl={item.imgUrl}
+                    />
+                    <IntroCard
+                        title={item.title}
+                        text={item.text}
+                        imgUrl={item.imgUrl}
+                    />
+                    <IntroCard
+                        title={item.title}
+                        text={item.text}
+                        imgUrl={item.imgUrl}
+                    />
+                </S.RelatedRecipe>
+            </S.RelatedRecipeWrapper>
         </>
     );
 };

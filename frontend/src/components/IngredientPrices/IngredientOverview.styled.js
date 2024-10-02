@@ -1,5 +1,9 @@
 import styled from "styled-components";
-import { flexAlignStartStyle, flexCenterStyle } from "../../styles/common";
+import {
+    flexAlignStartStyle,
+    flexCenterStyle,
+    flexStartStyle,
+} from "../../styles/common";
 
 export const IngredientLikeSection = styled.div`
     width: 70%;
@@ -17,5 +21,11 @@ export const TabWrapper = styled.div`
 `;
 
 export const RelatedRecipe = styled.div`
-    display: flex;
+    width: 100%;
+    ${flexCenterStyle}
+`;
+export const RelatedRecipeWrapper = styled.div`
+    ${flexStartStyle}
+    flex-direction: column;
+    width: 70%;
 `;

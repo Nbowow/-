@@ -8,6 +8,8 @@ import {
 
 export const ChartWrapper = styled.div`
     width: 30%;
+    height: 100%;
+    ${flexCenterStyle}
 `;
 export const IngredientInfoLayout = styled.div`
     ${flexBetweenStyle};
@@ -15,6 +17,7 @@ export const IngredientInfoLayout = styled.div`
 `;
 export const IngredientInfo = styled.div`
     ${flexAlignStartStyle}
+    height: 100%;
     flex-direction: column;
     width: 60%;
     margin-left: ${({ theme }) => theme.spacing.large};
@@ -22,9 +25,10 @@ export const IngredientInfo = styled.div`
 export const Wrapper = styled.div`
     width: 18rem;
     height: 5rem;
+
     padding: ${({ theme }) => theme.spacing.large};
     border-radius: ${({ theme }) => theme.borderRadius.medium};
-    box-shadow: 0rem 0.25rem 0.375rem rgba(0, 0, 0, 0.1);
+    background-color: ${({ theme }) => theme.color.point.lightGreen};
     ${flexCenterStyle}
 `;
 
