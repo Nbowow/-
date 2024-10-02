@@ -226,6 +226,7 @@ const MyPage = () => {
             <div>
                 <Header />
                 <UserProfile
+                    showInfo={true}
                     profileImgUrl={testProfile.profileImgUrl}
                     UserProfileStat={testProfile.profileStat}
                     nickName={testProfile.nickName}

@@ -15,6 +15,8 @@ export const CardToggle = styled.div`
     border-radius: 20px;
     box-shadow: 0px 0.25rem 1.25rem rgba(0, 0, 0, 0.1);
 
+    cursor: pointer;
+
     &:hover {
         background-color: ${({ theme }) => theme.color.point.lightGreen};
     }
@@ -29,5 +31,5 @@ export const Image = styled.img`
 
 export const Text = styled.div`
     font-family: "SUITSemiBold";
-    font-size: ${({ theme }) => theme.fontSize.h4};
+    font-size: ${({ theme }) => theme.fontSize.text};
 `;
