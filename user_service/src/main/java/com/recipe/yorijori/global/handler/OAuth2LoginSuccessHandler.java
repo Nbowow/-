@@ -34,7 +34,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
             String accessToken = jwtService.createAccessToken(oAuth2User.getEmail());
             String refreshToken = jwtService.createRefreshToken();
 
-            String redirectUrl = String.format("http://localhost:5173/?accessToken=%s&refreshToken=%s", accessToken, refreshToken);
+            String redirectUrl = String.format("http://localhost:5173/login-loading?accessToken=%s&refreshToken=%s", accessToken, refreshToken);
             response.sendRedirect(redirectUrl);
 
             jwtService.sendAccessAndRefreshToken(response, accessToken, refreshToken);
