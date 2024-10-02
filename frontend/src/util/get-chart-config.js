@@ -21,6 +21,47 @@ export const lineOptions = (yAxisMax, yAxisMin) => {
     };
 };
 
+export const smallLineOptions = () => {
+    return {
+        responsive: true,
+        plugins: {
+            legend: { display: false },
+            title: { display: false },
+            tooltip: {
+                enabled: false,
+            },
+            datalabels: {
+                display: false,
+            },
+        },
+        scales: {
+            x: {
+                display: false,
+
+                grid: {
+                    display: false,
+                    drawBorder: false,
+                    drawTicks: false,
+                },
+                ticks: {
+                    display: false,
+                },
+            },
+            y: {
+                display: false,
+                grid: {
+                    display: false,
+                    drawBorder: false,
+                    drawTicks: false,
+                },
+                ticks: {
+                    display: false,
+                },
+            },
+        },
+    };
+};
+
 const hexToRgba = (hex, opacity) => {
     hex = hex.replace("#", "");
     if (hex.length === 3) {
@@ -36,7 +77,13 @@ const hexToRgba = (hex, opacity) => {
 
     return `rgba(${r}, ${g}, ${b}, ${opacity})`;
 };
-
+export const smallLineConfig = (color) => {
+    return {
+        borderColor: color,
+        borderWidth: 6,
+        pointRadius: 0,
+    };
+};
 export const lineConfig = (color) => {
     return {
         borderColor: color,
@@ -130,6 +177,21 @@ export const barOptions = (data, color) => {
                     return count;
                 },
                 color: color,
+            },
+        },
+    };
+};
+export const pieConfig = () => {
+    return {
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: "right",
+                },
+                tooltip: {
+                    enabled: true,
+                },
             },
         },
     };

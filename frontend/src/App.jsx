@@ -9,6 +9,7 @@ import Ranking from "./pages/Ranking";
 import UserProfile from "./components/UserProfile/UserProfile";
 import RecipeDetail from "./pages/RecipeDetail/RecipeDetail";
 import MyPage from "./pages/MyPage/MyPage";
+import Ingredient from "./pages/Ingredient/Ingredient";
 import ModifyProfile from "./pages/ModifyProfile/ModifyProfile";
 
 function App() {
@@ -25,6 +26,7 @@ function App() {
                         <Route path="/profile" element={<UserProfile />} />
                         <Route path="/modify" element={<ModifyProfile />} />
                         <Route path="/mypage" element={<MyPage />} />
+                        <Route path="/ingredient" element={<Ingredient />} />
                         <Route path="*" element={<Notfound />} />
                     </Routes>
                 </Router>
