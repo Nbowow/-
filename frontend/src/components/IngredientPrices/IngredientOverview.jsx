@@ -1,8 +1,6 @@
 import { useState } from "react";
 import * as S from "./IngredientOverview.styled";
 import IntroCard from "../Card/IntroCard/IntroCard";
-import Tab from "../Tab/Tab";
-import PieChart from "../Chart/PieChart";
 import YearlyPriceChart from "./YearlyPriceChart/YearlyPriceChart";
 import Title from "../Title/Title";
 import LikeIngredient from "./LikeIngredient/LikeIngredient";
@@ -166,26 +164,15 @@ const IngredientOverview = () => {
         setIngredient(rowIdx);
     };
 
-    const tab = [
-        {
-            label: "가격 변동률",
-            content: (
-                <YearlyPriceChart
-                    priceHistory={like[ingredient].priceHistory}
-                />
-            ),
-        },
-        { label: "칼로리", content: <PieChart /> },
-    ];
     return (
         <>
             <S.IngredientLikeSection>
                 <Title title={"나의 식재료"} />
                 <S.Wrapper>
                     <LikeIngredient onClick={clickHandler} ingredients={like} />
-                    <S.TabWrapper>
-                        <Tab tabs={tab} />
-                    </S.TabWrapper>
+                    <YearlyPriceChart
+                        priceHistory={like[ingredient].priceHistory}
+                    />
                 </S.Wrapper>
             </S.IngredientLikeSection>
             <S.RelatedRecipeWrapper>

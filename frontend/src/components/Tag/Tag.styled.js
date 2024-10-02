@@ -24,5 +24,6 @@ export const TagWrapper = styled.div`
     text-align: center;
     padding: 0.3rem 0.6rem;
     cursor: pointer;
+    margin-right: 0.5rem;
     inline-size: max-content;
 `;

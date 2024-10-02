@@ -16,7 +16,7 @@ export const Header = styled.tr`
 `;
 
 export const Th = styled.th`
-    padding: 1.25rem;
+    padding-bottom: 1.25rem;
 `;
 
 export const Tbody = styled.tbody``;
