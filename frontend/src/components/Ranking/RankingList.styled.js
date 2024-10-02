@@ -26,6 +26,8 @@ export const Th = styled.th`
     text-align: left;
     color: black;
     cursor: pointer;
+    font-size: ${({ theme }) => theme.fontSize.h4};
+    font-family: "SUITSEMIBOLD";
 `;
 
 export const Td = styled.td`
@@ -33,6 +35,8 @@ export const Td = styled.td`
     text-align: left;
     background-color: rgba(255, 255, 255, 0.2);
     color: black;
+    font-size: ${({ theme }) => theme.fontSize.h2};
+    font-family: "SUITSEMIBOLD";
 
     &:hover {
         background-color: rgba(255, 255, 255, 0.3);
