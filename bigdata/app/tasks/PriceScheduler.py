@@ -10,9 +10,9 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # 환경 변수 읽기
-cert_key = os.getenv('CERT_KEY')
-cert_id = os.getenv('CERT_ID')
-api_url = os.getenv('API_URL')
+cert_key = os.getenv('PRICE_CERT_KEY')
+cert_id = os.getenv('PRICE_CERT_ID')
+api_url = os.getenv('PRICE_API_URL')
 
 # 소매우선, 그 후 도매
 p_cls_code = ["01", "02"]
