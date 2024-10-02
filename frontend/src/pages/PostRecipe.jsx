@@ -2,8 +2,6 @@ import RecipeForm from "./../components/Post/RecipeForm";
 import MaterialForm from "../components/Post/MaterialForm";
 import OrderForm from "../components/Post/OrderForm";
 import styled from "styled-components";
-import Header from "./../components/Header/Header";
-import Footer from "./../components/Footer/Footer";
 const RegisterButton = styled.button`
     display: block;
     width: 20%;
@@ -38,7 +36,6 @@ const Hr = styled.hr`
 const PostRecipe = () => {
     return (
         <div>
-            <Header />
             <RecipeForm />
             <Hr />
 
@@ -49,7 +46,6 @@ const PostRecipe = () => {
             <ButtonContainer>
                 <RegisterButton type="button">등록</RegisterButton>
             </ButtonContainer>
-            <Footer />
         </div>
     );
 };

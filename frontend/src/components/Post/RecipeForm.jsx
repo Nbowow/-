@@ -19,7 +19,7 @@ import {
     CloseButton,
     ButtonContainer,
     Text,
-} from "./RecipeForm.styeld";
+} from "./RecipeForm.styled";
 
 const RecipeForm = () => {
     const [recipeData, setRecipeData] = useState({

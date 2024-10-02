@@ -5,8 +5,6 @@ import Category from "../components/Category/Category";
 import Pagination from "../components/Pagination/Pagination";
 import SortSelector from "./../components/SortSelector/SortSelector";
 import RecipeList from "./../components/ReicipeList/RecipeList";
-import Header from "./../components/Header/Header";
-import Footer from "./../components/Footer/Footer";
 import SearchBar from "./../components/SearchBar/SearchBar";
 
 const Recipe = () => {
@@ -270,7 +268,6 @@ const Recipe = () => {
 
     return (
         <div>
-            <Header />
             <SearchBar />
             {/* <CategoryIcon /> */}
             <Category
@@ -289,7 +286,6 @@ const Recipe = () => {
                 onPageChange={({ selected }) => setCurrentPage(selected)} // 페이지 변경 시 호출
                 currentPage={currentPage} // 현재 페이지 전달
             />
-            <Footer />
         </div>
     );
 };

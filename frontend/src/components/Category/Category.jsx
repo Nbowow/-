@@ -5,7 +5,7 @@ import {
     CategorySection,
     CategoryTitle,
     Container,
-} from "./Category.styld";
+} from "./Category.styled";
 import { PropTypes } from "prop-types";
 
 const categories = {
