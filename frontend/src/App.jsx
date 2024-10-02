@@ -11,6 +11,7 @@ import RecipeDetail from "./pages/RecipeDetail/RecipeDetail";
 import MyPage from "./pages/MyPage/MyPage";
 import ModifyProfile from "./pages/ModifyProfile/ModifyProfile";
 import Login from "./pages/Login/Login";
+import Footer from "./components/Footer/Footer";
 
 function App() {
     return (
@@ -29,6 +30,7 @@ function App() {
                         <Route path="/login" element={<Login />} />
                         <Route path="*" element={<Notfound />} />
                     </Routes>
+                    <Footer />
                 </Router>
             </ThemeProvider>
         </>

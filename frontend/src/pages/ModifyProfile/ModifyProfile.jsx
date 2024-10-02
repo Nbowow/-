@@ -2,7 +2,6 @@ import Tab from "../../components/Tab/Tab";
 import UserProfile from "../../components/UserProfile/UserProfile";
 import ModifyUserInfoForm from "../../components/ModifyProfile/ModifyUserInfoForm/ModifyUserInfoForm";
 import AllergyListForm from "../../components/ModifyProfile/AllergyListForm/AllergyListForm";
-import Footer from "../../components/Footer/Footer";
 import * as S from "./ModifyProfile.styled";
 
 const ModifyProfile = () => {
@@ -18,7 +17,6 @@ const ModifyProfile = () => {
         <S.ModifyProfile>
             <UserProfile />
             <Tab tabs={tabs} />
-            <Footer />
         </S.ModifyProfile>
     );
 };

@@ -2,7 +2,6 @@ import BannerSlider from "../../components/Slider/BannerSlider/BannerSlider";
 import SearchBar from "../../components/SearchBar/SearchBar";
 import CardSlider from "../../components/Slider/CardSlider/CardSlider";
 import LinkBanner from "../../components/Banner/LinkBanner";
-import Footer from "../../components/Footer/Footer";
 
 import * as S from "./Main.styled";
 
@@ -239,7 +238,6 @@ const Main = () => {
             </div>
 
             <LinkBanner />
-            <Footer />
         </S.Main>
     );
 };
