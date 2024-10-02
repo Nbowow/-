@@ -1,5 +1,7 @@
 import os
 
+import requests
+from fastapi import HTTPException
 from hdfs import InsecureClient
 
 # HDFS 클라이언트 설정 (HDFS NameNode 주소로 접속)
@@ -7,18 +9,68 @@ hdfs_client = InsecureClient('http://master:9870', user='root')
 
 
 async def upload_recipe_file_to_mysql(what_do):
+    spark_url = "http://master:6066/v1/submissions/create"
+    filter_name = "recipe_filter.py"
+    filter_url = '/opt/spark-scripts/filter.py'
+    member_id = '1'
+
     # spark 정제코드 요청
 
     if what_do == 1:
+        filter_name = "RecipeFilter.py"
+        filter_url = '/opt/spark-scripts/RecipeFilter.py'
         print("1(recipe) : 정제 후 mysql 실행")
 
     elif what_do == 2:
+        filter_name = "PriceFilter.py"
+        filter_url = '/opt/spark-scripts/PriceFilter.py'
         print("2(price) : 정제 후 mysql 실행")
 
     elif what_do == 3:
+        filter_name = "NutrientFilter.py"
+        filter_url = '/opt/spark-scripts/NutrientFilter.py'
         print("3(nutrients) : 정제 후 mysql 실행")
 
-    return
+    data = {
+        "action": "CreateSubmissionRequest",
+        "appArgs": [filter_url, "", member_id],
+        "appResource": f"hdfs://master:9000/user/root/scripts/${filter_name}",
+        "clientSparkVersion": "3.5.2",
+        "mainClass": "org.apache.spark.deploy.PythonRunner",
+        "environmentVariables": {
+            "SPARK_ENV_LOADED": "1"
+        },
+        "sparkProperties": {
+            "spark.driver.supervise": "false",
+            "spark.app.name": "FastAPI Spark Job",
+            "spark.eventLog.dir": "hdfs://master:9000/spark-logs",
+            "spark.eventLog.enabled": "true",
+            "spark.submit.deployMode": "client",
+            "spark.master": "spark://master:7077",
+            "spark.driver.memory": "1g",
+            "spark.executor.memory": "1g",
+            "spark.submit.pyFiles": f"hdfs://master:9000/user/root/scripts/${filter_name}",
+            "spark.pyspark.python": "/usr/bin/python3",
+            "spark.pyspark.driver.python": "/usr/bin/python3"
+        }
+    }
+
+    try:
+        print("1. Spark 작업 제출 중...")
+        print(f"Spark 작업 제출 데이터: {data}")  # 작업 제출 데이터를 출력
+        response = requests.post(spark_url, json=data)
+        response_data = response.json()
+
+        if response.status_code == 200:
+            submission_id = response_data.get("submissionId")
+            print(f"2. 작업 제출 성공. Submission ID: {submission_id}")
+
+        else:
+            print(f"12. Spark 작업 제출 실패: {response.text}")
+            raise HTTPException(status_code=response.status_code, detail="Spark 작업 제출 실패")
+    except Exception as e:
+        print(f"13. 서버 오류 발생: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"서버 오류 발생: {str(e)}")
 
 
 async def upload_recipe_file_to_hdfs():
