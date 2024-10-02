@@ -47,16 +47,16 @@ public class User extends BaseTimeEntity{
     private Role role;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "user_socialType")
+    @Column(name = "user_social_type")
     private SocialType socialType;
 
-    @Column(name = "user_socialId")
+    @Column(name = "user_social_id")
     private String socialId;
 
     @Column(name = "user_password")
     private String password; // 비밀번호
 
-    @Column(name = "user_refreshToken")
+    @Column(name = "user_refresh_token")
     private String refreshToken;
 
     public void authorizeUser() {
