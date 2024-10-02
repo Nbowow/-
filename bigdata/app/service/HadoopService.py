@@ -34,7 +34,7 @@ async def upload_recipe_file_to_mysql(what_do):
     data = {
         "action": "CreateSubmissionRequest",
         "appArgs": [filter_url, "", member_id],
-        "appResource": f"hdfs://master:9000/user/root/scripts/${filter_name}",
+        "appResource": f"hdfs://master:9000/user/root/scripts/{filter_name}",
         "clientSparkVersion": "3.5.2",
         "mainClass": "org.apache.spark.deploy.PythonRunner",
         "environmentVariables": {
@@ -49,7 +49,7 @@ async def upload_recipe_file_to_mysql(what_do):
             "spark.master": "spark://master:7077",
             "spark.driver.memory": "1g",
             "spark.executor.memory": "1g",
-            "spark.submit.pyFiles": f"hdfs://master:9000/user/root/scripts/${filter_name}",
+            "spark.submit.pyFiles": f"hdfs://master:9000/user/root/scripts/{filter_name}",
             "spark.pyspark.python": "/usr/bin/python3",
             "spark.pyspark.driver.python": "/usr/bin/python3"
         }

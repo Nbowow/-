@@ -1,6 +1,7 @@
 import datetime
 import difflib
 
+from fastapi import FastAPI
 from hdfs import InsecureClient
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import regexp_replace, col, when, regexp_extract
@@ -223,6 +224,23 @@ class RecipeOrders(Base):
     recipe_id = Column(BigInteger, ForeignKey("Recipes.recipe_id"), nullable=False)
 
     recipe = relationship("Recipes", back_populates="recipe_orders")
+
+
+def main():
+    file_statuses = hdfs_client.list(hdfs_directory)
+
+    print("1. hdfs 파일 목록 읽기")
+
+    for file_name in file_statuses:
+        file_path = f"hdfs://master:9870{hdfs_directory}{file_name}"
+
+        # 파일 경로를 이용해 데이터를 정제 및 저장
+        print("2. hdfs 파일 정제시작")
+        process_recipe_data(file_path)
+
+        print(f"Uploaded data from {file_name} to MySQL")
+
+    return {"message": "All files processed and uploaded to MySQL"}
 
 
 # HDFS 파일을 읽고 Spark DataFrame으로 처리하여 정제하는 함수
@@ -524,24 +542,3 @@ def get_material_id(material_name):
         session.commit()
         print(f"'{material_name}' 재료가 추가되었습니다.")
         return {"material_id": new_material.material_id, "material_name": new_material.material_name}
-
-
-# HDFS에서 파일 목록을 읽고 처리하는 메인 함수
-def upload_recipe_file_to_mysql():
-    file_statuses = hdfs_client.list(hdfs_directory)
-
-    print("1. hdfs 파일 목록 읽기")
-
-    for file_name in file_statuses:
-        file_path = f"hdfs://master:9870{hdfs_directory}{file_name}"
-
-        # 파일 경로를 이용해 데이터를 정제 및 저장
-        print("2. hdfs 파일 정제시작")
-        process_recipe_data(file_path)
-
-        print(f"Uploaded data from {file_name} to MySQL")
-
-    return {"message": "All files processed and uploaded to MySQL"}
-
-
-upload_recipe_file_to_mysql()
