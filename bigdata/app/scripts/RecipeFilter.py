@@ -234,6 +234,8 @@ def process_recipe_data(file_path):
         inferSchema=True,
         encoding='utf-8'
     )
+
+    print("3. hdfs read.csv 성공")
     # 레시피이름, 글 제목, 조리순서가 null이 아닌 행만 필터링
     df = df.filter(df['레시피이름'].isNotNull() & df['글 제목'].isNotNull() & df['조리순서'].isNotNull())
 
@@ -277,6 +279,7 @@ def process_recipe_data(file_path):
     # 인분 데이터를 숫자만 추출하고 None 또는 비어 있으면 1로 설정
     df = df.withColumn("인분", when(col("인분").isNull() | (col("인분") == ""), 1)
                        .otherwise(regexp_extract(col("인분"), r'(\d+)', 1).cast("int")))
+    print("4. df 정제")
 
     # 필요한 컬럼만 선택하고 이름 변경
     selected_columns = df.select(
@@ -293,13 +296,17 @@ def process_recipe_data(file_path):
         col("재료별").alias("recipe_ingredients"),
         col("방법별").alias("recipe_method")
     )
-
+    print("5. 재료, 조리순서 db 추가")
     # 재료, 조리순서 컬럼 db데이터 추가
     for row in df.collect():
+        print("6. 레시피 저장")
         recipe_id = save_recipe_to_db(row)  # 레시피 저장 함수, 각 레시피에 대해 recipe_id 반환
 
+        print("7. 레시피 재료 저장")
         process_recipe_ingredients(row['재료'], recipe_id)
+
         # 레시피 단계별 정보 저장
+        print("8. 레시피 주문 저장")
         recipe_orders = eval(row['recipe_orders'])  # JSON 형태의 recipe_orders를 파이썬 리스트로 변환
         process_recipe_orders(recipe_orders, recipe_id)
 
@@ -523,10 +530,13 @@ def get_material_id(material_name):
 def upload_recipe_file_to_mysql():
     file_statuses = hdfs_client.list(hdfs_directory)
 
+    print("1. hdfs 파일 목록 읽기")
+
     for file_name in file_statuses:
         file_path = f"hdfs://master:9870{hdfs_directory}{file_name}"
 
         # 파일 경로를 이용해 데이터를 정제 및 저장
+        print("2. hdfs 파일 정제시작")
         process_recipe_data(file_path)
 
         print(f"Uploaded data from {file_name} to MySQL")
