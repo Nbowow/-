@@ -11,6 +11,7 @@ import RecipeDetail from "./pages/RecipeDetail/RecipeDetail";
 import MyPage from "./pages/MyPage/MyPage";
 import Ingredient from "./pages/Ingredient/Ingredient";
 import ModifyProfile from "./pages/ModifyProfile/ModifyProfile";
+import SearchRecipe from "./pages/SerachRecipe";
 
 function App() {
     return (
@@ -27,6 +28,7 @@ function App() {
                         <Route path="/modify" element={<ModifyProfile />} />
                         <Route path="/mypage" element={<MyPage />} />
                         <Route path="/ingredient" element={<Ingredient />} />
+                        <Route path="/search" element={<SearchRecipe />} />
                         <Route path="*" element={<Notfound />} />
                     </Routes>
                 </Router>
