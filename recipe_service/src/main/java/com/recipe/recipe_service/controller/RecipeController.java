@@ -39,10 +39,11 @@ public class RecipeController {
 
     @PostMapping("/create")
     public ResponseEntity<Recipe> createRecipe(
-            HttpServletRequest request,
+            @RequestHeader("Authorization") String authorization,
             @RequestBody RecipeRegisterRequestDto requestDto) {
 
-        Long userId = userServiceClient.getUserId(request);
+        String accessToken = authorization.split(" ")[1];
+        Long userId = userServiceClient.getUserId(accessToken);
 
         Recipe responseRecipe = recipeService.createRecipe(requestDto, userId);
 

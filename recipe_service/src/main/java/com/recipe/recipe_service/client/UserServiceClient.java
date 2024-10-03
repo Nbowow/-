@@ -8,5 +8,5 @@ import org.springframework.web.bind.annotation.GetMapping;
 public interface UserServiceClient {
 
     @GetMapping("/api/v1/users/id")
-    Long getUserId(HttpServletRequest request);
+    Long getUserId(String token);
 }
