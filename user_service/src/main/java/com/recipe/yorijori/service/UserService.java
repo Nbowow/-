@@ -18,6 +18,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -64,8 +65,8 @@ public class UserService {
                 user.getProfileImage(),
                 user.getName(),
                 user.getSummary(), // 추가된 회원 한줄 소개
-                getFollowers(user.getUserId()), // 추상 followers 정보
-                getFollowings(user.getUserId()) // 추상 followings 정보
+                mapFollowersToDto(user.getUserId()), // 추상 followers 정보
+                mapFollowingsToDto(user.getUserId()) // 추상 followings 정보
         );
     }
 
@@ -82,26 +83,32 @@ public class UserService {
         return userRecipeResponseDto;
     }
 
-    public UserRecipeResponseDto getUserByNickname(String nickname) {
-        User user = userRepository.findByNickname(nickname)
-                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
 
-        List<RecipeResponseDto> recipeList = recipeServiceClient.getRecipes(user.getUserId());
 
-        ModelMapper modelMapper = new ModelMapper();
-        UserRecipeResponseDto userRecipeResponseDto = modelMapper.map(user, UserRecipeResponseDto.class);
-        userRecipeResponseDto.setRecipes(recipeList);
-
-        return userRecipeResponseDto;
+    public List<FollowerResponseDto> mapFollowersToDto(Long userId) {
+        List<Long> followerIds = socialServiceClient.getFollowers(userId);
+        return followerIds.stream().map(followerId -> {
+            User follower = userRepository.findById(followerId)
+                    .orElseThrow(() -> new IllegalArgumentException("팔로워를 찾을 수 없습니다."));
+            return new FollowerResponseDto(
+                    follower.getUserId(),
+                    follower.getNickname(),
+                    follower.getProfileImage()
+            );
+        }).collect(Collectors.toList());
     }
 
-
-    public List<FollowerResponseDto> getFollowers(Long userId) {
-        return socialServiceClient.getFollowers(userId);
-    }
-
-    public List<FollowingResponseDto> getFollowings(Long userId) {
-        return socialServiceClient.getFollowings(userId);
+    public List<FollowingResponseDto> mapFollowingsToDto(Long userId) {
+        List<Long> followingIds = socialServiceClient.getFollowings(userId);
+        return followingIds.stream().map(followingId -> {
+            User following = userRepository.findById(followingId)
+                    .orElseThrow(() -> new IllegalArgumentException("팔로잉 사용자를 찾을 수 없습니다."));
+            return new FollowingResponseDto(
+                    following.getUserId(),
+                    following.getNickname(),
+                    following.getProfileImage()
+            );
+        }).collect(Collectors.toList());
     }
 
     public Long getUserIdByEmail(String email) {

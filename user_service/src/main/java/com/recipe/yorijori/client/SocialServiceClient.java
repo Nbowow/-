@@ -14,8 +14,8 @@ import java.util.List;
 public interface SocialServiceClient {
 
     @GetMapping("/api/v1/social/{userId}/follower")
-    List<FollowerResponseDto> getFollowers(@PathVariable("userId") Long userId);
+    List<Long> getFollowers(@PathVariable("userId") Long userId);
 
     @GetMapping("/api/v1/social/{userId}/following")
-    List<FollowingResponseDto> getFollowings(@PathVariable("userId") Long userId);
+    List<Long> getFollowings(@PathVariable("userId") Long userId);
 }

@@ -9,8 +9,8 @@ import java.util.List;
 public interface SocialRepository extends JpaRepository<Follow, Long> {
 
     // 팔로워 목록 조회
-    List<Follow> findByFollowingId(Long userId);
+    List<Long> findByFollowingId(Long userId);
 
     // 팔로잉 목록 조회
-    List<Follow> findByFollowerId(Long userId);
+    List<Long> findByFollowerId(Long userId);
 }

@@ -3,7 +3,6 @@ package com.recipe.yorijori.controller;
 import com.recipe.yorijori.data.dto.recipe.response.UserRecipeResponseDto;
 import com.recipe.yorijori.data.dto.user.request.UserSignUpDto;
 import com.recipe.yorijori.data.dto.user.response.UserResponseDto;
-import com.recipe.yorijori.data.dto.user.response.UserResponseDto2;
 import com.recipe.yorijori.repository.UserRepository;
 import com.recipe.yorijori.service.JwtService;
 import com.recipe.yorijori.service.UserService;
@@ -31,74 +30,36 @@ public class UserController {
     }
 
     @GetMapping("/{userId}")
-    public ResponseEntity<?> getUser(@PathVariable Long userId) {
+    public ResponseEntity<?> getUser(@PathVariable("userId") Long userId) {
         UserRecipeResponseDto userRecipeResponseDto = userService.getUserById(userId);
-
         return ResponseEntity.status(HttpStatus.OK).body(userRecipeResponseDto);
     }
-
-    @GetMapping("/image/{userId}")
-    public ResponseEntity<?> getUserImage(@PathVariable Long userId) {
-        // userId로 사용자 정보 조회
-        UserResponseDto2 userDto = userRepository.findById(userId)
-                .map(user -> new UserResponseDto2(
-                        user.getEmail(),
-                        user.getNickname(),
-                        user.getProfileImage(),
-                        user.getName(),
-                        user.getSummary()))
-                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
-
-        // 사용자 정보 응답
-        return ResponseEntity.ok(userDto);
-    }
-
 
     @GetMapping("/id")
     public Long getUserId(@RequestHeader("Authorization") String authorization) {
 
         String accessToken = authorization.split(" ")[1];
 
-        // AccessToken에서 사용자 이메일 추출
         String userEmail = jwtService.extractEmail(accessToken)
                 .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 AccessToken입니다."));
 
-        // 이메일로 사용자 ID 조회
         return userService.getUserIdByEmail(userEmail);
     }
 
 
     @GetMapping("/user")
     public ResponseEntity<UserResponseDto> getUserInfo(HttpServletRequest request) {
-        // 요청 헤더에서 AccessToken 추출
+
         String accessToken = jwtService.extractAccessToken(request)
                 .orElseThrow(() -> new IllegalArgumentException("AccessToken이 존재하지 않습니다."));
 
-        // AccessToken에서 사용자 이메일 추출
         String userEmail = jwtService.extractEmail(accessToken)
                 .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 AccessToken입니다."));
 
-        // 이메일로 사용자 정보 조회
         UserResponseDto userDto = userService.getUserByEmail(userEmail);
 
-        // 사용자 정보 응답
         return ResponseEntity.ok(userDto);
     }
 
-
-    @GetMapping("/{nickname}/test")
-    public UserRecipeResponseDto getUserByNickname(@PathVariable String nickname) {
-        log.info("nickname: " + nickname);
-        UserRecipeResponseDto userRecipeResponseDto = userService.getUserByNickname(nickname);
-
-        log.info("userRecipeResponseDto: " + userRecipeResponseDto.getEmail());
-        return userRecipeResponseDto;
-    }
-
-
-    @GetMapping("/jwt-test")
-    public String jwtTest() {
-        return "jwtTest 요청 성공";
-    }
 
 }
