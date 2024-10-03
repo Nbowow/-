@@ -7,7 +7,9 @@ import com.recipe.recipe_service.data.dto.comment.CommentRegisterRequestDto;
 import com.recipe.recipe_service.data.dto.comment.CommentResponseDto;
 import com.recipe.recipe_service.data.dto.recipe.request.RecipeRegisterRequestDto;
 import com.recipe.recipe_service.data.dto.recipe.response.ResponseRecipe;
+import com.recipe.recipe_service.data.dto.recipe.response.UserRecipeLikeResponseDto;
 import com.recipe.recipe_service.data.dto.recipe.response.UserRecipeRegistResponseDto;
+import com.recipe.recipe_service.data.dto.recipe.response.UserRecipeScrapResponseDto;
 import com.recipe.recipe_service.data.dto.user.UserSimpleResponseDto;
 import com.recipe.recipe_service.service.RecipeService;
 import lombok.AllArgsConstructor;
@@ -178,6 +180,20 @@ public class RecipeController {
     public ResponseEntity<List<UserRecipeRegistResponseDto>> getUserRecipes(@PathVariable("userId") Long userId) {
         List<UserRecipeRegistResponseDto> userRecipes = recipeService.getRecipesByUserId(userId);
         return ResponseEntity.status(HttpStatus.OK).body(userRecipes);
+    }
+
+    // 특정 사용자가 좋아요한 레시피 조회
+    @GetMapping("/user/like/{userId}")
+    public ResponseEntity<List<UserRecipeLikeResponseDto>> getUserLikeRecipes(@PathVariable("userId") Long userId) {
+        List<UserRecipeLikeResponseDto> userLikeRecipes = recipeService.getUserLikeRecipes(userId);
+        return ResponseEntity.status(HttpStatus.OK).body(userLikeRecipes);
+    }
+
+    // 특정 사용자가 스크랩한 레시피 조회
+    @GetMapping("/user/scrap/{userId}")
+    public ResponseEntity<List<UserRecipeScrapResponseDto>> getUserScrapRecipes(@PathVariable("userId") Long userId) {
+        List<UserRecipeScrapResponseDto> userScrapRecipes = recipeService.getUserScrapRecipes(userId);
+        return ResponseEntity.status(HttpStatus.OK).body(userScrapRecipes);
     }
 
 }

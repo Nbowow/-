@@ -1,9 +1,7 @@
 package com.recipe.yorijori.controller;
 
 import com.recipe.yorijori.client.RecipeServiceClient;
-import com.recipe.yorijori.data.dto.recipe.response.UserRecipeRegistResponseDto;
-import com.recipe.yorijori.data.dto.recipe.response.UserRecipeResponseDto;
-import com.recipe.yorijori.data.dto.recipe.response.UserSimpleResponseDto;
+import com.recipe.yorijori.data.dto.recipe.response.*;
 import com.recipe.yorijori.data.dto.user.request.UserModifyRequestDto;
 import com.recipe.yorijori.data.dto.user.request.UserSignUpDto;
 import com.recipe.yorijori.data.dto.user.response.UserResponseDto;
@@ -49,6 +47,38 @@ public class UserController {
         List<UserRecipeRegistResponseDto> userRecipeRegistResponseDto = recipeServiceClient.getUserRecipes(userId);
 
         return ResponseEntity.status(HttpStatus.OK).body(userRecipeRegistResponseDto);
+    }
+
+    @GetMapping("/like")
+    public ResponseEntity<?> getUserRecipeLike(HttpServletRequest request) {
+
+        String accessToken = jwtService.extractAccessToken(request)
+                .orElseThrow(() -> new IllegalArgumentException("AccessToken이 존재하지 않습니다."));
+
+        String userEmail = jwtService.extractEmail(accessToken)
+                .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 AccessToken입니다."));
+
+        Long userId = userService.getUserIdByEmail(userEmail);
+
+        List<UserRecipeLikeResponseDto> userRecipeRegistlikeResponseDto = recipeServiceClient.getUserLikeRecipes(userId);
+
+        return ResponseEntity.status(HttpStatus.OK).body(userRecipeRegistlikeResponseDto);
+    }
+
+    @GetMapping("/scarp")
+    public ResponseEntity<?> getUserRecipeScrap(HttpServletRequest request) {
+
+        String accessToken = jwtService.extractAccessToken(request)
+                .orElseThrow(() -> new IllegalArgumentException("AccessToken이 존재하지 않습니다."));
+
+        String userEmail = jwtService.extractEmail(accessToken)
+                .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 AccessToken입니다."));
+
+        Long userId = userService.getUserIdByEmail(userEmail);
+
+        List<UserRecipeScrapResponseDto> userRecipeScrapResponseDto = recipeServiceClient.getUserScrapRecipes(userId);
+
+        return ResponseEntity.status(HttpStatus.OK).body(userRecipeScrapResponseDto);
     }
 
     @GetMapping("/{userId}")
