@@ -1,14 +1,38 @@
-import datetime
 import difflib
+import os
+from datetime import datetime
 
+from dotenv import load_dotenv
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker, declarative_base
 from hdfs import InsecureClient
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import regexp_replace, col, when, regexp_extract
 from sqlalchemy import MetaData, Column, BigInteger, String, Boolean, select, Integer, DateTime, ForeignKey
 from sqlalchemy.orm import relationship
 
-from app.database.base import Base
-from app.database.database import engineconn
+Base = declarative_base()
+
+load_dotenv()
+
+DATABASE_URL = os.getenv("DATABASE_URL")
+
+
+class engineconnection:
+
+    def __init__(self):
+        self.engine = create_engine(DATABASE_URL, echo=True, pool_recycle=500)
+
+    def sessionmaker(self):
+        Session = sessionmaker(bind=self.engine)
+        session = Session()
+        return session
+
+    def connection(self):
+        conn = self.engine.connect()
+
+        return conn
+
 
 # HDFS 클라이언트 설정 (HDFS NameNode 주소로 접속)
 hdfs_client = InsecureClient('http://master:9870', user='root')
@@ -225,6 +249,23 @@ class RecipeOrders(Base):
     recipe = relationship("Recipes", back_populates="recipe_orders")
 
 
+def main():
+    file_statuses = hdfs_client.list(hdfs_directory)
+
+    print("1. hdfs 파일 목록 읽기")
+
+    for file_name in file_statuses:
+        file_path = f"hdfs://master:9870{hdfs_directory}{file_name}"
+
+        # 파일 경로를 이용해 데이터를 정제 및 저장
+        print("2. hdfs 파일 정제시작")
+        process_recipe_data(file_path)
+
+        print(f"Uploaded data from {file_name} to MySQL")
+
+    return {"message": "All files processed and uploaded to MySQL"}
+
+
 # HDFS 파일을 읽고 Spark DataFrame으로 처리하여 정제하는 함수
 def process_recipe_data(file_path):
     # HDFS에서 데이터 읽기
@@ -312,7 +353,7 @@ def process_recipe_data(file_path):
 
 
 def save_recipe_to_db(row):
-    engine = engineconn()
+    engine = engineconnection()
     session = engine.sessionmaker()
 
     # 중복 확인을 위해 기존 레시피 확인 (예: 레시피 이름과 제목을 기준으로 중복 확인)
@@ -380,7 +421,7 @@ def add_recipe_order(recipe_id, step_number, description, image_url):
     """
     RecipeOrders 테이블에 단계를 추가하는 함수
     """
-    engine = engineconn()
+    engine = engineconnection()
     session = engine.sessionmaker()
 
     new_recipe_order = RecipeOrders(
@@ -437,7 +478,7 @@ def add_recipe_material(recipe_id, material_id, amount, unit):
     """
     RecipeMaterials 테이블에 재료 정보를 추가하는 함수
     """
-    engine = engineconn()
+    engine = engineconnection()
     session = engine.sessionmaker()
 
     try:
@@ -480,7 +521,7 @@ def get_allergy_num(material_name):
 
 def get_material_id(material_name):
     # 재료 존재여부 확인하고 테이블 추가
-    engine = engineconn()
+    engine = engineconnection()
     session = engine.sessionmaker()
     metadata = MetaData()
 
@@ -526,22 +567,5 @@ def get_material_id(material_name):
         return {"material_id": new_material.material_id, "material_name": new_material.material_name}
 
 
-# HDFS에서 파일 목록을 읽고 처리하는 메인 함수
-def upload_recipe_file_to_mysql():
-    file_statuses = hdfs_client.list(hdfs_directory)
-
-    print("1. hdfs 파일 목록 읽기")
-
-    for file_name in file_statuses:
-        file_path = f"hdfs://master:9870{hdfs_directory}{file_name}"
-
-        # 파일 경로를 이용해 데이터를 정제 및 저장
-        print("2. hdfs 파일 정제시작")
-        process_recipe_data(file_path)
-
-        print(f"Uploaded data from {file_name} to MySQL")
-
-    return {"message": "All files processed and uploaded to MySQL"}
-
-
-upload_recipe_file_to_mysql()
+if __name__ == "__main__":
+    main()
