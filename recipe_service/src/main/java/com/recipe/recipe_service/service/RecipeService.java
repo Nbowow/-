@@ -31,6 +31,7 @@ public class RecipeService {
                 .servings(createRecipeDto.getServings())
                 .time(createRecipeDto.getTime())
                 .level(createRecipeDto.getLevel())
+                .cookingTools(createRecipeDto.getCookingTools())
                 .type(createRecipeDto.getType())
                 .situation(createRecipeDto.getSituation())
                 .ingredients(createRecipeDto.getIngredients())
