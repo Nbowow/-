@@ -15,6 +15,7 @@ import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -37,6 +38,7 @@ public class RecipeController {
         return String.format("PORT : %s", env.getProperty("server.port"));
     }
 
+    // 레시피 생성
     @PostMapping("/create")
     public ResponseEntity<Recipe> createRecipe(
             @RequestHeader("Authorization") String authorization,
@@ -49,17 +51,27 @@ public class RecipeController {
         return ResponseEntity.status(HttpStatus.CREATED).body(responseRecipe);
     }
 
-    @GetMapping("/{userId}/recipes")
-    public ResponseEntity<?> getRecipes(@PathVariable("userId") Long userId) {
-        Iterable<Recipe> recipeList = recipeService.getRecipesByUserEmail(userId);
+    // 레시피 전체 조회
+    @GetMapping("")
+    public ResponseEntity<List<ResponseRecipe>> getAllRecipes(
+            @RequestParam("pageSize") int pageSize,
+            @RequestParam("pageNumber") int pageNumber) {
 
-        List<ResponseRecipe> responseRecipeList = new ArrayList<>();
-        recipeList.forEach(v -> {
-            responseRecipeList.add(new ModelMapper().map(v, ResponseRecipe.class));
-        });
+        // 서비스에서 페이징 처리된 레시피 목록 가져오기
+        List<ResponseRecipe> recipeList = recipeService.getAllRecipes(pageNumber, pageSize);
 
-        return ResponseEntity.status(HttpStatus.OK).body(responseRecipeList);
+        return ResponseEntity.status(HttpStatus.OK).body(recipeList);
 
+    }
+
+    // 레시피 상세 조회
+    @GetMapping("")
+    public ResponseEntity<ResponseRecipe> getRecipe(
+            @RequestParam("id") Long id) {
+
+        ResponseRecipe recipe = recipeService.getRecipe(id);
+
+        return ResponseEntity.status(HttpStatus.OK).body(recipe);
     }
 
 

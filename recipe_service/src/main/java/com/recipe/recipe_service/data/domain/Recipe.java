@@ -31,9 +31,6 @@ public class Recipe {
     @Column(name = "recipe_image")
     private String image;
 
-    @Column(name = "recipe_like_count")
-    private Long likeCount;
-
     @Column(name = "recipe_view_count")
     private Long viewCount;
 
@@ -72,6 +69,15 @@ public class Recipe {
 
     @Column(name = "user_id")
     private Long userId;
+
+    @Column(name = "recipe_like_count")
+    private Long likeCount = 0L;
+
+    @Column(name = "recipe_scrap_count")
+    private Long scrapCount = 0L;
+
+    @Column(name = "recipe_comment_count")
+    private Long commentCount = 0L;
 
     // 데이터가 저장되기 전 자동으로 현재 시간과 기본값 설정
     @PrePersist
