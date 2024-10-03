@@ -5,6 +5,7 @@ import com.recipe.yorijori.client.SocialServiceClient;
 import com.recipe.yorijori.data.domain.User;
 import com.recipe.yorijori.data.dto.recipe.response.RecipeResponseDto;
 import com.recipe.yorijori.data.dto.recipe.response.UserRecipeResponseDto;
+import com.recipe.yorijori.data.dto.recipe.response.UserSimpleResponseDto;
 import com.recipe.yorijori.data.dto.user.request.UserSignUpDto;
 import com.recipe.yorijori.data.dto.user.response.FollowerResponseDto;
 import com.recipe.yorijori.data.dto.user.response.FollowingResponseDto;
@@ -18,6 +19,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -122,5 +124,17 @@ public class UserService {
         User user = userRepository.findByNickname(nickname)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
         return user.getEmail();
+    }
+
+    public UserSimpleResponseDto getSimpleUserById(Long userId) {
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+
+        return UserSimpleResponseDto.builder()
+                .userId(user.getUserId())
+                .profileImage(user.getProfileImage())
+                .nickname(user.getNickname())
+                .build();
     }
 }

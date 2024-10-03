@@ -1,6 +1,7 @@
 package com.recipe.yorijori.controller;
 
 import com.recipe.yorijori.data.dto.recipe.response.UserRecipeResponseDto;
+import com.recipe.yorijori.data.dto.recipe.response.UserSimpleResponseDto;
 import com.recipe.yorijori.data.dto.user.request.UserSignUpDto;
 import com.recipe.yorijori.data.dto.user.response.UserResponseDto;
 import com.recipe.yorijori.repository.UserRepository;
@@ -33,6 +34,11 @@ public class UserController {
     public ResponseEntity<?> getUser(@PathVariable("userId") Long userId) {
         UserRecipeResponseDto userRecipeResponseDto = userService.getUserById(userId);
         return ResponseEntity.status(HttpStatus.OK).body(userRecipeResponseDto);
+    }
+
+    @GetMapping("/simple/{userId}")
+    public UserSimpleResponseDto getSimpleUser(@PathVariable("userId") Long userId) {
+        return userService.getSimpleUserById(userId);
     }
 
     @GetMapping("/id")
@@ -69,6 +75,5 @@ public class UserController {
 
         return ResponseEntity.ok(userDto);
     }
-
 
 }

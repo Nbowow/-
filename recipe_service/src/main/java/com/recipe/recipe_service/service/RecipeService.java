@@ -1,10 +1,17 @@
 package com.recipe.recipe_service.service;
 
 import com.recipe.recipe_service.data.domain.Recipe;
+import com.recipe.recipe_service.data.domain.RecipeComments;
+import com.recipe.recipe_service.data.domain.RecipeLikes;
+import com.recipe.recipe_service.data.domain.RecipeScraps;
+import com.recipe.recipe_service.data.dto.comment.CommentResponseDto;
 import com.recipe.recipe_service.data.dto.recipe.RecipeDto;
 import com.recipe.recipe_service.data.dto.recipe.request.RecipeRegisterRequestDto;
 import com.recipe.recipe_service.data.dto.recipe.response.ResponseRecipe;
+import com.recipe.recipe_service.repository.RecipeCommentsRepository;
+import com.recipe.recipe_service.repository.RecipeLikesRepository;
 import com.recipe.recipe_service.repository.RecipeRepository;
+import com.recipe.recipe_service.repository.RecipeScrapsRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,6 +21,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -24,6 +32,9 @@ import java.util.Optional;
 public class RecipeService {
 
     private final RecipeRepository recipeRepository;
+    private final RecipeLikesRepository recipeLikesRepository;
+    private final RecipeCommentsRepository recipeCommentsRepository;
+    private final RecipeScrapsRepository recipeScrapsRepository;
 
     public Recipe createRecipe(RecipeRegisterRequestDto createRecipeDto, Long userId) {
 
@@ -122,4 +133,96 @@ public class RecipeService {
                 .toList();
 
     }
+
+    @Transactional
+    public void likeRecipe(Long recipeId, Long userId) {
+        Optional<RecipeLikes> existingLike = recipeLikesRepository.findByRecipeIdAndUserId(recipeId, userId);
+
+        if (existingLike.isPresent()) {
+            RecipeLikes recipeLikes = existingLike.get();
+            if (!recipeLikes.getStatus()) {
+                // status false -> true
+                recipeLikes.setStatus(true);
+                return;
+            }
+        }
+
+        // 새로운 좋아요 등록
+        RecipeLikes newLikes = RecipeLikes.builder()
+                .recipeId(recipeId)
+                .userId(userId)
+                .status(true) // 좋아요 상태로 설정
+                .build();
+
+        recipeLikesRepository.save(newLikes);
+    }
+
+    @Transactional
+    public void unlikeRecipe(Long recipeId, Long userId) {
+        Optional<RecipeLikes> existingLike = recipeLikesRepository.findByRecipeIdAndUserId(recipeId, userId);
+
+        if (existingLike.isPresent()) {
+            RecipeLikes recipeLikes = existingLike.get();
+            if (recipeLikes.getStatus()) {
+                // status true -> false (좋아요 취소)
+                recipeLikes.setStatus(false);
+            }
+        } else {
+            throw new IllegalStateException("좋아요가 등록되지 않은 상태입니다.");
+        }
+    }
+
+    @Transactional
+    public void scrapRecipe(Long recipeId, Long userId) {
+        Optional<RecipeScraps> existingScrap = recipeScrapsRepository.findByRecipeIdAndUserId(recipeId, userId);
+
+        if (existingScrap.isPresent()) {
+            RecipeScraps recipeScraps = existingScrap.get();
+            if (!recipeScraps.getStatus()) {
+                // status false -> true (스크랩 등록)
+                recipeScraps.setStatus(true);
+            }
+        } else {
+            // 새로운 스크랩 등록
+            RecipeScraps newScrap = RecipeScraps.builder()
+                    .recipeId(recipeId)
+                    .userId(userId)
+                    .status(true)
+                    .build();
+            recipeScrapsRepository.save(newScrap);
+        }
+    }
+
+    @Transactional
+    public void unscrapRecipe(Long recipeId, Long userId) {
+        Optional<RecipeScraps> existingScrap = recipeScrapsRepository.findByRecipeIdAndUserId(recipeId, userId);
+
+        if (existingScrap.isPresent()) {
+            RecipeScraps recipeScraps = existingScrap.get();
+            if (recipeScraps.getStatus()) {
+                // status true -> false (스크랩 취소)
+                recipeScraps.setStatus(false);
+            }
+        } else {
+            throw new IllegalStateException("스크랩이 등록되지 않은 상태입니다.");
+        }
+    }
+
+    @Transactional
+    public void addComment(Long recipeId, Long userId, String content) {
+        RecipeComments newComment = RecipeComments.builder()
+                .recipeId(recipeId)
+                .userId(userId)
+                .commentContent(content)
+                .status(true) // 댓글 등록
+                .build();
+
+        recipeCommentsRepository.save(newComment);
+    }
+
+    public List<RecipeComments> getCommentsByRecipeId(Long recipeId) {
+        // 댓글 조회
+        return recipeCommentsRepository.findByRecipeId(recipeId);
+    }
+    
 }

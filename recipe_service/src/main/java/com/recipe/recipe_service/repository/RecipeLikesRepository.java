@@ -1,0 +1,12 @@
+package com.recipe.recipe_service.repository;
+
+import com.recipe.recipe_service.data.domain.RecipeLikes;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.Optional;
+
+public interface RecipeLikesRepository extends JpaRepository<RecipeLikes, Integer> {
+    // 특정 유저와 레시피에 대해 좋아요가 존재하는지 확인
+    Optional<RecipeLikes> findByRecipeIdAndUserId(Long recipeId, Long userId);
+
+}
