@@ -65,7 +65,7 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(userRecipeRegistlikeResponseDto);
     }
 
-    @GetMapping("/scarp")
+    @GetMapping("/scrap")
     public ResponseEntity<?> getUserRecipeScrap(HttpServletRequest request) {
 
         String accessToken = jwtService.extractAccessToken(request)
