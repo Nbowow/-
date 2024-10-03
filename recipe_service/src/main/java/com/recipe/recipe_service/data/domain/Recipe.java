@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Getter
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "recipes")
@@ -44,6 +45,9 @@ public class Recipe {
 
     @Column(name = "recipe_level")
     private String level;
+
+    @Column(name = "recipe_cooking_tools")
+    private String cookingTools;
 
     @Column(name = "recipe_type")
     private String type;

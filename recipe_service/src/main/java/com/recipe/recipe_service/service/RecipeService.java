@@ -16,12 +16,27 @@ import org.springframework.stereotype.Service;
 public class RecipeService {
 
     private final RecipeRepository recipeRepository;
-    private final ModelMapper modelMapper;
 
-    public Recipe createRecipe(RecipeRegisterRequestDto createRecipeDto) {
+    public Recipe createRecipe(RecipeRegisterRequestDto createRecipeDto, Long userId) {
 
-        // DTO를 Recipe 엔티티로 변환
-        Recipe recipeEntity = modelMapper.map(createRecipeDto, Recipe.class);
+        // Builder 패턴을 사용하여 RecipeRegisterRequestDto 객체 생성
+        Recipe recipeEntity = Recipe.builder()
+                .userId(userId)  // userId를 설정
+                .title(createRecipeDto.getTitle())  // 다른 값들을 그대로 사용
+                .name(createRecipeDto.getName())
+                .intro(createRecipeDto.getIntro())
+                .image(createRecipeDto.getImage())
+                .likeCount(0L)
+                .viewCount(0L)
+                .servings(createRecipeDto.getServings())
+                .time(createRecipeDto.getTime())
+                .level(createRecipeDto.getLevel())
+                .type(createRecipeDto.getType())
+                .situation(createRecipeDto.getSituation())
+                .ingredients(createRecipeDto.getIngredients())
+                .method(createRecipeDto.getMethod())
+                .userStatus(true)  // 필요 시 기본값을 넣거나 그대로 사용
+                .build();
 
         // 변환된 엔티티를 저장
         return recipeRepository.save(recipeEntity);

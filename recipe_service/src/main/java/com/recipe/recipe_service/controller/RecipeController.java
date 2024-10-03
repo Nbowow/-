@@ -1,11 +1,14 @@
 package com.recipe.recipe_service.controller;
 
+import com.recipe.recipe_service.client.UserServiceClient;
 import com.recipe.recipe_service.data.domain.Recipe;
 import com.recipe.recipe_service.data.dto.recipe.RecipeDto;
 import com.recipe.recipe_service.data.dto.recipe.request.RecipeRegisterRequestDto;
 import com.recipe.recipe_service.data.dto.recipe.response.ResponseRecipe;
 import com.recipe.recipe_service.repository.RecipeRepository;
 import com.recipe.recipe_service.service.RecipeService;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -27,8 +30,7 @@ public class RecipeController {
 
     private final RecipeService recipeService;
     private final Environment env;
-    private final ModelMapper modelMapper;
-    private final RecipeRepository recipeRepository;
+    private final UserServiceClient userServiceClient;
 
     @GetMapping("/health_check")
     public String status() {
@@ -37,12 +39,12 @@ public class RecipeController {
 
     @PostMapping("/create")
     public ResponseEntity<Recipe> createRecipe(
-            @RequestHeader("Authorization")String authorization,
-            @RequestBody RecipeRegisterRequestDto request) {
+            HttpServletRequest request,
+            @RequestBody RecipeRegisterRequestDto requestDto) {
 
-        RecipeRegisterRequestDto createRecipeDto = modelMapper.map(request, RecipeRegisterRequestDto.class);
+        Long userId = userServiceClient.getUserId(request);
 
-        Recipe responseRecipe = recipeService.createRecipe(createRecipeDto);
+        Recipe responseRecipe = recipeService.createRecipe(requestDto, userId);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(responseRecipe);
     }
