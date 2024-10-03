@@ -58,7 +58,8 @@ public class RecipeController {
             @RequestParam("pageNumber") int pageNumber) {
 
         // 서비스에서 페이징 처리된 레시피 목록 가져오기
-        List<ResponseRecipe> recipeList = recipeService.getAllRecipes(pageNumber, pageSize);
+        // pageNumber가 1부터 시작한다고 가정하고 0부터 시작하도록 맞춤
+        List<ResponseRecipe> recipeList = recipeService.getAllRecipes(pageNumber - 1, pageSize);
 
         return ResponseEntity.status(HttpStatus.OK).body(recipeList);
 
