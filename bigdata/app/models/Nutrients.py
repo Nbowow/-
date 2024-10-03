@@ -5,7 +5,7 @@ from app.database.base import Base
 
 
 class Nutrients(Base):
-    __tablename__ = "Nutrients"
+    __tablename__ = "nutrients"
 
     nutrient_id = Column(BigInteger, primary_key=True, nullable=False, autoincrement=True, index=True)
     capacity = Column(String(100), nullable=False)
@@ -19,5 +19,5 @@ class Nutrients(Base):
     saturated = Column(Double)
     transfat = Column(Double)
 
-    material_id = Column(BigInteger, ForeignKey("Materials.material_id"), nullable=False)
+    material_id = Column(BigInteger, ForeignKey("materials.material_id"), nullable=False)
     material = relationship("Materials", back_populates="nutrient")

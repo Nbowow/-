@@ -1,27 +1,33 @@
 import difflib
-import os
+import json
+import re
+from collections.abc import Sequence
 from datetime import datetime
 
-from dotenv import load_dotenv
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, declarative_base
+import pytz
 from hdfs import InsecureClient
 from pyspark.sql import SparkSession
-from pyspark.sql.functions import regexp_replace, col, when, regexp_extract
-from sqlalchemy import MetaData, Column, BigInteger, String, Boolean, select, Integer, DateTime, ForeignKey
+from pyspark.sql.functions import regexp_replace, col, when, regexp_extract, udf
+from pyspark.sql.types import StringType
+from sqlalchemy import Column, BigInteger, String, Boolean, select, Integer, DateTime, ForeignKey
+from sqlalchemy import create_engine
 from sqlalchemy.orm import relationship
+from sqlalchemy.orm import sessionmaker, declarative_base
 
 Base = declarative_base()
 
-load_dotenv()
+# load_dotenv()
 
-DATABASE_URL = os.getenv("DATABASE_URL")
+# KST 타임존 설정
+kst = pytz.timezone('Asia/Seoul')
+
+DATABASE_URL = "mysql+pymysql://eejuuung:eejuuung@mysql:3306/yorijori?charset=utf8mb4"
 
 
 class engineconnection:
 
     def __init__(self):
-        self.engine = create_engine(DATABASE_URL, echo=True, pool_recycle=500)
+        self.engine = create_engine(DATABASE_URL, echo=False, pool_recycle=500)
 
     def sessionmaker(self):
         Session = sessionmaker(bind=self.engine)
@@ -179,13 +185,35 @@ allergy_mapping = {
 
 # Spark 세션 생성
 spark = SparkSession.builder \
-    .appName("Filter Squash") \
+    .appName("Filter Recipe Squash") \
     .config("spark.sql.shuffle.partitions", "50") \
     .getOrCreate()
 
 
+class Users(Base):
+    __tablename__ = "users"
+
+    user_id = Column(BigInteger, primary_key=True, autoincrement=True, index=True, nullable=False)
+    user_email = Column(String(255))
+    user_nickname = Column(String(255))
+    user_image = Column(String(255))
+    user_name = Column(String(255))
+    user_score = Column(BigInteger, default=0, nullable=False)
+    user_social_id = Column(String(30))
+    user_social_type = Column(String(30))
+    user_password = Column(String(30))
+    user_refresh_token = Column(String(100))
+    user_role = Column(String(30))
+    user_status = Column(Boolean, default=True, nullable=False)
+    created_date = Column(DateTime, default=datetime.now(kst), nullable=False)
+    modified_date = Column(DateTime, default=datetime.now(kst), onupdate=datetime.now(kst), nullable=False)
+
+    # 관계설정
+    recipe = relationship("Recipes", back_populates="user")
+
+
 class Materials(Base):
-    __tablename__ = "Materials"
+    __tablename__ = "materials"
 
     material_id = Column(BigInteger, primary_key=True, index=True, autoincrement=True, nullable=False)
     material_name = Column(String(20), nullable=False)
@@ -193,20 +221,25 @@ class Materials(Base):
     material_img = Column(String(512))
     material_allergy_num = Column(String(20))
 
+    recipe_materials = relationship("RecipeMaterials", back_populates="material")
+
 
 class RecipeMaterials(Base):
-    __tablename__ = "RecipeMaterials"
+    __tablename__ = "recipematerials"
 
-    recipe_material_id = Column(BigInteger, primary_key=True, nullable=False, index=True)
+    recipe_material_id = Column(BigInteger, primary_key=True, nullable=False, index=True, autoincrement=True)
     recipe_material_amount = Column(String(100))
     recipe_material_unit = Column(String(100))
 
-    recipe_id = Column(BigInteger, ForeignKey("Recipes.recipe_id"), nullable=False)
+    recipe_id = Column(BigInteger, ForeignKey("recipes.recipe_id"), nullable=False)
     recipe = relationship("Recipes", back_populates="recipe_materials")
+
+    material_id = Column(BigInteger, ForeignKey("materials.material_id"), nullable=True)
+    material = relationship("Materials", back_populates="recipe_materials")
 
 
 class Recipes(Base):
-    __tablename__ = "Recipes"
+    __tablename__ = "recipes"
 
     recipe_id = Column(BigInteger, primary_key=True, index=True, autoincrement=True, nullable=False)
     recipe_title = Column(String(255))
@@ -222,30 +255,29 @@ class Recipes(Base):
     recipe_situation = Column(String(20))
     recipe_ingredients = Column(String(20))
     recipe_method = Column(String(20))
-    created_date = Column(DateTime, default=datetime.utcnow, nullable=False)
-    modified_date = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
+    created_date = Column(DateTime, default=datetime.now(kst), nullable=False)
+    modified_date = Column(DateTime, default=datetime.now(kst), onupdate=datetime.now(kst), nullable=False)
     user_status = Column(Boolean, default=True, nullable=False)
 
-    user_id = Column(BigInteger, ForeignKey("Users.user_id"), nullable=False)
+    user_id = Column(BigInteger, ForeignKey("users.user_id"), nullable=False)
     user = relationship("Users", back_populates="recipe")
 
     recipe_orders = relationship("RecipeOrders", back_populates="recipe")
 
     recipe_materials = relationship("RecipeMaterials", back_populates="recipe")
 
-    recipe_nutrient = relationship("RecipeNutrient", back_populates="recipe")
+    # recipe_nutrient = relationship("RecipeNutrient", back_populates="recipe")
 
 
 class RecipeOrders(Base):
-    __tablename__ = "RecipeOrders"
+    __tablename__ = "recipeorders"
 
     recipe_order_id = Column(BigInteger, primary_key=True, index=True, autoincrement=True, nullable=False)
     recipe_order_content = Column(String(512), nullable=False)
     recipe_order_num = Column(Integer, nullable=False)
     recipe_order_img = Column(String(512))
 
-    recipe_id = Column(BigInteger, ForeignKey("Recipes.recipe_id"), nullable=False)
-
+    recipe_id = Column(BigInteger, ForeignKey("recipes.recipe_id"), nullable=False)
     recipe = relationship("Recipes", back_populates="recipe_orders")
 
 
@@ -276,36 +308,31 @@ def process_recipe_data(file_path):
         encoding='utf-8'
     )
 
+    # Spark UDF로 각 매핑 함수 등록
+    map_category_udf = udf(lambda x: map_category(x, category_mapping), StringType())
+    map_situation_udf = udf(lambda x: map_category(x, situation_mapping), StringType())
+    map_ingredient_udf = udf(lambda x: map_category(x, ingredient_mapping), StringType())
+    map_method_udf = udf(lambda x: map_category(x, method_mapping), StringType())
+
     print("3. hdfs read.csv 성공")
     # 레시피이름, 글 제목, 조리순서가 null이 아닌 행만 필터링
-    df = df.filter(df['레시피이름'].isNotNull() & df['글 제목'].isNotNull() & df['조리순서'].isNotNull())
+    df = df.filter(df['레시피이름'].isNotNull() & df['글 제목'].isNotNull() & df['조리순서'].isNotNull() &
+                   (df['조리순서'] != '[]'))
 
     # 조회수 데이터에서 콤마를 제거하고 정수형으로 변환
     df = df.withColumn("조회수", regexp_replace(col("조회수"), ",", "").cast("int"))
 
-    # 종류별 카테고리를 코드로 변환 (기본값: '기타')
-    df = df.withColumn("종류별",
-                       when(col("종류별").isin(list(category_mapping.keys())),
-                            col("종류별").map(category_mapping))
-                       .otherwise("B_0018"))
+    # 종류별 카테고리를 코드로 변환
+    df = df.withColumn("종류별", map_category_udf(col("종류별")))
 
-    # 상황별 카테고리를 코드로 변환 (기본값: '기타')
-    df = df.withColumn("상황별",
-                       when(col("상황별").isin(list(situation_mapping.keys())),
-                            col("상황별").map(situation_mapping))
-                       .otherwise("C_0015"))
+    # 상황별 카테고리를 코드로 변환
+    df = df.withColumn("상황별", map_situation_udf(col("상황별")))
 
-    # 재료별 카테고리를 코드로 변환 (기본값: '기타')
-    df = df.withColumn("재료별",
-                       when(col("재료별").isin(list(ingredient_mapping.keys())),
-                            col("재료별").map(ingredient_mapping))
-                       .otherwise("D_0017"))
+    # 재료별 카테고리를 코드로 변환
+    df = df.withColumn("재료별", map_ingredient_udf(col("재료별")))
 
-    # 방법별 카테고리를 코드로 변환 (기본값: '기타')
-    df = df.withColumn("방법별",
-                       when(col("방법별").isin(list(method_mapping.keys())),
-                            col("방법별").map(method_mapping))
-                       .otherwise("E_0015"))
+    # 방법별 카테고리를 코드로 변환
+    df = df.withColumn("방법별", map_method_udf(col("방법별")))
 
     # 조리시간
     df = df.withColumn(
@@ -320,23 +347,10 @@ def process_recipe_data(file_path):
     # 인분 데이터를 숫자만 추출하고 None 또는 비어 있으면 1로 설정
     df = df.withColumn("인분", when(col("인분").isNull() | (col("인분") == ""), 1)
                        .otherwise(regexp_extract(col("인분"), r'(\d+)', 1).cast("int")))
-    print("4. df 정제")
 
-    # 필요한 컬럼만 선택하고 이름 변경
-    selected_columns = df.select(
-        col("index").alias("recipe_id"),
-        col("글 제목").alias("recipe_title"),
-        col("레시피이름").alias("recipe_name"),
-        col("소개글").alias("recipe_intro"),
-        col("조회수").alias("recipe_view_count"),
-        col("조리시간").alias("recipe_time"),
-        col("난이도").alias("recipe_level"),
-        col("인분").alias("recipe_servings"),
-        col("종류별").alias("recipe_type"),
-        col("상황별").alias("recipe_situation"),
-        col("재료별").alias("recipe_ingredients"),
-        col("방법별").alias("recipe_method")
-    )
+    print("4. 유저클래스 먼저 넣기 아이디는 모두의 레시피")
+    save_user_to_db()
+
     print("5. 재료, 조리순서 db 추가")
     # 재료, 조리순서 컬럼 db데이터 추가
     for row in df.collect():
@@ -348,8 +362,56 @@ def process_recipe_data(file_path):
 
         # 레시피 단계별 정보 저장
         print("8. 레시피 주문 저장")
-        recipe_orders = eval(row['recipe_orders'])  # JSON 형태의 recipe_orders를 파이썬 리스트로 변환
-        process_recipe_orders(recipe_orders, recipe_id)
+        try:
+            # JSON 형태의 문자열을 파이썬 리스트로 변환
+            recipe_orders = json.loads(row['조리순서'].replace("'", '"'))
+            process_recipe_orders(recipe_orders, recipe_id)
+        except json.JSONDecodeError as e:
+            print(f"조리순서 데이터를 처리하는 중 오류 발생: {str(e)}")
+
+
+def map_category(value, mapping):
+    return mapping.get(value, "기타")
+
+
+def save_user_to_db():
+    engine = engineconnection()
+    session = engine.sessionmaker()
+
+    # 먼저 user_id=1인 관리자가 존재하는지 확인
+    existing_user = session.query(Users).filter_by(user_id=1).first()
+
+    if existing_user:
+        print("관리자 계정이 이미 존재합니다.")
+    else:
+        # 새 관리자 사용자 생성
+        new_user = Users(
+            user_id=1,
+            user_email="admin@example.com",
+            user_nickname="요리조리",
+            user_image=None,  # 필요에 따라 설정
+            user_name="Admin User",
+            user_score=0,
+            user_social_id=None,  # 필요에 따라 설정
+            user_social_type=None,  # 필요에 따라 설정
+            user_password="securepassword",  # 실제 사용 시 해시된 비밀번호 사용
+            user_refresh_token=None,  # 필요에 따라 설정
+            user_role="admin",
+            user_status=True,
+            created_date=datetime.now(kst),
+            modified_date=datetime.now(kst)
+        )
+
+        # 데이터베이스에 추가
+        session.add(new_user)
+
+        # 변경 사항 커밋
+        session.commit()
+
+        print("새 관리자 사용자가 추가되었습니다.")
+
+    # 세션 닫기
+    session.close()
 
 
 def save_recipe_to_db(row):
@@ -358,28 +420,51 @@ def save_recipe_to_db(row):
 
     # 중복 확인을 위해 기존 레시피 확인 (예: 레시피 이름과 제목을 기준으로 중복 확인)
     existing_recipe = session.query(Recipes).filter(
-        Recipes.recipe_id == row['recipe_id'],
-        Recipes.recipe_name == row['recipe_name'],
-        Recipes.recipe_title == row['recipe_title']
+        Recipes.recipe_id == row['index'],
+        Recipes.recipe_name == row['레시피이름'],
+        Recipes.recipe_title == row['글 제목']
     ).first()
 
     if existing_recipe:
         print(f"이미 존재하는 레시피입니다: {existing_recipe.recipe_id}")
         return existing_recipe.recipe_id  # 중복된 레시피의 ID 반환
 
+    # 'row'를 딕셔너리로 변환
+    row_dict = row.asDict()
+    print(f"레시피 이름: {row_dict['레시피이름']}")
+
+    # recipe_id가 올바른 값인지 확인
+    try:
+        recipe_id_value = int(row_dict['index'])  # recipe_id는 정수형이어야 함
+    except ValueError as e:
+        print(f"recipe_id 변환 오류: {e} - 원래 값: {row_dict['index']}")
+        return None  # 오류 시 None 반환
+
+    # recipe_intro 길이 제한 (예: 500자로 제한)
+    recipe_intro = row_dict['소개글']
+    if recipe_intro is None:  # None 체크
+        recipe_intro = ''  # None인 경우 빈 문자열로 설정
+    elif len(recipe_intro) > 1000:  # 500자로 제한
+        recipe_intro = recipe_intro[:1000] + '...'
+
     new_recipe = Recipes(
-        recipe_id=row['recipe_id'],
-        recipe_title=row['recipe_title'],
-        recipe_name=row['recipe_name'],
-        recipe_intro=row['recipe_intro'],
-        recipe_view_count=row['recipe_view_count'],
-        recipe_time=row['recipe_time'],
-        recipe_level=row['recipe_level'],
-        recipe_servings=row['recipe_servings'],
-        recipe_type=row['recipe_type'],
-        recipe_situation=row['recipe_situation'],
-        recipe_ingredients=row['recipe_ingredients'],
-        recipe_method=row['recipe_method']
+        recipe_id=recipe_id_value,
+        recipe_title=row_dict['글 제목'],
+        recipe_name=row_dict['레시피이름'],
+        recipe_image=row_dict['레시피이미지'],
+        recipe_intro=recipe_intro,
+        recipe_view_count=row_dict['조회수'],
+        recipe_time=row_dict['조리시간'],
+        recipe_level=row_dict['난이도'],
+        recipe_servings=row_dict['인분'],
+        recipe_type=row_dict['종류별'],
+        recipe_situation=row_dict['상황별'],
+        recipe_ingredients=row_dict['재료별'],
+        recipe_method=row_dict['방법별'],
+
+        # row에 없는 값들에 기본값 설정
+        user_status=row_dict.get('user_status', True),  # 사용자 상태 기본값 True
+        user_id=row_dict.get('user_id', 1)  # 기본 사용자 ID 설정 (예: 1번 사용자)
     )
 
     session.add(new_recipe)
@@ -433,45 +518,96 @@ def add_recipe_order(recipe_id, step_number, description, image_url):
 
     session.add(new_recipe_order)
     session.commit()
-    print(f"레시피 ID {recipe_id}의 단계 {step_number} 저장 완료.")
+    # print(f"레시피 ID {recipe_id}의 단계 {step_number} 저장 완료.")
 
 
 def process_recipe_ingredients(ingredients_str, recipe_id):
     """
     재료 문자열을 처리하여 RecipeMaterials 테이블에 각 재료 정보를 저장하는 함수
     """
-    ingredients = ingredients_str.split(',')
-    for item in ingredients:
-        try:
-            material, amount_with_unit = item.split(':')  # 재료명과 양, 단위 분리
-            material = material.strip()  # 재료명
-            amount_with_unit = amount_with_unit.strip()  # 양과 단위
 
-            # 양과 단위를 분리 (숫자와 단위 추출)
-            amount, unit = extract_amount_and_unit(amount_with_unit)
+    if not ingredients_str:  # ingredients_str가 None 또는 빈 문자열인 경우
+        print("재료 문자열이 비어있거나 None입니다.")
+        return
 
-            # 재료 ID 확인 또는 추가
-            material_info = get_material_id(material)
-            material_id = material_info['material_id']
+    try:
+        # 문자열을 튜플 리스트로 변환
+        ingredients_list = parse_ingredients(ingredients_str)
 
-            # RecipeMaterials 테이블에 재료 저장
-            add_recipe_material(recipe_id, material_id, amount, unit)
+        for item in ingredients_list:
+            try:
+                # item이 리스트인지 확인
+                if isinstance(item, tuple) and len(item) == 2:
+                    material, amount_with_unit = item  # 재료명과 양 분리
+                else:
+                    print(f"유효하지 않은 재료 형식: {item}")
+                    continue
 
-        except ValueError:
-            print(f"재료 데이터 분리 중 오류 발생: {item}")
-            continue
+                # 제어 문자 제거 및 공백 제거
+                material = material.replace('\u200b', '').strip()
+                amount_with_unit = amount_with_unit.replace('\u200b', '').strip()
+
+                if not material:
+                    continue
+
+                # amount_with_unit이 빈 문자열인 경우 양과 단위를 추출하지 않음
+                if amount_with_unit:
+                    # 양과 단위를 분리 (숫자와 단위 추출)
+                    amount, unit = extract_amount_and_unit(amount_with_unit)
+                else:
+                    amount, unit = "", ""  # 양과 단위를 None으로 설정
+
+                # 재료 ID 확인 또는 추가
+                material_info = get_material_id(material)
+                material_id = material_info['material_id']
+
+                # RecipeMaterials 테이블에 재료 저장
+                add_recipe_material(recipe_id, material_id, amount, unit)
+
+            except ValueError as e:
+                print(f"재료 데이터 처리 중 오류 발생: {item}, 오류 메시지: {str(e)}")
+                continue
+            except Exception as e:
+                print(f"예기치 못한 오류 발생: {str(e)}")
+                continue
+
+    except Exception as e:
+        print(f"재료 데이터 문자열 처리 중 오류 발생: {str(e)}")
+
+
+def parse_ingredients(ingredients_str):
+    """
+    재료 문자열을 튜플 리스트로 변환하는 함수
+    """
+    # 정규식을 사용하여 재료 데이터를 추출
+    pattern = re.compile(r"\('([^']*)',\s*'([^']*)'\)")
+    matches = pattern.findall(ingredients_str)
+
+    # 튜플 리스트로 변환
+    ingredients_list = []
+    for material, amount in matches:
+        # '생략 가능' 문구 제거
+        material = material.replace('생략 가능', '').strip()
+        amount = amount.replace('생략 가능', '').strip()
+        ingredients_list.append((material, amount))
+
+    return ingredients_list
 
 
 def extract_amount_and_unit(amount_with_unit):
     """
     양과 단위를 분리하는 함수 (예: '600g'에서 '600'과 'g'를 분리)
+    범위 표현과 '/'를 포함한 양을 처리하고 '조금' 같은 경우에 대한 처리를 추가
     """
-    import re
-    match = re.match(r"(\d+)([a-zA-Z]+)", amount_with_unit)
+    # 정규 표현식 수정: 숫자 + 범위 (예: 1.4~1.5), 단위 포함, / 처리
+    match = re.match(r"([\d./~]+)([a-zA-Z]+)", amount_with_unit)
+
     if match:
         return match.group(1), match.group(2)  # 숫자(양)와 단위 반환
+    elif '조금' in amount_with_unit:
+        return '조금', ''  # '조금'인 경우 양으로 처리
     else:
-        return amount_with_unit, ""  # 단위가 없으면 빈 문자열 반환
+        return amount_with_unit, ''  # 단위가 없으면 빈 문자열 반환
 
 
 def add_recipe_material(recipe_id, material_id, amount, unit):
@@ -485,13 +621,13 @@ def add_recipe_material(recipe_id, material_id, amount, unit):
         new_recipe_material = RecipeMaterials(
             recipe_material_amount=amount,
             recipe_material_unit=unit,
-            recipe_id=recipe_id,
-            recipe_material_id=material_id  # 외부 키로 연결
+            recipe_id=recipe_id,  # 외부 키로 연결
+            material_id=material_id
         )
 
         session.add(new_recipe_material)
         session.commit()
-        print(f"레시피 ID {recipe_id}에 재료 ID {material_id} 추가 완료.")
+        # print(f"레시피 ID {recipe_id}에 재료 ID {material_id} 추가 완료.")
 
     except Exception as e:
         session.rollback()  # 오류 발생 시 트랜잭션 롤백
@@ -502,8 +638,25 @@ def add_recipe_material(recipe_id, material_id, amount, unit):
 
 
 # 유사도 계산 함수
-def get_best_match(item_name, reference_names, match_value):
-    match = difflib.get_close_matches(item_name, reference_names, n=1, cutoff=match_value)  # 0.85 이상일 경우 매칭
+def get_best_allergy_match(item_name, reference_names, match_value):
+    # '생략 가능' 문자열 제거
+    cleaned_item_name = item_name.replace('생략 가능', '').strip()
+
+    match = difflib.get_close_matches(cleaned_item_name, reference_names, n=1,
+                                      cutoff=match_value)
+    if match:
+        return match[0]
+    return item_name
+
+
+def get_best_material_match(item_name, reference_names, match_value):
+    # '생략 가능' 문자열 제거
+    cleaned_item_name = item_name.replace('생략 가능', '').strip()
+
+    cleaned_reference_names = [name.replace('생략 가능', '').strip() for name in reference_names]
+
+    match = difflib.get_close_matches(cleaned_item_name, cleaned_reference_names, n=1,
+                                      cutoff=match_value)
     if match:
         return match[0]
     return item_name
@@ -512,59 +665,81 @@ def get_best_match(item_name, reference_names, match_value):
 # 재료가 알레르기 항목에 해당하는지 확인하는 함수
 def get_allergy_num(material_name):
     for allergy_category, items in allergy_mapping.items():
-        best_match = get_best_match(material_name, items, 0.7)
+        best_match = get_best_allergy_match(material_name, items, 0.8)
+
         if best_match != material_name:
             print(f"'{material_name}'이(가) '{best_match}' 항목으로 매칭되었습니다. 알레르기 카테고리: {allergy_category}")
-            return allergy_code_mapping[allergy_category]  # 알레르기 공통 코드 반환
-    return None  # 알레르기 코드가 없는 경우 None 반환
+            allergy_code = allergy_code_mapping.get(allergy_category)
+
+            if allergy_code:
+                return allergy_code  # 알레르기 공통 코드 반환
+            else:
+                print(f"'{allergy_category}'에 대한 알레르기 코드가 존재하지 않습니다.")
+
+    return ""  # 알레르기 코드가 없는 경우 None 반환
 
 
 def get_material_id(material_name):
     # 재료 존재여부 확인하고 테이블 추가
     engine = engineconnection()
     session = engine.sessionmaker()
-    metadata = MetaData()
 
-    # 기존 재료 리스트 추출 (재료 이름 리스트)
-    stmt_reference = select(Materials.material_name)
-    reference_materials = session.execute(stmt_reference).scalars().all()
+    try:
+        print(f"입력된 재료명: '{material_name}'")  # 입력된 재료명 확인
 
-    # 재료명 유사도 계산하여 가장 유사한 이름 반환
-    best_match = get_best_match(material_name, reference_materials, 0.85)
+        # 기존 재료 리스트 추출 (재료 이름 리스트)
+        stmt_reference = select(Materials.material_name)
+        reference_materials: Sequence[str] = session.execute(stmt_reference).scalars().all()  # Sequence로 변경
 
-    # 유사도가 높은 재료가 있는지 확인
-    if best_match != material_name:
-        print(f"'{material_name}'이(가) '{best_match}'으로 매칭되었습니다.")
-        material_name = best_match  # 유사한 값으로 재료명 변경
+        # 참조 재료 리스트가 비어 있는 경우 바로 새로운 재료 추가
+        if not reference_materials:
+            allergy_num = get_allergy_num(material_name)
+            print(f"참조 재료 리스트가 비어 있습니다. 새 재료 추가: '{material_name}', 알레르기 번호: {allergy_num}")  # 추가될 재료 정보 확인
+            new_material = Materials(
+                material_name=material_name,
+                material_allergy_num=allergy_num  # 알레르기 번호 추가
+            )
+            session.add(new_material)
+            session.commit()  # 새로운 재료를 데이터베이스에 추가
+            print(f"'{material_name}' 재료가 추가되었습니다. 새로운 ID: {new_material.material_id}")  # 추가 확인
+            return {"material_id": new_material.material_id, "material_name": new_material.material_name}
 
-    # 재료가 존재하는지 확인하는 쿼리
-    stmt = select(Materials).where(Materials.material_name == material_name)
+        # 재료명 유사도 계산하여 가장 유사한 이름 반환
+        best_match = get_best_material_match(material_name, reference_materials, 0.85)
 
-    # 쿼리 실행
-    material = session.execute(stmt).scalars().first()
+        print(f"최고 매칭 재료명: '{best_match}'")  # 매칭된 재료명 확인
 
-    # 재료가 존재한다면 material_id와 material_name 반환
-    if material:
-        return {"material_id": material.material_id, "material_name": material.material_name}
-    else:
-        # 재료가 없다면 가장 최근 material_id 값을 가져와 +1을 적용
-        last_id_stmt = select(Materials.material_id).order_by(Materials.material_id.desc()).limit(1)
-        last_id = session.execute(last_id_stmt).scalars().first()
+        # 유사도가 높은 재료가 있는지 확인
+        if best_match != material_name:
+            print(f"'{material_name}'이(가) '{best_match}'으로 매칭되었습니다.")
+            material_name = best_match  # 유사한 값으로 재료명 변경
 
-        # 새로운 material_id 설정
-        new_material_id = (last_id + 1) if last_id is not None else 1  # 마지막 id가 없을 경우 1로 시작
+        # 재료가 존재하는지 확인하는 쿼리
+        stmt = select(Materials).where(Materials.material_name == material_name)
 
-        # 알레르기 번호를 확인하고 새로운 재료 추가
-        allergy_num = get_allergy_num(material_name)
-        new_material = Materials(
-            material_id=new_material_id,  # 수동으로 ID 설정
-            material_name=material_name,
-            material_allergy_num=allergy_num  # 알레르기 번호 추가
-        )
-        session.add(new_material)
-        session.commit()
-        print(f"'{material_name}' 재료가 추가되었습니다.")
-        return {"material_id": new_material.material_id, "material_name": new_material.material_name}
+        # 쿼리 실행
+        material = session.execute(stmt).scalars().first()
+
+        if material:
+            print(f"'{material_name}'이(가) 이미 존재합니다. ID: {material.material_id}")
+            return {"material_id": material.material_id, "material_name": material.material_name}
+        else:
+            # 재료가 없다면 새로운 재료 추가 (material_id는 auto increment로 자동 처리)
+            allergy_num = get_allergy_num(material_name)
+            print(f"새 재료 추가: '{material_name}', 알레르기 번호: {allergy_num}")  # 추가될 재료 정보 확인
+            new_material = Materials(
+                material_name=material_name,
+                material_allergy_num=allergy_num  # 알레르기 번호 추가
+            )
+            session.add(new_material)
+            session.commit()  # 새로운 재료를 데이터베이스에 추가
+            print(f"'{material_name}' 재료가 추가되었습니다. 새로운 ID: {new_material.material_id}")  # 추가 확인
+            return {"material_id": new_material.material_id, "material_name": new_material.material_name}
+    except Exception as e:
+        session.rollback()  # 오류 발생 시 트랜잭션 롤백
+        print(f"재료 처리 중 오류 발생: {str(e)}")
+    finally:
+        session.close()
 
 
 if __name__ == "__main__":
