@@ -42,8 +42,7 @@ public class RecipeController {
             @RequestHeader("Authorization") String authorization,
             @RequestBody RecipeRegisterRequestDto requestDto) {
 
-        String accessToken = authorization.split(" ")[1];
-        Long userId = userServiceClient.getUserId(accessToken);
+        Long userId = userServiceClient.getUserId(authorization);
 
         Recipe responseRecipe = recipeService.createRecipe(requestDto, userId);
 

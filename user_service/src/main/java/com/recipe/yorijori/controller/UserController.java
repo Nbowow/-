@@ -36,8 +36,9 @@ public class UserController {
 
 
     @GetMapping("/id")
-    public Long getUserId(String accessToken) {
+    public Long getUserId(@RequestHeader("Authorization") String authorization) {
 
+        String accessToken = authorization.split(" ")[1];
 
         // AccessToken에서 사용자 이메일 추출
         String userEmail = jwtService.extractEmail(accessToken)
