@@ -60,6 +60,7 @@ public class UserService {
 
         // User 객체를 UserDto로 변환하여 반환
         return new UserResponseDto(
+                user.getUserId(),
                 user.getEmail(),
                 user.getNickname(),
                 user.getProfileImage(),
@@ -117,4 +118,9 @@ public class UserService {
         return user.getUserId();
     }
 
+    public String getEmailByNickname(String nickname) {
+        User user = userRepository.findByNickname(nickname)
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+        return user.getEmail();
+    }
 }

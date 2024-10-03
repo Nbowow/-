@@ -10,6 +10,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserResponseDto {
+    private long id;
     private String email;
     private String nickname;
     private String profileImage;

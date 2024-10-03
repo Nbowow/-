@@ -61,5 +61,14 @@ public class UserController {
         return ResponseEntity.ok(userDto);
     }
 
+    @GetMapping("/user/{nickname}")
+    public ResponseEntity<UserResponseDto> getOtherUserInfo(@PathVariable("nickname")String nickname) {
+
+        String userEmail = userService.getEmailByNickname(nickname);
+        UserResponseDto userDto = userService.getUserByEmail(userEmail);
+
+        return ResponseEntity.ok(userDto);
+    }
+
 
 }
