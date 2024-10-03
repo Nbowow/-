@@ -37,7 +37,7 @@ public class SocialController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @DeleteMapping("/unfollow/{partnerId}")
+    @DeleteMapping("/follow/{partnerId}")
     public ResponseEntity<?> unfollow(@RequestHeader("Authorization") String authorization, @PathVariable("partnerId") Long partnerId) {
         Long userId = userServiceClient.getUserId(authorization);
         socialService.unfollowUser(userId, partnerId);
