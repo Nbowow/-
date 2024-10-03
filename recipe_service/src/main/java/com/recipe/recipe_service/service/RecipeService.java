@@ -92,4 +92,34 @@ public class RecipeService {
         return recipeRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("해당 ID에 해당하는 레시피가 존재하지 않습니다."));
     }
+
+    public List<ResponseRecipe> searchRecipe(String keyword) {
+
+        List<Recipe> recipes = recipeRepository.searchByKeyword(keyword);
+
+        // Recipe -> ResponseRecipe로 변환
+        return recipes.stream()
+                .map(recipe -> ResponseRecipe.builder()
+                        .id(recipe.getId())
+                        .title(recipe.getTitle())
+                        .name(recipe.getName())
+                        .intro(recipe.getIntro())
+                        .image(recipe.getImage())
+                        .viewCount(recipe.getViewCount())
+                        .servings(recipe.getServings())
+                        .time(recipe.getTime())
+                        .level(recipe.getLevel())
+                        .cookingTools(recipe.getCookingTools())
+                        .type(recipe.getType())
+                        .situation(recipe.getSituation())
+                        .ingredients(recipe.getIngredients())
+                        .method(recipe.getMethod())
+                        .userId(recipe.getUserId())
+                        .likeCount(recipe.getLikeCount())
+                        .scrapCount(recipe.getScrapCount())
+                        .commentCount(recipe.getCommentCount())
+                        .build())
+                .toList();
+
+    }
 }

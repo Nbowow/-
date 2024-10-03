@@ -75,5 +75,14 @@ public class RecipeController {
         return ResponseEntity.status(HttpStatus.OK).body(recipe);
     }
 
+    // 레시피 검색
+    @GetMapping("/search")
+    public ResponseEntity<List<ResponseRecipe>> searchRecipe(
+            @RequestParam("keyword") String keyword) {
+
+        List<ResponseRecipe> recipeList = recipeService.searchRecipe(keyword);
+
+        return ResponseEntity.status(HttpStatus.OK).body(recipeList);
+    }
 
 }
