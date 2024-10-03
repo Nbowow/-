@@ -15,6 +15,7 @@ const ActionToggleGroup = () => {
             <InteractionToggle
                 type={"heart"}
                 isActive={isLike}
+                size="22px"
                 onClick={() => {
                     setIsLike(!isLike);
                 }}
@@ -27,6 +28,7 @@ const ActionToggleGroup = () => {
             <InteractionToggle
                 type={"bookmark"}
                 isActive={isScrap}
+                size="22px"
                 onClick={() => {
                     setIsScrap(!isScrap);
                 }}
@@ -35,7 +37,7 @@ const ActionToggleGroup = () => {
     };
 
     const CommentIcon = () => {
-        return <InteractionToggle type={"comment"} />;
+        return <InteractionToggle size="22px" type={"comment"} />;
     };
 
     return (
