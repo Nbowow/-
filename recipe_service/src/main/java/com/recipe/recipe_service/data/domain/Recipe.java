@@ -70,12 +70,15 @@ public class Recipe {
     @Column(name = "user_id")
     private Long userId;
 
+    @Builder.Default
     @Column(name = "recipe_like_count")
     private Long likeCount = 0L;
 
+    @Builder.Default
     @Column(name = "recipe_scrap_count")
     private Long scrapCount = 0L;
 
+    @Builder.Default
     @Column(name = "recipe_comment_count")
     private Long commentCount = 0L;
 

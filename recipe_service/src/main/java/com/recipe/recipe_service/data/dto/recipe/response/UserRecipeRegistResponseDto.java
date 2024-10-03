@@ -1,4 +1,4 @@
-package com.recipe.yorijori.data.dto.recipe.response;
+package com.recipe.recipe_service.data.dto.recipe.response;
 
 
 import lombok.AllArgsConstructor;

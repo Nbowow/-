@@ -7,6 +7,7 @@ import com.recipe.recipe_service.data.dto.comment.CommentRegisterRequestDto;
 import com.recipe.recipe_service.data.dto.comment.CommentResponseDto;
 import com.recipe.recipe_service.data.dto.recipe.request.RecipeRegisterRequestDto;
 import com.recipe.recipe_service.data.dto.recipe.response.ResponseRecipe;
+import com.recipe.recipe_service.data.dto.recipe.response.UserRecipeRegistResponseDto;
 import com.recipe.recipe_service.data.dto.user.UserSimpleResponseDto;
 import com.recipe.recipe_service.service.RecipeService;
 import lombok.AllArgsConstructor;
@@ -170,6 +171,13 @@ public class RecipeController {
                 .collect(Collectors.toList());
 
         return ResponseEntity.status(HttpStatus.OK).body(responseComments);
+    }
+
+    // 특정 사용자가 만든 레시피 조회
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<UserRecipeRegistResponseDto>> getUserRecipes(@PathVariable("userId") Long userId) {
+        List<UserRecipeRegistResponseDto> userRecipes = recipeService.getRecipesByUserId(userId);
+        return ResponseEntity.status(HttpStatus.OK).body(userRecipes);
     }
 
 }

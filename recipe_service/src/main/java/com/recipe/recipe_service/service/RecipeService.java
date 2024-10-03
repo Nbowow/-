@@ -8,6 +8,7 @@ import com.recipe.recipe_service.data.dto.comment.CommentResponseDto;
 import com.recipe.recipe_service.data.dto.recipe.RecipeDto;
 import com.recipe.recipe_service.data.dto.recipe.request.RecipeRegisterRequestDto;
 import com.recipe.recipe_service.data.dto.recipe.response.ResponseRecipe;
+import com.recipe.recipe_service.data.dto.recipe.response.UserRecipeRegistResponseDto;
 import com.recipe.recipe_service.repository.RecipeCommentsRepository;
 import com.recipe.recipe_service.repository.RecipeLikesRepository;
 import com.recipe.recipe_service.repository.RecipeRepository;
@@ -25,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -223,6 +225,38 @@ public class RecipeService {
     public List<RecipeComments> getCommentsByRecipeId(Long recipeId) {
         // 댓글 조회
         return recipeCommentsRepository.findByRecipeId(recipeId);
+    }
+
+
+
+
+    // 특정 userId에 해당하는 레시피 조회
+    public List<UserRecipeRegistResponseDto> getRecipesByUserId(Long userId) {
+        List<Recipe> recipes = recipeRepository.findByUserId(userId);
+
+        // Entity를 DTO로 변환
+        return recipes.stream()
+                .map(recipe -> new UserRecipeRegistResponseDto(
+                        recipe.getId(),
+                        recipe.getTitle(),
+                        recipe.getName(),
+                        recipe.getIntro(),
+                        recipe.getImage(),
+                        recipe.getViewCount(),
+                        recipe.getServings(),
+                        recipe.getTime(),
+                        recipe.getLevel(),
+                        recipe.getCookingTools(),
+                        recipe.getType(),
+                        recipe.getSituation(),
+                        recipe.getIngredients(),
+                        recipe.getMethod(),
+                        recipe.getUserId(),
+                        recipe.getLikeCount(),
+                        recipe.getScrapCount(),
+                        recipe.getCommentCount()
+                ))
+                .collect(Collectors.toList());
     }
     
 }

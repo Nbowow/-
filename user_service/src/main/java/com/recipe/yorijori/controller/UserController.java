@@ -1,5 +1,7 @@
 package com.recipe.yorijori.controller;
 
+import com.recipe.yorijori.client.RecipeServiceClient;
+import com.recipe.yorijori.data.dto.recipe.response.UserRecipeRegistResponseDto;
 import com.recipe.yorijori.data.dto.recipe.response.UserRecipeResponseDto;
 import com.recipe.yorijori.data.dto.recipe.response.UserSimpleResponseDto;
 import com.recipe.yorijori.data.dto.user.request.UserModifyRequestDto;
@@ -15,6 +17,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/users")
@@ -23,7 +27,7 @@ public class UserController {
 
     private final UserService userService;
     private final JwtService jwtService;
-    private final UserRepository userRepository;
+    private final RecipeServiceClient recipeServiceClient;
 
     @PostMapping("/sign-up")
     public String signUp(@RequestBody UserSignUpDto userSignUpDto) throws Exception {
@@ -42,9 +46,9 @@ public class UserController {
 
         Long userId = userService.getUserIdByEmail(userEmail);
 
-        UserRecipeResponseDto userRecipeResponseDto = userService.getUserById(userId);
+        List<UserRecipeRegistResponseDto> userRecipeRegistResponseDto = recipeServiceClient.getUserRecipes(userId);
 
-        return ResponseEntity.status(HttpStatus.OK).body(userRecipeResponseDto);
+        return ResponseEntity.status(HttpStatus.OK).body(userRecipeRegistResponseDto);
     }
 
     @GetMapping("/{userId}")
