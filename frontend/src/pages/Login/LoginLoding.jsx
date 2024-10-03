@@ -1,5 +1,5 @@
 import * as S from "./Login.styled";
-import useAuthStore from "../../store/userStore";
+import { useAuthStore } from "../../store/userStore";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";

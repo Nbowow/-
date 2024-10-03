@@ -3,17 +3,14 @@ import UserProfile from "../../components/UserProfile/UserProfile";
 import UserProfileLevel from "../../components/UserProfile/UserProfileLevel/UserProfileLevel";
 import Tab from "../../components/Tab/Tab";
 import RecipeCardList from "../../components/CardList/RecipeCardList";
+import { useUserStore } from "../../store/userStore";
+import useUser from "../../hooks/useUser";
 
 const MyPage = () => {
-    const member = {
-        nickname: "듀오링고",
-        profileImage:
-            "https://blog.kakaocdn.net/dn/Vu9AF/btsI0dWR1sR/Lapf73QjpozmkzZv1a5aF0/img.jpg",
-        score: 0,
-        summary: "영어로 살려달라고 빌어보세요.",
-        followers: [],
-        following: [],
-    };
+    const { isLoading } = useUser();
+    const user = useUserStore((state) => state.user);
+
+    if (isLoading) return <div></div>;
 
     //TODO : 테스트용 데이터
     const recipes = [
@@ -226,8 +223,8 @@ const MyPage = () => {
     return (
         <S.MyPage>
             <div>
-                <UserProfile showInfo={true} member={member} />
-                <UserProfileLevel score={member.score} />
+                <UserProfile showInfo={true} member={user} />
+                <UserProfileLevel score={user.score} />
             </div>
             <Tab tabs={tabs} />
         </S.MyPage>

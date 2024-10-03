@@ -1,8 +1,8 @@
 import axios from "axios";
-import useAuthStore from "../store/userStore";
+import { useAuthStore } from "../store/userStore";
 
 const axiosInstance = axios.create({
-    baseURL: "https://j11c206.p.ssafy.io/api/v1",
+    baseURL: import.meta.env.VITE_API_BASE_URL,
 });
 
 axiosInstance.interceptors.request.use(
@@ -12,7 +12,6 @@ axiosInstance.interceptors.request.use(
         if (accessToken) {
             config.headers.Authorization = `Bearer ${accessToken}`;
         }
-
         return config;
     },
     (error) => {

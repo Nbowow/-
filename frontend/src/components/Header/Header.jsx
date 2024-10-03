@@ -1,5 +1,5 @@
 import * as S from "./Header.styled";
-import useAuthStore from "../../store/userStore";
+import { useAuthStore } from "../../store/userStore";
 import { useNavigate } from "react-router-dom";
 
 const Header = () => {
