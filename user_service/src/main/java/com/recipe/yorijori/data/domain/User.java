@@ -31,6 +31,10 @@ public class User extends BaseTimeEntity{
     @Column(name = "user_image")
     private String profileImage;
 
+    @Builder.Default
+    @Column(name = "user_summary")
+    private String summary="";
+
     @Column(name = "user_name")
     private String name;
 

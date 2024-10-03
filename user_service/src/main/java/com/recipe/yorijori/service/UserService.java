@@ -1,10 +1,13 @@
 package com.recipe.yorijori.service;
 
 import com.recipe.yorijori.client.RecipeServiceClient;
+import com.recipe.yorijori.client.SocialServiceClient;
 import com.recipe.yorijori.data.domain.User;
 import com.recipe.yorijori.data.dto.recipe.response.RecipeResponseDto;
 import com.recipe.yorijori.data.dto.recipe.response.UserRecipeResponseDto;
 import com.recipe.yorijori.data.dto.user.request.UserSignUpDto;
+import com.recipe.yorijori.data.dto.user.response.FollowerResponseDto;
+import com.recipe.yorijori.data.dto.user.response.FollowingResponseDto;
 import com.recipe.yorijori.data.dto.user.response.UserResponseDto;
 import com.recipe.yorijori.data.enums.Role;
 import com.recipe.yorijori.repository.UserRepository;
@@ -24,6 +27,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final RecipeServiceClient recipeServiceClient;
+    private final SocialServiceClient socialServiceClient;
 
     public void signUp(UserSignUpDto userSignUpDto) throws Exception {
 
@@ -57,7 +61,10 @@ public class UserService {
                 user.getEmail(),
                 user.getNickname(),
                 user.getProfileImage(),
-                user.getName()
+                user.getName(),
+                user.getSummary(), // 추가된 회원 한줄 소개
+                getFollowers(user.getNickname()), // 추상 followers 정보
+                getFollowings(user.getNickname()) // 추상 followings 정보
         );
     }
 
@@ -86,4 +93,27 @@ public class UserService {
 
         return userRecipeResponseDto;
     }
+
+    private List<FollowerResponseDto> getFollowers(String nickname) {
+
+        List<FollowerResponseDto> followerResponseDtoList = socialServiceClient.getFollowers(nickname);
+        ModelMapper modelMapper = new ModelMapper();
+
+        return followerResponseDtoList;
+    }
+
+    private List<FollowingResponseDto> getFollowings(String nickname) {
+
+        List<FollowingResponseDto> followingResponseDtoList = socialServiceClient.getFollowings(nickname);
+        ModelMapper modelMapper = new ModelMapper();
+
+        return followingResponseDtoList;
+    }
+
+    public Long getUserIdByEmail(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+        return user.getUserId();
+    }
+
 }

@@ -49,6 +49,22 @@ public class UserController {
         return "jwtTest 요청 성공";
     }
 
+
+    @GetMapping("/id")
+    public Long getUserId(HttpServletRequest request) {
+        // 요청 헤더에서 AccessToken 추출
+        String accessToken = jwtService.extractAccessToken(request)
+                .orElseThrow(() -> new IllegalArgumentException("AccessToken이 존재하지 않습니다."));
+
+        // AccessToken에서 사용자 이메일 추출
+        String userEmail = jwtService.extractEmail(accessToken)
+                .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 AccessToken입니다."));
+
+        // 이메일로 사용자 ID 조회
+        return userService.getUserIdByEmail(userEmail);
+    }
+
+
     @GetMapping("/user")
     public ResponseEntity<UserResponseDto> getUserInfo(HttpServletRequest request) {
         // 요청 헤더에서 AccessToken 추출
