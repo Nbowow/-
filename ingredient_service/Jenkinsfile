@@ -13,7 +13,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git credentialsId: GITLAB_CREDENTIALSID, branch: 'develop', url: 'https://lab.ssafy.com/s11-bigdata-dist-sub1/S11P21C206.git'
+                git credentialsId: GITLAB_CREDENTIALSID, branch: 'release', url: 'https://lab.ssafy.com/s11-bigdata-dist-sub1/S11P21C206.git'
             }
         }
         stage('Notify Start') {
