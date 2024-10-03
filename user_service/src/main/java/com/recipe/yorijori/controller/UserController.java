@@ -31,6 +31,22 @@ public class UserController {
         return "회원가입 성공";
     }
 
+    @GetMapping("/recipe")
+    public ResponseEntity<?> getUserRecipe(HttpServletRequest request) {
+
+        String accessToken = jwtService.extractAccessToken(request)
+                .orElseThrow(() -> new IllegalArgumentException("AccessToken이 존재하지 않습니다."));
+
+        String userEmail = jwtService.extractEmail(accessToken)
+                .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 AccessToken입니다."));
+
+        Long userId = userService.getUserIdByEmail(userEmail);
+
+        UserRecipeResponseDto userRecipeResponseDto = userService.getUserById(userId);
+
+        return ResponseEntity.status(HttpStatus.OK).body(userRecipeResponseDto);
+    }
+
     @GetMapping("/{userId}")
     public ResponseEntity<?> getUser(@PathVariable("userId") Long userId) {
         UserRecipeResponseDto userRecipeResponseDto = userService.getUserById(userId);
