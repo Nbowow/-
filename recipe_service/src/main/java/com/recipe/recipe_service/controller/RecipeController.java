@@ -2,13 +2,13 @@ package com.recipe.recipe_service.controller;
 
 import com.recipe.recipe_service.data.domain.Recipe;
 import com.recipe.recipe_service.data.dto.recipe.RecipeDto;
-import com.recipe.recipe_service.data.dto.recipe.request.RequestRecipe;
+import com.recipe.recipe_service.data.dto.recipe.request.RecipeRegisterRequestDto;
 import com.recipe.recipe_service.data.dto.recipe.response.ResponseRecipe;
 import com.recipe.recipe_service.repository.RecipeRepository;
 import com.recipe.recipe_service.service.RecipeService;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
-import org.modelmapper.convention.MatchingStrategies;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
@@ -22,11 +22,12 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/recipe")
 @AllArgsConstructor
+@Slf4j
 public class RecipeController {
 
-    private static final Logger log = LoggerFactory.getLogger(RecipeController.class);
     private final RecipeService recipeService;
     private final Environment env;
+    private final ModelMapper modelMapper;
     private final RecipeRepository recipeRepository;
 
     @GetMapping("/health_check")
@@ -34,16 +35,16 @@ public class RecipeController {
         return String.format("PORT : %s", env.getProperty("server.port"));
     }
 
-    @PostMapping("/{userId}/recipes")
-    public ResponseEntity<?> createUser(@PathVariable("userId") Long userId, @RequestBody RequestRecipe recipeDetails) {
-        log.info("userId : " + userId + " recipe details : " + recipeDetails);
-        ModelMapper mapper = new ModelMapper();
-        RecipeDto recipeDto = mapper.map(recipeDetails, RecipeDto.class);
-        recipeDto.setUserId(userId);
+    @PostMapping("/create")
+    public ResponseEntity<Recipe> createRecipe(
+            @RequestHeader("Authorization")String authorization,
+            @RequestBody RecipeRegisterRequestDto request) {
 
-        Recipe recipe = recipeService.createRecipe(recipeDto);
+        RecipeRegisterRequestDto createRecipeDto = modelMapper.map(request, RecipeRegisterRequestDto.class);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(recipe);
+        Recipe responseRecipe = recipeService.createRecipe(createRecipeDto);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(responseRecipe);
     }
 
     @GetMapping("/{userId}/recipes")
