@@ -19,12 +19,12 @@
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`user_id`, `user_email`, `user_nickname`, `user_image`, `user_summary`, `user_name`, `user_score`, `user_social_id`, `user_social_type`, `user_password`, `user_refresh_token`, `user_role`, `user_status`, `created_date`, `modified_date`) 
+INSERT INTO `users` (`user_id`, `user_email`, `user_nickname`, `user_image`, `user_summary`, `user_name`, `user_score`, `user_social_id`, `user_social_type`, `user_password`, `user_refresh_token`, `user_role`, `user_status`, `created_date`, `last_modified_date`) 
 VALUES 
 (2, 'jane.smith@example.com', 'janey', 'profile2.jpg', 'Loves baking', 'Jane Smith', 150, NULL, NULL, 'password456', NULL, 'USER', TRUE, NOW(), NOW()),
 (3, 'alice.jones@example.com', 'alice', 'profile3.jpg', 'Recipe creator', 'Alice Jones', 200, NULL, NULL, 'password789', NULL, 'USER', TRUE, NOW(), NOW()),
 (4, 'bob.brown@example.com', 'bobby', 'profile4.jpg', 'Food critic', 'Bob Brown', 80, NULL, NULL, 'password101', NULL, 'USER', TRUE, NOW(), NOW()),
-(5, 'charlie.white@example.com', 'charlie', 'profile5.jpg', 'Vegan recipes lover', 'Charlie White', 120, NULL, NULL, 'password202', NULL, 'USER', TRUE, NOW(), NOW());
+(5, 'charlie.white@example.com', 'charlie', 'profile5.jpg', 'Vegan recipes lover', 'Charlie White', 120, NULL, NULL, 'password202', NULL, 'USER', TRUE, NOW(), NOW()),
 (6, 'emma.davis@example.com', 'emma', 'profile6.jpg', 'Loves vegetarian recipes', 'Emma Davis', 180, NULL, NULL, 'password303', NULL, 'USER', TRUE, NOW(), NOW()),
 (7, 'michael.jordan@example.com', 'mjordan', 'profile7.jpg', 'Grill master', 'Michael Jordan', 250, NULL, NULL, 'password404', NULL, 'USER', TRUE, NOW(), NOW()),
 (8, 'sarah.connor@example.com', 'sarah', 'profile8.jpg', 'Food blogger', 'Sarah Connor', 210, NULL, NULL, 'password505', NULL, 'USER', TRUE, NOW(), NOW()),

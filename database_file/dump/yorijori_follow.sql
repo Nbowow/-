@@ -24,7 +24,7 @@ VALUES
 (2, TRUE, TRUE, 2, 3),  -- janey follows alice
 (3, TRUE, TRUE, 3, 1),  -- alice follows johnny
 (4, TRUE, TRUE, 4, 5),  -- bobby follows charlie
-(5, TRUE, TRUE, 5, 1);  -- charlie follows johnny
+(5, TRUE, TRUE, 5, 1),  -- charlie follows johnny
 (6, TRUE, TRUE, 6, 7),   -- emma follows mjordan
 (7, TRUE, TRUE, 7, 8),   -- mjordan follows sarah
 (8, TRUE, TRUE, 8, 9),   -- sarah follows david
