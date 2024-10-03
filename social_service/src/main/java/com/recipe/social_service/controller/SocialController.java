@@ -1,11 +1,15 @@
 package com.recipe.social_service.controller;
 
-import com.recipe.social_service.data.dto.user.UserResponseDto;
+import com.recipe.social_service.data.dto.user.response.FollowerResponseDto;
+import com.recipe.social_service.data.dto.user.response.FollowingResponseDto;
+import com.recipe.social_service.data.dto.user.response.UserResponseDto;
 import com.recipe.social_service.service.SocialService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -25,5 +29,15 @@ public class SocialController {
         UserResponseDto userResponseDto = socialService.findUserByUserNickname(nickname);
 
         return ResponseEntity.status(HttpStatus.OK).body(userResponseDto);
+    }
+
+    @GetMapping("/api/v1/social/{nickname}/follower")
+    public List<FollowerResponseDto> getFollowers(@PathVariable String nickname){
+        return List.of();
+    }
+
+    @GetMapping("/api/v1/social/{nickname}/following")
+    List<FollowingResponseDto> getFollowings(@PathVariable String nickname){
+        return List.of();
     }
 }

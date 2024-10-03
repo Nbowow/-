@@ -34,27 +34,10 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(userRecipeResponseDto);
     }
 
-    @GetMapping("/{nickname}/test")
-    public UserRecipeResponseDto getUserByNickname(@PathVariable String nickname) {
-        log.info("nickname: " + nickname);
-        UserRecipeResponseDto userRecipeResponseDto = userService.getUserByNickname(nickname);
-
-        log.info("userRecipeResponseDto: " + userRecipeResponseDto.getEmail());
-        return userRecipeResponseDto;
-    }
-
-
-    @GetMapping("/jwt-test")
-    public String jwtTest() {
-        return "jwtTest 요청 성공";
-    }
-
 
     @GetMapping("/id")
-    public Long getUserId(HttpServletRequest request) {
-        // 요청 헤더에서 AccessToken 추출
-        String accessToken = jwtService.extractAccessToken(request)
-                .orElseThrow(() -> new IllegalArgumentException("AccessToken이 존재하지 않습니다."));
+    public Long getUserId(String accessToken) {
+
 
         // AccessToken에서 사용자 이메일 추출
         String userEmail = jwtService.extractEmail(accessToken)
@@ -80,6 +63,22 @@ public class UserController {
 
         // 사용자 정보 응답
         return ResponseEntity.ok(userDto);
+    }
+
+
+    @GetMapping("/{nickname}/test")
+    public UserRecipeResponseDto getUserByNickname(@PathVariable String nickname) {
+        log.info("nickname: " + nickname);
+        UserRecipeResponseDto userRecipeResponseDto = userService.getUserByNickname(nickname);
+
+        log.info("userRecipeResponseDto: " + userRecipeResponseDto.getEmail());
+        return userRecipeResponseDto;
+    }
+
+
+    @GetMapping("/jwt-test")
+    public String jwtTest() {
+        return "jwtTest 요청 성공";
     }
 
 }

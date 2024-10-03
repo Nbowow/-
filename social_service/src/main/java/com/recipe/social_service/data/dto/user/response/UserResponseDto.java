@@ -1,4 +1,4 @@
-package com.recipe.social_service.data.dto.user;
+package com.recipe.social_service.data.dto.user.response;
 
 import com.recipe.social_service.data.dto.recipe.RecipeResponseDto;
 import lombok.Data;

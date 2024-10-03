@@ -99,7 +99,8 @@ public class UserService {
         List<FollowerResponseDto> followerResponseDtoList = socialServiceClient.getFollowers(nickname);
         ModelMapper modelMapper = new ModelMapper();
 
-        return followerResponseDtoList;
+
+        return List.of();
     }
 
     private List<FollowingResponseDto> getFollowings(String nickname) {
@@ -107,7 +108,7 @@ public class UserService {
         List<FollowingResponseDto> followingResponseDtoList = socialServiceClient.getFollowings(nickname);
         ModelMapper modelMapper = new ModelMapper();
 
-        return followingResponseDtoList;
+        return List.of();
     }
 
     public Long getUserIdByEmail(String email) {

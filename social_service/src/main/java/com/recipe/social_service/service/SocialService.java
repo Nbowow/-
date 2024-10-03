@@ -1,7 +1,7 @@
 package com.recipe.social_service.service;
 
 import com.recipe.social_service.client.UserServiceClient;
-import com.recipe.social_service.data.dto.user.UserResponseDto;
+import com.recipe.social_service.data.dto.user.response.UserResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
