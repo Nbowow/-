@@ -13,6 +13,6 @@ public interface UserServiceClient {
     @GetMapping("/api/v1/users/{nickname}/test")
     UserResponseDto getUser(@PathVariable String nickname);
 
-    @GetMapping("api/v1/users/image/{userId}")
-    UserResponseDto2 getUserImage(@PathVariable Long userId);
+    @GetMapping("/api/v1/users/image/{userId}")
+    UserResponseDto2 getUserImage(@PathVariable("userId") Long userId);
 }
