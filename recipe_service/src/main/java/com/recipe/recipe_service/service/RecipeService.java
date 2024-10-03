@@ -89,7 +89,7 @@ public class RecipeService {
 
     public ResponseRecipe getRecipe(Long id) {
 
-        return recipeRepository.findByRecipeId(id)
+        return recipeRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("해당 ID에 해당하는 레시피가 존재하지 않습니다."));
     }
 }

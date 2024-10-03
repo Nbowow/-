@@ -14,5 +14,5 @@ public interface RecipeRepository extends JpaRepository<Recipe, Integer> {
 
     Page<Recipe> findAll(Pageable pageable);
 
-    Optional<ResponseRecipe> findByRecipeId(Long recipeId);
+    Optional<ResponseRecipe> findById(Long recipeId);
 }
