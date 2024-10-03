@@ -56,6 +56,7 @@ public class UserService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
 
+
         // User 객체를 UserDto로 변환하여 반환
         return new UserResponseDto(
                 user.getEmail(),
@@ -63,8 +64,8 @@ public class UserService {
                 user.getProfileImage(),
                 user.getName(),
                 user.getSummary(), // 추가된 회원 한줄 소개
-                getFollowers(user.getNickname()), // 추상 followers 정보
-                getFollowings(user.getNickname()) // 추상 followings 정보
+                getFollowers(user.getUserId()), // 추상 followers 정보
+                getFollowings(user.getUserId()) // 추상 followings 정보
         );
     }
 
@@ -94,21 +95,13 @@ public class UserService {
         return userRecipeResponseDto;
     }
 
-    private List<FollowerResponseDto> getFollowers(String nickname) {
 
-        List<FollowerResponseDto> followerResponseDtoList = socialServiceClient.getFollowers(nickname);
-        ModelMapper modelMapper = new ModelMapper();
-
-
-        return List.of();
+    public List<FollowerResponseDto> getFollowers(Long userId) {
+        return socialServiceClient.getFollowers(userId);
     }
 
-    private List<FollowingResponseDto> getFollowings(String nickname) {
-
-        List<FollowingResponseDto> followingResponseDtoList = socialServiceClient.getFollowings(nickname);
-        ModelMapper modelMapper = new ModelMapper();
-
-        return List.of();
+    public List<FollowingResponseDto> getFollowings(Long userId) {
+        return socialServiceClient.getFollowings(userId);
     }
 
     public Long getUserIdByEmail(String email) {

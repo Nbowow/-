@@ -1,6 +1,16 @@
 package com.recipe.social_service.repository;
 
+import com.recipe.social_service.data.domain.Follow;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface SocialRepository {
+import java.util.List;
+
+
+public interface SocialRepository extends JpaRepository<Follow, Long> {
+
+    // 팔로워 목록 조회
+    List<Follow> findFollowersByUserId(Long userId);
+
+    // 팔로잉 목록 조회
+    List<Follow> findFollowingsByUserId(Long userId);
 }

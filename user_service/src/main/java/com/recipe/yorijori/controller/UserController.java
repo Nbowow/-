@@ -3,6 +3,8 @@ package com.recipe.yorijori.controller;
 import com.recipe.yorijori.data.dto.recipe.response.UserRecipeResponseDto;
 import com.recipe.yorijori.data.dto.user.request.UserSignUpDto;
 import com.recipe.yorijori.data.dto.user.response.UserResponseDto;
+import com.recipe.yorijori.data.dto.user.response.UserResponseDto2;
+import com.recipe.yorijori.repository.UserRepository;
 import com.recipe.yorijori.service.JwtService;
 import com.recipe.yorijori.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -20,6 +22,7 @@ public class UserController {
 
     private final UserService userService;
     private final JwtService jwtService;
+    private final UserRepository userRepository;
 
     @PostMapping("/sign-up")
     public String signUp(@RequestBody UserSignUpDto userSignUpDto) throws Exception {
@@ -32,6 +35,22 @@ public class UserController {
         UserRecipeResponseDto userRecipeResponseDto = userService.getUserById(userId);
 
         return ResponseEntity.status(HttpStatus.OK).body(userRecipeResponseDto);
+    }
+
+    @GetMapping("/image/{userId}")
+    public ResponseEntity<?> getUserImage(@PathVariable Long userId) {
+        // userId로 사용자 정보 조회
+        UserResponseDto2 userDto = userRepository.findById(userId)
+                .map(user -> new UserResponseDto2(
+                        user.getEmail(),
+                        user.getNickname(),
+                        user.getProfileImage(),
+                        user.getName(),
+                        user.getSummary()))
+                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+
+        // 사용자 정보 응답
+        return ResponseEntity.ok(userDto);
     }
 
 

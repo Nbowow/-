@@ -13,9 +13,9 @@ import java.util.List;
 @FeignClient(name = "social-service")
 public interface SocialServiceClient {
 
-    @GetMapping("/api/v1/social/{nickname}/follower")
-    List<FollowerResponseDto> getFollowers(@PathVariable String nickname);
+    @GetMapping("/api/v1/social/{userId}/follower")
+    List<FollowerResponseDto> getFollowers(@PathVariable Long userId);
 
-    @GetMapping("/api/v1/social/{nickname}/following")
-    List<FollowingResponseDto> getFollowings(@PathVariable String nickname);
+    @GetMapping("/api/v1/social/{userId}/following")
+    List<FollowingResponseDto> getFollowings(@PathVariable Long userId);
 }
