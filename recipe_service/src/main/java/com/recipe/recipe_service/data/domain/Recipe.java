@@ -8,7 +8,6 @@ import java.time.LocalDateTime;
 
 @Entity
 @Getter
-@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "Recipes")
@@ -46,20 +45,43 @@ public class Recipe {
     @Column(name = "recipe_level")
     private String level;
 
+    @Column(name = "recipe_type")
     private String type;
 
+    @Column(name = "recipe_situation")
     private String situation;
 
+    @Column(name = "recipe_ingredients")
     private String ingredients;
 
+    @Column(name = "recipe_method")
     private String method;
 
+    @Column(name = "created_date", updatable = false)
     private LocalDateTime createdDate;
 
+    @Column(name = "modified_date")
     private LocalDateTime modifiedDate;
 
-    @DefaultValue(value = "true")
-    private Boolean userStatus;
+    @Column(name = "user_status")
+    private Boolean userStatus = true;
 
+    @Column(name = "user_id")
+    private Long userId;
 
+    // 데이터가 저장되기 전 자동으로 현재 시간과 기본값 설정
+    @PrePersist
+    protected void onCreate() {
+        this.createdDate = LocalDateTime.now();
+        this.modifiedDate = LocalDateTime.now();
+        if (this.userStatus == null) {
+            this.userStatus = true;
+        }
+    }
+
+    // 데이터가 수정되기 전 자동으로 수정 시간 설정
+    @PreUpdate
+    protected void onUpdate() {
+        this.modifiedDate = LocalDateTime.now();
+    }
 }
