@@ -6,6 +6,7 @@ import com.recipe.yorijori.data.domain.User;
 import com.recipe.yorijori.data.dto.recipe.response.RecipeResponseDto;
 import com.recipe.yorijori.data.dto.recipe.response.UserRecipeResponseDto;
 import com.recipe.yorijori.data.dto.recipe.response.UserSimpleResponseDto;
+import com.recipe.yorijori.data.dto.user.request.UserModifyRequestDto;
 import com.recipe.yorijori.data.dto.user.request.UserSignUpDto;
 import com.recipe.yorijori.data.dto.user.response.FollowerResponseDto;
 import com.recipe.yorijori.data.dto.user.response.FollowingResponseDto;
@@ -136,5 +137,22 @@ public class UserService {
                 .profileImage(user.getProfileImage())
                 .nickname(user.getNickname())
                 .build();
+    }
+
+    public void updateUser(String email, UserModifyRequestDto userModifyRequestDto) {
+        // Retrieve the user by their email
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("해당 사용자를 찾을 수 없습니다."));
+
+        // Update user fields with the information from UserModifyRequestDto
+        if (userModifyRequestDto.getNickname() != null) {
+            user.setNickname(userModifyRequestDto.getNickname());
+        }
+        if (userModifyRequestDto.getSummary() != null) {
+            user.setSummary(userModifyRequestDto.getSummary());
+        }
+
+        // Save the updated user back to the repository
+        userRepository.save(user);
     }
 }

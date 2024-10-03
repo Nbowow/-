@@ -2,6 +2,7 @@ package com.recipe.yorijori.controller;
 
 import com.recipe.yorijori.data.dto.recipe.response.UserRecipeResponseDto;
 import com.recipe.yorijori.data.dto.recipe.response.UserSimpleResponseDto;
+import com.recipe.yorijori.data.dto.user.request.UserModifyRequestDto;
 import com.recipe.yorijori.data.dto.user.request.UserSignUpDto;
 import com.recipe.yorijori.data.dto.user.response.UserResponseDto;
 import com.recipe.yorijori.repository.UserRepository;
@@ -52,6 +53,20 @@ public class UserController {
         return userService.getUserIdByEmail(userEmail);
     }
 
+    @PatchMapping("/user")
+    public ResponseEntity<?> updateUserInfo(HttpServletRequest request, @RequestBody UserModifyRequestDto userModifyRequestDto) {
+
+        String accessToken = jwtService.extractAccessToken(request)
+                .orElseThrow(() -> new IllegalArgumentException("AccessToken이 존재하지 않습니다."));
+
+        String userEmail = jwtService.extractEmail(accessToken)
+                .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 AccessToken입니다."));
+
+
+        userService.updateUser(userEmail, userModifyRequestDto);
+
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 
     @GetMapping("/user")
     public ResponseEntity<UserResponseDto> getUserInfo(HttpServletRequest request) {

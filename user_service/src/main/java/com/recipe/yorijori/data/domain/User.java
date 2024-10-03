@@ -75,4 +75,12 @@ public class User extends BaseTimeEntity{
     public void updateRefreshToken(String updateRefreshToken) {
         this.refreshToken = updateRefreshToken;
     }
+
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
+    }
+
+    public void setSummary(String summary) {
+        this.summary = summary;
+    }
 }
