@@ -26,6 +26,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
 
+import static org.springframework.security.config.Customizer.withDefaults;
 
 
 /**
@@ -49,6 +50,8 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
+                .cors(withDefaults()) // Spring Security에 CORS 설정을 추가
+
                 // CSRF 비활성화
                 .csrf(csrf -> csrf.disable()) // Stateless 애플리케이션에서 CSRF 보호 비활성화
 
