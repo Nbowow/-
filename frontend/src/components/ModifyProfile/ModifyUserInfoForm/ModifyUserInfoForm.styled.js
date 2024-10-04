@@ -8,7 +8,6 @@ export const ModifyUserInfoForm = styled.div`
     margin: 0 auto;
     align-items: center;
 `;
-export const InputFormContainer = styled.div``;
 
 export const InputForm = styled.div`
     display: flex;
@@ -23,9 +22,10 @@ export const Input = styled.input`
     width: 807px;
     outline: none;
     border-radius: 8px;
-    padding: 8px;
+    padding: 14px;
     box-sizing: border-box;
     font-family: "SUITRegular";
+    font-size: ${({ theme }) => theme.fontSize.text};
     border: 1px solid ${({ theme }) => theme.color.gray.light};
 `;
 
@@ -36,13 +36,15 @@ export const TextArea = styled.textarea`
     width: 807px;
     height: 100%;
     box-sizing: border-box;
-    padding: 8px;
+    padding: 14px;
     border-radius: 10px;
     font-family: "SUITRegular";
+    font-size: ${({ theme }) => theme.fontSize.text};
     border: 1px solid ${({ theme }) => theme.color.gray.light};
 `;
 
 export const Label = styled.div`
     flex: 1;
     font-family: "SUITSemiBold";
+    font-size: ${({ theme }) => theme.fontSize.text};
 `;
