@@ -1,6 +1,5 @@
 package com.recipe.recipe_service.data.dto.recipe.request;
 
-import lombok.Builder;
 import lombok.Data;
 
 @Data

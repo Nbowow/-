@@ -130,6 +130,7 @@ public class UserController {
         UserResponseDto userDto = userService.getUserByEmail(userEmail);
 
         return ResponseEntity.ok(userDto);
+
     }
 
     @GetMapping("/user/{nickname}")
