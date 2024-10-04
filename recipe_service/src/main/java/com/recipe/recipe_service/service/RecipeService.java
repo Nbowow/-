@@ -143,8 +143,8 @@ public class RecipeService {
             if (!recipeLikes.getStatus()) {
                 // status false -> true
                 recipeLikes.setStatus(true);
-                return;
             }
+            return;
         }
 
         // 새로운 좋아요 등록
@@ -182,15 +182,17 @@ public class RecipeService {
                 // status false -> true (스크랩 등록)
                 recipeScraps.setStatus(true);
             }
-        } else {
-            // 새로운 스크랩 등록
-            RecipeScraps newScrap = RecipeScraps.builder()
-                    .recipeId(recipeId)
-                    .userId(userId)
-                    .status(true)
-                    .build();
-            recipeScrapsRepository.save(newScrap);
+            return;
         }
+
+        // 새로운 스크랩 등록
+        RecipeScraps newScrap = RecipeScraps.builder()
+                .recipeId(recipeId)
+                .userId(userId)
+                .status(true)
+                .build();
+        recipeScrapsRepository.save(newScrap);
+
     }
 
     @Transactional
