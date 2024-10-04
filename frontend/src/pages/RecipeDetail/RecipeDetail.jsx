@@ -1,5 +1,4 @@
 import { useParams } from "react-router-dom";
-import Header from "../../components/Header/Header";
 import RecipeUser from "../../components/RecipeDetail/RecipeUser/RecipeUser";
 import RecipeHeader from "../../components/RecipeDetail/RecipeHeader/RecipeHeader";
 import RecipeStep from "../../components/RecipeStep/RecipeStep";
@@ -87,7 +86,6 @@ const RecipeDetail = () => {
     const rating = [100, 50, 30, 1, 5];
     return (
         <>
-            <Header />
             <S.Container>
                 <S.InfoSection>
                     <RecipeHeader data={data} />
