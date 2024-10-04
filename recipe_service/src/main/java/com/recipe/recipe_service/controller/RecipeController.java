@@ -35,7 +35,7 @@ public class RecipeController {
     private final IngredientServiceClient ingredientServiceClient;
 
     // 레시피 생성
-    @PostMapping("/create")
+    @PostMapping("")
     public ResponseEntity<Recipe> createRecipe(
             @RequestHeader("Authorization") String authorization,
             @RequestBody RecipeRegisterRequestDto requestDto) {
@@ -52,6 +52,9 @@ public class RecipeController {
 
         return ResponseEntity.status(HttpStatus.CREATED).body(responseRecipe);
     }
+    
+    // 레시피 삭제
+    @DeleteMapping("")
 
     // 레시피 전체 조회
     @GetMapping("")
@@ -152,6 +155,8 @@ public class RecipeController {
 
         return ResponseEntity.status(HttpStatus.OK).build();
     }
+    
+    // 레시피 댓글 삭제
 
     // 레시피 댓글 조회
     @GetMapping("/comment")
