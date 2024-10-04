@@ -4,11 +4,13 @@ import AllergyListForm from "../../components/ModifyProfile/AllergyListForm/Alle
 import * as S from "./ModifyProfile.styled";
 import UserProfileImage from "../../components/UserProfile/UserProfileImage/UserProfileImage";
 import { useUserStore } from "../../store/userStore";
+import { useRef } from "react";
 import useUser from "../../hooks/useUser";
 
 const ModifyProfile = () => {
     const { isLoading } = useUser();
     const user = useUserStore((state) => state.user);
+    const fileInputRef = useRef(null);
 
     if (isLoading) return <div></div>;
 
@@ -23,10 +25,25 @@ const ModifyProfile = () => {
         },
     ];
 
+    const handleProfileClick = () => {
+        fileInputRef.current.click();
+    };
+
+    const handleFileChange = (event) => {
+        // TODO: 백엔드에 사진 업로드
+    };
+
     return (
         <S.ModifyProfile>
-            <S.ProfileImageWrapper>
+            <S.ProfileImageWrapper onClick={handleProfileClick}>
+                <div className="overlay">프로필 사진 수정</div>
                 <UserProfileImage size="180px" imageUrl={user.profileImage} />
+                <S.FileInput
+                    type="file"
+                    accept="image/*"
+                    ref={fileInputRef}
+                    onChange={handleFileChange}
+                />
             </S.ProfileImageWrapper>
             <Tab tabs={tabs} />
         </S.ModifyProfile>
