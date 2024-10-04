@@ -21,8 +21,8 @@ public class IngredientController {
 
 
     @GetMapping("/get-num/{name}")
-    public ResponseEntity<IngredientIdResponseDto> getIngredientsNum(@PathVariable("name") String name) {
-        return ResponseEntity.status(HttpStatus.OK).body(ingredientService.findSimilarName(name));
+    public Long getIngredientsNum(@PathVariable("name") String name) {
+        return ingredientService.findSimilarName(name).getId();
     }
 
 
