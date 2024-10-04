@@ -19,11 +19,14 @@ public class RecipeMaterials {
     @Column(name = "recipe_material_id")
     private long id;
 
-    @Column(name = "recipe_material_amout")
+    @Column(name = "recipe_material_amount")
     private String amount;
 
     @Column(name = "recipe_material_unit")
     private String unit;
+
+    @Column(name = "recipe_subtitle")
+    private String subtitle;
 
     @Column(name = "recipe_id")
     private Long recipeId;

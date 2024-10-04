@@ -65,6 +65,7 @@ public class RecipeService {
                             .materialId(materialDto.getMaterialId()) // 재료 ID 사용
                             .amount(materialDto.getMaterialAmount())
                             .unit(materialDto.getMaterialUnit())
+                            .subtitle(materialDto.getMaterialSubtitle())
                             .build())
                     .collect(Collectors.toList());
             recipeMaterialsRepository.saveAll(materialsList);
