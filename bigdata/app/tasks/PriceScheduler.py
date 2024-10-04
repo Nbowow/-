@@ -79,7 +79,7 @@ async def price_back_data_api_scheduler(get_start_date):
                         "p_product_cls_code": cls_code,  # 상품 구분 코드
                         "p_country_code": "1101",  # 국가 코드
                         "p_regday": start_date.strftime("%Y-%m-%d"),  # 조회 날짜
-                        "p_convert_kg_yn": "Y",  # kg 단위 변환 여부
+                        "p_convert_kg_yn": "N",  # kg 단위 변환 여부
                         "p_item_category_code": category_code,  # 품목 대분류 코드
                         "p_cert_key": cert_key,  # 인증 키
                         "p_cert_id": cert_id,  # 인증 ID

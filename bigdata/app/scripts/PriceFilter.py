@@ -189,52 +189,99 @@ def process_price_data(file_path):
     # item_name이 null이 아닌 행만 필터링
     df = df.filter(df['item_name'].isNotNull())
 
-    # dpr1 데이터 환산 및 날짜 형식 변환
-    day_col = 'dpr1'
-    unit_col = 'unit'
-    date_col = 'day1'
-    print(f"0")
+    # 데이터를 리스트로 변환 (collect 사용)
+    rows = df.collect()
 
-    # 날짜 문자열 정제: 불필요한 괄호 제거
-    df = df.withColumn(date_col, regexp_replace(col(date_col), r'\)', ''))
+    print(f"남아있는 데이터의 수: {len(rows)}")
 
-    # 단위별 가격 변환을 위한 UDF 등록
-    def convert_price_udf(unit, price):
-        if price is None or price in ['-', '']:  # 가격이 None, '-' 또는 빈 문자열일 경우
-            return 0.0  # 0으로 설정
+    for row in rows:
+        # 각 row를 순회하며 필요한 값들을 가져옴
+        item_name = row['item_name']
+        unit = row['unit']
+        price = row['dpr1']
+        date = row['day1']
 
-        price = int(price.replace(',', ''))  # 가격 문자열에서 쉼표를 제거한 후 정수로 변환
+        # 필요시 각 데이터를 정제
+        if unit and price:
+            price = convert_price_udf(unit, price)  # 가격 변환
 
-        # 단위에서 숫자만 추출하고 괄호 및 그 안의 내용을 제거하는 함수
-        def extract_number(unit_string):
-            unit_string = re.sub(r'\(.*?\)', '', unit_string).strip()  # 괄호 제거
-            number = ''.join(filter(str.isdigit, unit_string))  # 숫자만 추출
-            return float(number) if number else 1.0  # 숫자가 없으면 기본값 1.0 반환
+        # 날짜 정제 (괄호 제거 및 변환)
+        if date:
+            # 정규 표현식을 사용하여 괄호 안의 날짜만 추출
+            match = re.search(r'\((\d{2}/\d{2})\)', date)
 
-        unit_value = extract_number(unit)  # 숫자만 추출하여 float로 변환
+            if match:
+                extracted_date = match.group(1)  # "01/01"을 추출
+                date = f"2024/{extracted_date[:2]}/{extracted_date[3:]}"  # "2024/01/01"로 변환
+                print(f"변환된 날짜: {date}")
+            else:
+                print("날짜 형식이 맞지 않습니다.")
 
-        if 'kg' in unit:
-            return int(price / (unit_value * 10))
-        elif 'g' in unit:
-            return int(price / unit_value)
-        elif any(x in unit for x in ['포기', '개', '장', '마리', '구', '손']):
-            return int(price)
-        elif 'L' in unit:
-            return int(price)
-        return int(price)
+        # 정제된 데이터를 DB에 저장
+        db_material_id = get_material_id(item_name)  # DB에서 material_id 가져옴
+        save_dayprice_db(db_material_id, {'day1': date, 'dpr1': price})  # DB에 저장
 
-    convert_price = udf(convert_price_udf)
+    print("데이터 정제가 완료되고 DB에 저장되었습니다.")
 
-    df = df.withColumn(day_col,
-                       when(col(unit_col).isNotNull(), convert_price(col(unit_col), col(day_col))).otherwise(None)) \
-        .withColumn(date_col,
-                    to_timestamp(concat(lit('2024/'), col(date_col).substr(5, 8)),
-                                 'yyyy/MM/dd'))
+    #
+    # # dpr1 데이터 환산 및 날짜 형식 변환
+    # day_col = 'dpr1'
+    # unit_col = 'unit'
+    # date_col = 'day1'
+    # print(f"0")
+    #
+    # # 날짜 문자열 정제: 불필요한 괄호 제거
+    # df = df.withColumn(date_col, regexp_replace(col(date_col), r'\)', ''))
+    #
+    # convert_price = udf(convert_price_udf)
+    #
+    # df = df.withColumn(day_col,
+    #                    when(col(unit_col).isNotNull(), convert_price(col(unit_col), col(day_col))).otherwise(None)) \
+    #     .withColumn(date_col,
+    #                 to_timestamp(concat(lit('2024/'), col(date_col).substr(5, 8)),
+    #                              'yyyy/MM/dd'))
+    #
+    # print(f"6")
+    # for row in df.select('item_name', day_col, date_col).collect():
+    #     db_material_id = get_material_id(row['item_name'])
+    #     save_dayprice_db(db_material_id, row)
 
-    print(f"6")
-    for row in df.select('item_name', day_col, date_col).collect():
-        db_material_id = get_material_id(row['item_name'])
-        save_dayprice_db(db_material_id, row)
+
+# 단위에서 숫자만 추출하고 괄호 및 그 안의 내용을 제거하는 함수
+def extract_number(unit_string):
+    unit_string = re.sub(r'\(.*?\)', '', unit_string).strip()  # 괄호 제거
+    number = ''.join(filter(str.isdigit, unit_string))  # 숫자만 추출
+    return float(number) if number else 1.0  # 숫자가 없으면 기본값 1.0 반환
+
+
+def convert_price_udf(unit, price):
+    if price is None or price in ['-', '']:  # 가격이 None, '-' 또는 빈 문자열일 경우
+        return 0.0  # 0으로 설정
+
+    price = int(price.replace(',', ''))  # 가격 문자열에서 쉼표를 제거한 후 정수로 변환
+
+    unit_value = extract_number(unit)  # 숫자만 추출하여 float로 변환
+
+    if 'kg' in unit:
+        result = int(price / (unit_value * 10))
+        print(f"unit: {unit}, price: {price}, result: {result}")
+        return result
+    elif 'g' in unit:
+        result = int(price / unit_value)
+        print(f"unit: {unit}, price: {price}, result: {result}")
+        return result
+    elif any(x in unit for x in ['포기', '개', '장', '마리', '구', '손']):
+        result = int(price)
+        print(f"unit: {unit}, price: {price}, result: {result}")
+        return result
+    elif 'L' in unit:
+        result = int(price)
+        print(f"unit: {unit}, price: {price}, result: {result}")
+        return result
+    else:
+        result = int(price)
+        print(f"unit: {unit}, price: {price}, result: {result}")
+        return result
 
 
 def save_dayprice_db(get_db_data, row):
