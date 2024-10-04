@@ -8,9 +8,7 @@ const useUser = () => {
     return useQuery({
         queryKey: ["user"],
         queryFn: fetchUser,
-        onSuccess: (data) => {
-            setUser(data);
-        },
+        select: (data) => setUser(data),
         staleTime: 30_000,
     });
 };

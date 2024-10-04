@@ -7,8 +7,9 @@ import { formatNumber } from "../../util/format-number";
 
 const UserProfile = ({ showInfo, member }) => {
     const buttonText = "정보 수정";
+
     const follow = formatNumber(member.followers.length);
-    const following = formatNumber(member.following.length);
+    const following = formatNumber(member.followings.length);
 
     const navigate = useNavigate();
 
@@ -60,10 +61,10 @@ UserProfile.propTypes = {
     showInfo: PropTypes.bool,
     member: PropTypes.shape({
         profileImage: PropTypes.string,
-        nickname: PropTypes.string.isRequired,
+        nickname: PropTypes.string,
         summary: PropTypes.string,
-        followers: PropTypes.arrayOf(FollowerFollowingShape).isRequired,
-        following: PropTypes.arrayOf(FollowerFollowingShape).isRequired,
+        followers: PropTypes.arrayOf(FollowerFollowingShape),
+        followings: PropTypes.arrayOf(FollowerFollowingShape),
     }).isRequired,
 };
 
