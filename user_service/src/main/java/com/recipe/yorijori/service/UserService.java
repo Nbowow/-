@@ -68,6 +68,7 @@ public class UserService {
                 user.getNickname(),
                 user.getProfileImage(),
                 user.getName(),
+                user.getScore(),
                 user.getSummary(), // 추가된 회원 한줄 소개
                 mapFollowersToDto(user.getUserId()), // 추상 followers 정보
                 mapFollowingsToDto(user.getUserId()) // 추상 followings 정보

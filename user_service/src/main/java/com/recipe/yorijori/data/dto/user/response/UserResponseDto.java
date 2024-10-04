@@ -15,6 +15,7 @@ public class UserResponseDto {
     private String nickname;
     private String profileImage;
     private String name;
+    private Long score; // 회원 점수
     private String summary; // 회원 한줄 소개
 
     private List<FollowerResponseDto> followers;
