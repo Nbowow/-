@@ -2,6 +2,8 @@ package com.recipe.recipe_service.data.dto.recipe.request;
 
 import lombok.Data;
 
+import java.util.List;
+
 @Data
 public class RecipeRegisterRequestDto {
     private String title;
@@ -16,5 +18,11 @@ public class RecipeRegisterRequestDto {
     private String situation;
     private String ingredients;
     private String method;
+
+    // 재료 정보
+    private List<RecipeMaterialsRequestDto> recipeMaterials;
+
+    // 요리 순서
+    private List<RecipeOrdersRequestDto> recipeOrders;
 
 }

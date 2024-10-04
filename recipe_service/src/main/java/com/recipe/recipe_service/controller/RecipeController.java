@@ -1,5 +1,6 @@
 package com.recipe.recipe_service.controller;
 
+import com.recipe.recipe_service.client.IngredientServiceClient;
 import com.recipe.recipe_service.client.UserServiceClient;
 import com.recipe.recipe_service.data.domain.Recipe;
 import com.recipe.recipe_service.data.domain.RecipeComments;
@@ -31,6 +32,7 @@ public class RecipeController {
     private final RecipeService recipeService;
     private final Environment env;
     private final UserServiceClient userServiceClient;
+    private final IngredientServiceClient ingredientServiceClient;
 
     @GetMapping("/health_check")
     public String status() {
@@ -44,6 +46,12 @@ public class RecipeController {
             @RequestBody RecipeRegisterRequestDto requestDto) {
 
         Long userId = userServiceClient.getUserId(authorization);
+
+        // 재료의 이름으로 재료 ID 가져오기
+        requestDto.getRecipeMaterials().forEach(materialDto -> {
+            Long ingredientId = ingredientServiceClient.getIngredientIdByName(materialDto.getMaterialName());
+            materialDto.setMaterialId(ingredientId);
+        });
 
         Recipe responseRecipe = recipeService.createRecipe(requestDto, userId);
 
