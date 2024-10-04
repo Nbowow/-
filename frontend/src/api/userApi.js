@@ -9,3 +9,8 @@ export const fetchUserRecipe = async () => {
     const response = await axiosInstance.get("/users/recipe");
     return response.data;
 };
+
+export const updateUser = async (data) => {
+    const response = await axiosInstance.patch("/users/user", data);
+    return response.data;
+};
