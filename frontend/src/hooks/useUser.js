@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { fetchUser } from "../api/userApi";
+import { fetchUser, fetchUserRecipe } from "../api/userApi";
 import { useUserStore } from "../store/userStore";
 
 const useUser = () => {
@@ -12,4 +12,17 @@ const useUser = () => {
         staleTime: 30_000,
     });
 };
+
 export default useUser;
+
+export const useUserReceipe = () => {
+    const setRecipes = useUserStore((state) => state.setRecipes);
+
+    return useQuery({
+        queryKey: ["userRecipes"],
+        queryFn: fetchUserRecipe,
+        select: (data) => setRecipes(data),
+        staleTime: 0,
+        refetchOnMount: true,
+    });
+};
