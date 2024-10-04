@@ -3,9 +3,8 @@ package com.recipe.yorijori.service;
 import com.recipe.yorijori.client.RecipeServiceClient;
 import com.recipe.yorijori.client.SocialServiceClient;
 import com.recipe.yorijori.data.domain.User;
-import com.recipe.yorijori.data.dto.recipe.response.RecipeResponseDto;
-import com.recipe.yorijori.data.dto.recipe.response.UserRecipeResponseDto;
-import com.recipe.yorijori.data.dto.recipe.response.UserSimpleResponseDto;
+import com.recipe.yorijori.data.dto.rank.RankResponseDto;
+import com.recipe.yorijori.data.dto.recipe.response.*;
 import com.recipe.yorijori.data.dto.user.request.UserModifyRequestDto;
 import com.recipe.yorijori.data.dto.user.request.UserSignUpDto;
 import com.recipe.yorijori.data.dto.user.response.FollowerResponseDto;
@@ -16,6 +15,10 @@ import com.recipe.yorijori.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -155,5 +158,33 @@ public class UserService {
 
         // Save the updated user back to the repository
         userRepository.save(user);
+    }
+
+    public List<RankResponseDto> getUserRank(int pageSize, int pageNumber) {
+
+        Pageable pageable = PageRequest.of(pageNumber - 1, pageSize, Sort.by(Sort.Direction.DESC, "score"));
+
+        // 유저 데이터를 점수 순으로 페이징 처리하여 가져오기
+        Page<User> usersPage = userRepository.findAll(pageable);
+
+        // 유저 엔티티를 RankResponseDto로 변환
+        return usersPage.getContent().stream()
+                .map(user -> {
+                    RankResponseDto rankResponseDto = new RankResponseDto();
+                    rankResponseDto.setNickname(user.getNickname());
+                    rankResponseDto.setImage(user.getProfileImage());
+                    rankResponseDto.setScore(user.getScore());
+
+                    // 해당 유저의 등록된 레시피 개수
+                    List<UserRecipeRegistResponseDto> userRecipes = recipeServiceClient.getUserRecipes(user.getUserId());
+                    rankResponseDto.setRecipeCount((long) userRecipes.size());
+
+                    // 해당 유저의 등록된 레시피에 좋아요 누른 갯수
+                    List<UserRecipeLikeResponseDto> userRecipeLikes = recipeServiceClient.getUserLikeRecipes(user.getUserId());
+                    rankResponseDto.setLikeCount((long) userRecipeLikes.size());
+
+                    return rankResponseDto;
+                })
+                .collect(Collectors.toList());
     }
 }

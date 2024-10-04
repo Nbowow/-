@@ -34,11 +34,6 @@ public class RecipeController {
     private final UserServiceClient userServiceClient;
     private final IngredientServiceClient ingredientServiceClient;
 
-    @GetMapping("/health_check")
-    public String status() {
-        return String.format("PORT : %s", env.getProperty("server.port"));
-    }
-
     // 레시피 생성
     @PostMapping("/create")
     public ResponseEntity<Recipe> createRecipe(

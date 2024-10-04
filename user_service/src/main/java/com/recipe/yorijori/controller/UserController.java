@@ -1,6 +1,7 @@
 package com.recipe.yorijori.controller;
 
 import com.recipe.yorijori.client.RecipeServiceClient;
+import com.recipe.yorijori.data.dto.rank.RankResponseDto;
 import com.recipe.yorijori.data.dto.recipe.response.*;
 import com.recipe.yorijori.data.dto.user.request.UserModifyRequestDto;
 import com.recipe.yorijori.data.dto.user.request.UserSignUpDto;
@@ -142,4 +143,14 @@ public class UserController {
         return ResponseEntity.ok(userDto);
     }
 
+    // 유저 랭킹 조회
+    @GetMapping("/rank")
+    public ResponseEntity<?> getUserRank(
+            @RequestParam("pageSize") int pageSize,
+            @RequestParam("pageNumber") int pageNumber) {
+
+        List<RankResponseDto> rankResponseDtoList = userService.getUserRank(pageSize, pageNumber);
+
+        return ResponseEntity.status(HttpStatus.OK).body(rankResponseDtoList);
+    }
 }
