@@ -10,7 +10,8 @@ from urllib3.util.retry import Retry
 
 from app.globals import set_recipe_back_crawling_status
 
-data_dir = "../data/recipe/"
+# data_dir = "../data/recipe/"
+data_dir = "/app/data/recipe/"
 
 by_type = {'밑반찬': '63', '메인반찬': '56', '국/탕': '54', '찌개': '55', '디저트': '60', '면/만두': '53',
            '밥/죽/떡': '52', '퓨전': '61', '양념/잼/소스': '58', '양식': '65', '샐러드': '64', '스프': '68',
@@ -31,6 +32,8 @@ by_method = {'볶음': '6', '끓이기': '1', '부침': '7', '조림': '36', '�
 
 async def recipe_back_data_crawling_scheduler(get_type, get_situation, get_ingredient, get_method, get_page,
                                               recipe_idx):
+    recipe_url = None  # 기본값으로 None 설정
+
     try:
         # 경로가 존재하지 않으면 생성
         os.makedirs(data_dir, exist_ok=True)
@@ -116,6 +119,14 @@ async def recipe_back_data_crawling_scheduler(get_type, get_situation, get_ingre
                                         title = 'None'
                                         print("제목을 찾을 수 없습니다.")
 
+                                    # 이미지
+                                    try:
+                                        dish_image = soup_r.select_one('#main_thumbs')['src']
+                                        print(f"레시피 이미지 URL: {dish_image}")
+                                    except Exception as e:
+                                        print(f"Error occurred: {e}")
+                                        dish_image = 'None'
+
                                     # 레시피 이름
                                     dish_title_element = soup_r.find('b', {
                                         'style': 'color:#74b243;'})  # 'b' 태그에서 특정 style 속성을 가진 요소 찾기
@@ -184,6 +195,8 @@ async def recipe_back_data_crawling_scheduler(get_type, get_situation, get_ingre
                                         print(f"Error occurred: {e}")
                                         intro = None
 
+                                    cooking_order = []
+                                    
                                     # 조리순서
                                     try:
                                         # 단계별 조리법과 이미지를 저장할 리스트
@@ -226,7 +239,7 @@ async def recipe_back_data_crawling_scheduler(get_type, get_situation, get_ingre
                                     # 상세정보 크롤링 끝
                                     list4df.append(
                                         [recipe_idx, type_key, situ_key, ing_key, method_key, title, dish_title,
-                                         views,
+                                         dish_image, views,
                                          cooking_time, difficulty, servings, ingredient, intro, cooking_order])
                                     recipe_idx += 1
 
@@ -234,7 +247,7 @@ async def recipe_back_data_crawling_scheduler(get_type, get_situation, get_ingre
                                 # 데이터프레임 생성 및 저장
                                 recipe_df = pd.DataFrame(list4df,
                                                          columns=['index', '종류별', '상황별', '재료별', '방법별', '글 제목',
-                                                                  '레시피이름',
+                                                                  '레시피이름', '레시피이미지',
                                                                   '조회수', '조리시간', '난이도', '인분', '재료', '소개글', '조리순서'])
 
                                 print(recipe_df)

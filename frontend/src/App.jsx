@@ -9,6 +9,7 @@ import Ranking from "./pages/Ranking";
 import Header from "./components/Header/Header";
 import RecipeDetail from "./pages/RecipeDetail/RecipeDetail";
 import MyPage from "./pages/MyPage/MyPage";
+import Ingredient from "./pages/Ingredient/Ingredient";
 import ModifyProfile from "./pages/ModifyProfile/ModifyProfile";
 import Login from "./pages/Login/Login";
 import LoginLoading from "./pages/Login/LoginLoding";
@@ -33,6 +34,7 @@ function App() {
                             path="/login-loading"
                             element={<LoginLoading />}
                         />
+                        <Route path="/ingredient" element={<Ingredient />} />
                         <Route path="*" element={<Notfound />} />
                     </Routes>
                     <Footer />

@@ -12,10 +12,11 @@ const Header = () => {
         <S.MenuBar>
             <S.LogoImage src={imagePath} onClick={() => navigate("/")} />
             <S.LinkContainer>
-                <S.Link>모든 레시피</S.Link>
-                <S.Link>물가 동향</S.Link>
+                <S.Link onClick={() => navigate("/recipe")}>모든 레시피</S.Link>
+                <S.Link onClick={() => navigate("/ingredient")}>
+                    모든 식재료
+                </S.Link>
                 <S.Link onClick={() => navigate("/post")}>레시피 등록</S.Link>
-
                 {isLoggedIn ? (
                     <>
                         <S.Link onClick={() => navigate("/mypage")}>

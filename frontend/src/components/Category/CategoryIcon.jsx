@@ -61,14 +61,14 @@ const NoodleIcon = () => (
 
 // 아이콘 목록을 정의
 const icons = [
-    { id: 1, component: <AllIcon /> },
-    { id: 2, component: <MeatIcon /> },
-    { id: 3, component: <SeafoodIcon /> },
-    { id: 4, component: <DietIcon /> },
-    { id: 5, component: <VegetableIcon /> },
-    { id: 6, component: <AlcoholIcon /> },
-    { id: 7, component: <SoupIcon /> },
-    { id: 8, component: <NoodleIcon /> },
+    { id: 1, component: <AllIcon />, name: "전체" },
+    { id: 2, component: <MeatIcon />, name: "고기" },
+    { id: 3, component: <SeafoodIcon />, name: "해산물" },
+    { id: 4, component: <DietIcon />, name: "다이어트" },
+    { id: 5, component: <VegetableIcon />, name: "채소" },
+    { id: 6, component: <AlcoholIcon />, name: "안주" },
+    { id: 7, component: <SoupIcon />, name: "국/탕" },
+    { id: 8, component: <NoodleIcon />, name: "면류" },
 ];
 
 const IconSelector = () => {
@@ -81,13 +81,12 @@ const IconSelector = () => {
     return (
         <IconContainer>
             {icons.map((icon) => (
-                <IconButton
-                    key={icon.id}
-                    selected={selectedIcon === icon.id}
-                    onClick={() => handleIconClick(icon.id)}
-                >
-                    {icon.component}
-                </IconButton>
+                <div key={icon.id} onClick={() => handleIconClick(icon.id)}>
+                    <IconButton selected={selectedIcon === icon.id}>
+                        {icon.component}
+                    </IconButton>
+                    <span>{icon.name}</span>
+                </div>
             ))}
         </IconContainer>
     );

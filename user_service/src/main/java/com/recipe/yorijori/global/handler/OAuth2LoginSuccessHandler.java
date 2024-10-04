@@ -30,9 +30,15 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
             CustomOAuth2User oAuth2User = (CustomOAuth2User) authentication.getPrincipal();
             loginSuccess(response, oAuth2User);
 
-            // 로그인 성공 후 리다이렉트 URL 설정
-            String redirectUrl = "/api/v1/home"; // 로그인 성공 후 리다이렉트할 경로
+            // 로그인 성공 후 토큰을 쿼리 파라미터로 리다이렉트 URL에 포함
+            String accessToken = jwtService.createAccessToken(oAuth2User.getEmail());
+            String refreshToken = jwtService.createRefreshToken();
+
+            String redirectUrl = String.format("http://localhost:5173/login-loading?accessToken=%s&refreshToken=%s", accessToken, refreshToken);
             response.sendRedirect(redirectUrl);
+
+            jwtService.sendAccessAndRefreshToken(response, accessToken, refreshToken);
+            jwtService.updateRefreshToken(oAuth2User.getEmail(), refreshToken);
 
         } catch (Exception e) {
             throw e;
@@ -41,12 +47,12 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
     }
 
     private void loginSuccess(HttpServletResponse response, CustomOAuth2User oAuth2User) throws IOException {
-        String accessToken = jwtService.createAccessToken(oAuth2User.getEmail());
-        String refreshToken = jwtService.createRefreshToken();
-        response.addHeader(jwtService.getAccessHeader(), "Bearer " + accessToken);
-        response.addHeader(jwtService.getRefreshHeader(), "Bearer " + refreshToken);
-
-        jwtService.sendAccessAndRefreshToken(response, accessToken, refreshToken);
-        jwtService.updateRefreshToken(oAuth2User.getEmail(), refreshToken);
+//        String accessToken = jwtService.createAccessToken(oAuth2User.getEmail());
+//        String refreshToken = jwtService.createRefreshToken();
+//        response.addHeader(jwtService.getAccessHeader(), "Bearer " + accessToken);
+//        response.addHeader(jwtService.getRefreshHeader(), "Bearer " + refreshToken);
+//
+//        jwtService.sendAccessAndRefreshToken(response, accessToken, refreshToken);
+//        jwtService.updateRefreshToken(oAuth2User.getEmail(), refreshToken);
     }
 }
