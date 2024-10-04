@@ -1,18 +1,12 @@
 package com.recipe.recipe_service.service;
 
-import com.recipe.recipe_service.data.domain.Recipe;
-import com.recipe.recipe_service.data.domain.RecipeComments;
-import com.recipe.recipe_service.data.domain.RecipeLikes;
-import com.recipe.recipe_service.data.domain.RecipeScraps;
+import com.recipe.recipe_service.data.domain.*;
 import com.recipe.recipe_service.data.dto.recipe.request.RecipeRegisterRequestDto;
 import com.recipe.recipe_service.data.dto.recipe.response.ResponseRecipe;
 import com.recipe.recipe_service.data.dto.recipe.response.UserRecipeLikeResponseDto;
 import com.recipe.recipe_service.data.dto.recipe.response.UserRecipeRegistResponseDto;
 import com.recipe.recipe_service.data.dto.recipe.response.UserRecipeScrapResponseDto;
-import com.recipe.recipe_service.repository.RecipeCommentsRepository;
-import com.recipe.recipe_service.repository.RecipeLikesRepository;
-import com.recipe.recipe_service.repository.RecipeRepository;
-import com.recipe.recipe_service.repository.RecipeScrapsRepository;
+import com.recipe.recipe_service.repository.*;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,6 +29,8 @@ public class RecipeService {
     private final RecipeLikesRepository recipeLikesRepository;
     private final RecipeCommentsRepository recipeCommentsRepository;
     private final RecipeScrapsRepository recipeScrapsRepository;
+    private final RecipeMaterialsRepository recipeMaterialsRepository;
+    private final RecipeOrdersRepository recipeOrdersRepository;
 
     public Recipe createRecipe(RecipeRegisterRequestDto createRecipeDto, Long userId) {
 
@@ -58,8 +54,37 @@ public class RecipeService {
                 .userStatus(true)  // 필요 시 기본값을 넣거나 그대로 사용
                 .build();
 
+        // 레시피 저장
+        Recipe savedRecipe = recipeRepository.save(recipeEntity);
+
+        // RecipeMaterials 저장
+        if (createRecipeDto.getRecipeMaterials() != null) {
+            List<RecipeMaterials> materialsList = createRecipeDto.getRecipeMaterials().stream()
+                    .map(materialDto -> RecipeMaterials.builder()
+                            .recipeId(savedRecipe.getId())
+                            .materialId(materialDto.getMaterialId()) // 재료 ID 사용
+                            .amount(materialDto.getMaterialAmount())
+                            .unit(materialDto.getMaterialUnit())
+                            .build())
+                    .collect(Collectors.toList());
+            recipeMaterialsRepository.saveAll(materialsList);
+        }
+
+        // RecipeOrders 저장
+        if (createRecipeDto.getRecipeOrders() != null) {
+            List<RecipeOrders> ordersList = createRecipeDto.getRecipeOrders().stream()
+                    .map(orderDto -> RecipeOrders.builder()
+                            .recipeId(savedRecipe.getId())
+                            .orderNum(orderDto.getOrderNum())
+                            .image(orderDto.getOrderImg())
+                            .content(orderDto.getOrderContent())
+                            .build())
+                    .collect(Collectors.toList());
+            recipeOrdersRepository.saveAll(ordersList);
+        }
+
         // 변환된 엔티티를 저장
-        return recipeRepository.save(recipeEntity);
+        return savedRecipe;
     }
 
     public Iterable<Recipe> getRecipesByUserEmail(Long userId) {

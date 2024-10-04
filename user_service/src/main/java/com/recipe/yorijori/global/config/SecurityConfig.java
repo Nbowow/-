@@ -86,6 +86,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/", "/index.html","/css/**", "/images/**", "/js/**", "/favicon.ico", "/h2-console/**").permitAll() // 공용 자원에 대한 접근 허용
                         .requestMatchers("/api/v1/users/sign-up").permitAll() // 회원가입 페이지 접근 허용
+                        .requestMatchers("/api/v1/users/simple/**").permitAll() // 레시피 댓글 조회는 모두 가능
                         .requestMatchers("/api/v1/home").permitAll() // /home 경로도 인증 없이 접근 허용
                         .anyRequest().authenticated() // 그 외 모든 요청은 인증된 사용자만 접근 가능
 
