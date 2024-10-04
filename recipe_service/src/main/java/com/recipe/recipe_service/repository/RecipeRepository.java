@@ -12,7 +12,7 @@ import java.util.Optional;
 
 public interface RecipeRepository extends JpaRepository<Recipe, Integer> {
 
-    Iterable<Recipe> findByUserId(Long userId);
+    List<Recipe> findByUserId(Long userId);
 
     Page<Recipe> findAll(Pageable pageable);
 
@@ -23,4 +23,8 @@ public interface RecipeRepository extends JpaRepository<Recipe, Integer> {
             "OR LOWER(r.name) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
             "OR LOWER(r.intro) LIKE LOWER(CONCAT('%', :keyword, '%'))")
     List<Recipe> searchByKeyword(String keyword);
+
+
+
+
 }

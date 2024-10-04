@@ -1,6 +1,7 @@
 package com.recipe.social_service.service;
 
 import com.recipe.social_service.client.UserServiceClient;
+import com.recipe.social_service.data.domain.Follow;
 import com.recipe.social_service.repository.SocialRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -14,15 +15,33 @@ public class SocialService {
 
     private final SocialRepository socialRepository;
 
-    // 팔로워 목록 조회
+
     public List<Long> getFollowers(Long userId) {
-        // 사용자가 팔로우하는 다른 사람들의 ID 목록을 가져옴
         return socialRepository.findFollowerIdsByFollowingId(userId);
     }
 
-    // 팔로잉 목록 조회
+
     public List<Long> getFollowings(Long userId) {
-        // 사용자를 팔로우하는 사람들의 ID 목록을 가져옴
         return socialRepository.findFollowingIdsByFollowerId(userId);
+    }
+
+
+    // Follow a user
+    public void followUser(Long followerId, Long followingId) {
+        Follow follow = Follow.builder()
+                .followerId(followerId)
+                .followingId(followingId)
+                .followerStatus(true)  // optional: assume true by default
+                .followingStatus(true) // optional: assume true by default
+                .build();
+        socialRepository.save(follow);
+    }
+
+    // Unfollow a user
+    public void unfollowUser(Long followerId, Long followingId) {
+        Follow follow = socialRepository.findByFollowerIdAndFollowingId(followerId, followingId);
+        if (follow != null) {
+            socialRepository.delete(follow);
+        }
     }
 }

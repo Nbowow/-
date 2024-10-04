@@ -17,4 +17,8 @@ public interface SocialRepository extends JpaRepository<Follow, Long> {
     // 팔로잉 ID 목록 조회
     @Query("SELECT f.followingId FROM Follow f WHERE f.followerId = :userId")
     List<Long> findFollowingIdsByFollowerId(@Param("userId") Long userId);
+
+
+    // Find follow relationship by follower and following IDs
+    Follow findByFollowerIdAndFollowingId(Long followerId, Long followingId);
 }

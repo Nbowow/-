@@ -1,7 +1,8 @@
 package com.recipe.yorijori.controller;
 
-import com.recipe.yorijori.data.dto.recipe.response.UserRecipeResponseDto;
-import com.recipe.yorijori.data.dto.recipe.response.UserSimpleResponseDto;
+import com.recipe.yorijori.client.RecipeServiceClient;
+import com.recipe.yorijori.data.dto.recipe.response.*;
+import com.recipe.yorijori.data.dto.user.request.UserModifyRequestDto;
 import com.recipe.yorijori.data.dto.user.request.UserSignUpDto;
 import com.recipe.yorijori.data.dto.user.response.UserResponseDto;
 import com.recipe.yorijori.repository.UserRepository;
@@ -14,6 +15,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/users")
@@ -22,12 +25,60 @@ public class UserController {
 
     private final UserService userService;
     private final JwtService jwtService;
-    private final UserRepository userRepository;
+    private final RecipeServiceClient recipeServiceClient;
 
     @PostMapping("/sign-up")
     public String signUp(@RequestBody UserSignUpDto userSignUpDto) throws Exception {
         userService.signUp(userSignUpDto);
         return "회원가입 성공";
+    }
+
+    @GetMapping("/recipe")
+    public ResponseEntity<?> getUserRecipe(HttpServletRequest request) {
+
+        String accessToken = jwtService.extractAccessToken(request)
+                .orElseThrow(() -> new IllegalArgumentException("AccessToken이 존재하지 않습니다."));
+
+        String userEmail = jwtService.extractEmail(accessToken)
+                .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 AccessToken입니다."));
+
+        Long userId = userService.getUserIdByEmail(userEmail);
+
+        List<UserRecipeRegistResponseDto> userRecipeRegistResponseDto = recipeServiceClient.getUserRecipes(userId);
+
+        return ResponseEntity.status(HttpStatus.OK).body(userRecipeRegistResponseDto);
+    }
+
+    @GetMapping("/like")
+    public ResponseEntity<?> getUserRecipeLike(HttpServletRequest request) {
+
+        String accessToken = jwtService.extractAccessToken(request)
+                .orElseThrow(() -> new IllegalArgumentException("AccessToken이 존재하지 않습니다."));
+
+        String userEmail = jwtService.extractEmail(accessToken)
+                .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 AccessToken입니다."));
+
+        Long userId = userService.getUserIdByEmail(userEmail);
+
+        List<UserRecipeLikeResponseDto> userRecipeRegistlikeResponseDto = recipeServiceClient.getUserLikeRecipes(userId);
+
+        return ResponseEntity.status(HttpStatus.OK).body(userRecipeRegistlikeResponseDto);
+    }
+
+    @GetMapping("/scrap")
+    public ResponseEntity<?> getUserRecipeScrap(HttpServletRequest request) {
+
+        String accessToken = jwtService.extractAccessToken(request)
+                .orElseThrow(() -> new IllegalArgumentException("AccessToken이 존재하지 않습니다."));
+
+        String userEmail = jwtService.extractEmail(accessToken)
+                .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 AccessToken입니다."));
+
+        Long userId = userService.getUserIdByEmail(userEmail);
+
+        List<UserRecipeScrapResponseDto> userRecipeScrapResponseDto = recipeServiceClient.getUserScrapRecipes(userId);
+
+        return ResponseEntity.status(HttpStatus.OK).body(userRecipeScrapResponseDto);
     }
 
     @GetMapping("/{userId}")
@@ -52,6 +103,20 @@ public class UserController {
         return userService.getUserIdByEmail(userEmail);
     }
 
+    @PatchMapping("/user")
+    public ResponseEntity<?> updateUserInfo(HttpServletRequest request, @RequestBody UserModifyRequestDto userModifyRequestDto) {
+
+        String accessToken = jwtService.extractAccessToken(request)
+                .orElseThrow(() -> new IllegalArgumentException("AccessToken이 존재하지 않습니다."));
+
+        String userEmail = jwtService.extractEmail(accessToken)
+                .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 AccessToken입니다."));
+
+
+        userService.updateUser(userEmail, userModifyRequestDto);
+
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 
     @GetMapping("/user")
     public ResponseEntity<UserResponseDto> getUserInfo(HttpServletRequest request) {

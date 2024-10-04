@@ -8,6 +8,9 @@ import com.recipe.recipe_service.data.dto.comment.CommentResponseDto;
 import com.recipe.recipe_service.data.dto.recipe.RecipeDto;
 import com.recipe.recipe_service.data.dto.recipe.request.RecipeRegisterRequestDto;
 import com.recipe.recipe_service.data.dto.recipe.response.ResponseRecipe;
+import com.recipe.recipe_service.data.dto.recipe.response.UserRecipeLikeResponseDto;
+import com.recipe.recipe_service.data.dto.recipe.response.UserRecipeRegistResponseDto;
+import com.recipe.recipe_service.data.dto.recipe.response.UserRecipeScrapResponseDto;
 import com.recipe.recipe_service.repository.RecipeCommentsRepository;
 import com.recipe.recipe_service.repository.RecipeLikesRepository;
 import com.recipe.recipe_service.repository.RecipeRepository;
@@ -25,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -226,5 +230,112 @@ public class RecipeService {
         // 댓글 조회
         return recipeCommentsRepository.findByRecipeId(recipeId);
     }
-    
+
+
+
+
+    // 특정 userId에 해당하는 레시피 조회
+    public List<UserRecipeRegistResponseDto> getRecipesByUserId(Long userId) {
+        List<Recipe> recipes = recipeRepository.findByUserId(userId);
+
+        // Entity를 DTO로 변환
+        return recipes.stream()
+                .map(recipe -> new UserRecipeRegistResponseDto(
+                        recipe.getId(),
+                        recipe.getTitle(),
+                        recipe.getName(),
+                        recipe.getIntro(),
+                        recipe.getImage(),
+                        recipe.getViewCount(),
+                        recipe.getServings(),
+                        recipe.getTime(),
+                        recipe.getLevel(),
+                        recipe.getCookingTools(),
+                        recipe.getType(),
+                        recipe.getSituation(),
+                        recipe.getIngredients(),
+                        recipe.getMethod(),
+                        recipe.getUserId(),
+                        recipe.getLikeCount(),
+                        recipe.getScrapCount(),
+                        recipe.getCommentCount()
+                ))
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public List<UserRecipeLikeResponseDto> getUserLikeRecipes(Long userId) {
+        // 특정 유저가 좋아요한 레시피 ID 목록 가져오기
+        List<RecipeLikes> likedRecipes = recipeLikesRepository.findByUserIdAndStatusTrue(userId);
+
+        // 레시피 ID에 해당하는 레시피 정보를 가져와 DTO로 변환
+        List<UserRecipeLikeResponseDto> likedRecipeDtos = likedRecipes.stream()
+                .map(recipeLike -> {
+                    ResponseRecipe recipe = recipeRepository.findById(recipeLike.getRecipeId())
+                            .orElseThrow(() -> new EntityNotFoundException("Recipe not found"));
+
+                    return new UserRecipeLikeResponseDto(
+                            recipe.getId(),
+                            recipe.getTitle(),
+                            recipe.getName(),
+                            recipe.getIntro(),
+                            recipe.getImage(),
+                            recipe.getViewCount(),
+                            recipe.getServings(),
+                            recipe.getTime(),
+                            recipe.getLevel(),
+                            recipe.getCookingTools(),
+                            recipe.getType(),
+                            recipe.getSituation(),
+                            recipe.getIngredients(),
+                            recipe.getMethod(),
+                            recipe.getUserId(),
+                            recipe.getLikeCount(),
+                            recipe.getScrapCount(),
+                            recipe.getCommentCount()
+                    );
+                })
+                .collect(Collectors.toList());
+
+        return likedRecipeDtos;
+    }
+
+    @Transactional(readOnly = true)
+    public List<UserRecipeScrapResponseDto> getUserScrapRecipes(Long userId) {
+        // 특정 유저가 좋아요한 레시피 ID 목록 가져오기
+        List<RecipeScraps> scrapedRecipes = recipeScrapsRepository.findByUserIdAndStatusTrue(userId);
+
+        // 레시피 ID에 해당하는 레시피 정보를 가져와 DTO로 변환
+        List<UserRecipeScrapResponseDto> scrapedRecipeDtos = scrapedRecipes.stream()
+                .map(recipeScraps -> {
+                    ResponseRecipe recipe = recipeRepository.findById(recipeScraps.getRecipeId())
+                            .orElseThrow(() -> new EntityNotFoundException("Recipe not found"));
+
+                    return new UserRecipeScrapResponseDto(
+                            recipe.getId(),
+                            recipe.getTitle(),
+                            recipe.getName(),
+                            recipe.getIntro(),
+                            recipe.getImage(),
+                            recipe.getViewCount(),
+                            recipe.getServings(),
+                            recipe.getTime(),
+                            recipe.getLevel(),
+                            recipe.getCookingTools(),
+                            recipe.getType(),
+                            recipe.getSituation(),
+                            recipe.getIngredients(),
+                            recipe.getMethod(),
+                            recipe.getUserId(),
+                            recipe.getLikeCount(),
+                            recipe.getScrapCount(),
+                            recipe.getCommentCount()
+                    );
+                })
+                .collect(Collectors.toList());
+
+        return scrapedRecipeDtos;
+    }
+
+
 }
