@@ -13,7 +13,6 @@ export const CategorySection = styled.div`
     display: flex;
     justify-content: flex-start;
     width: 100%;
-    margin: 10px 0;
 `;
 
 export const CategoryTitle = styled.h3`
@@ -36,5 +35,6 @@ export const CategoryItem = styled.div`
     margin: 5px;
     text-align: center;
     cursor: pointer;
-    font-weight: ${(props) => (props.selected ? "bold" : "normal")};
+    font-family: ${(props) =>
+        props.selected ? "SUITExtraBold" : "SUITregular"};
 `;

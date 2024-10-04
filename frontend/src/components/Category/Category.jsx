@@ -1,4 +1,3 @@
-import { useState } from "react";
 import {
     CategoryItem,
     CategoryList,
@@ -6,7 +5,8 @@ import {
     CategoryTitle,
     Container,
 } from "./Category.styled";
-import { PropTypes } from "prop-types";
+import PropTypes from "prop-types";
+import { useRecipeStore } from "./../../store/recipeStore";
 
 const categories = {
     종류: [
@@ -68,25 +68,40 @@ const CategoryComponent = ({
     onIngredientsSelect,
     onMethodSelect,
 }) => {
-    const [selectedCategories, setSelectedCategories] = useState({
-        종류: "전체",
-        상황: "전체",
-        재료: "전체",
-        방법: "전체",
-    });
+    const {
+        selectedType,
+        selectedSituation,
+        selectedIngredients,
+        selectedMethod,
+        setSelectedType,
+        setSelectedSituation,
+        setSelectedIngredients,
+        setSelectedMethod,
+    } = useRecipeStore((state) => ({
+        selectedType: state.selectedType,
+        selectedSituation: state.selectedSituation,
+        selectedIngredients: state.selectedIngredients,
+        selectedMethod: state.selectedMethod,
+        setSelectedType: state.setSelectedType,
+        setSelectedSituation: state.setSelectedSituation,
+        setSelectedIngredients: state.setSelectedIngredients,
+        setSelectedMethod: state.setSelectedMethod,
+    }));
 
     const handleCategoryClick = (category, item) => {
-        const newSelectedCategories = {
-            ...selectedCategories,
-            [category]: item,
-        };
-        setSelectedCategories(newSelectedCategories);
-
-        // 부모 컴포넌트에 선택된 값 전달
-        if (category === "종류") onTypeSelect(item);
-        else if (category === "상황") onSituationSelect(item);
-        else if (category === "재료") onIngredientsSelect(item);
-        else if (category === "방법") onMethodSelect(item);
+        if (category === "종류") {
+            setSelectedType(item);
+            onTypeSelect(item);
+        } else if (category === "상황") {
+            setSelectedSituation(item);
+            onSituationSelect(item);
+        } else if (category === "재료") {
+            setSelectedIngredients(item);
+            onIngredientsSelect(item);
+        } else if (category === "방법") {
+            setSelectedMethod(item);
+            onMethodSelect(item);
+        }
     };
 
     return (
@@ -97,7 +112,7 @@ const CategoryComponent = ({
                     <CategoryList>
                         {items.map((item, index) => (
                             <div
-                                key={item}
+                                key={`${item}-${index}`} // 고유한 key 사용
                                 style={{
                                     display: "flex",
                                     alignItems: "center",
@@ -105,7 +120,14 @@ const CategoryComponent = ({
                             >
                                 <CategoryItem
                                     selected={
-                                        selectedCategories[title] === item
+                                        (title === "종류" &&
+                                            selectedType === item) ||
+                                        (title === "상황" &&
+                                            selectedSituation === item) ||
+                                        (title === "재료" &&
+                                            selectedIngredients === item) ||
+                                        (title === "방법" &&
+                                            selectedMethod === item)
                                     }
                                     onClick={() =>
                                         handleCategoryClick(title, item)

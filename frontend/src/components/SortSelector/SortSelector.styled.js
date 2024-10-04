@@ -4,6 +4,7 @@ export const ButtonContainer = styled.div`
     display: flex;
     gap: 10px;
     justify-content: flex-end;
+    padding-bottom: 10px;
 `;
 
 export const SortButton = styled.button`

@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom"; // 추가
 import useSearchHistoryStore from "../../store/searchHistoryStore";
 import * as S from "./SearchBar.styled";
 import PropTypes from "prop-types";
@@ -14,10 +15,9 @@ const SearchBar = ({
     const [showDropDown, setShowDropDown] = useState(false);
     const { getSearchTerm, addSearchTerm, removeSearchTerm } =
         useSearchHistoryStore();
+    const navigate = useNavigate(); // navigate 추가
 
     const searchBarRef = useRef(null);
-
-    // TODO: 연관검색,,
     const searchHistory = purpose ? getSearchTerm(userId, purpose) : [];
 
     useEffect(() => {
@@ -32,16 +32,20 @@ const SearchBar = ({
             setShowDropDown(false);
     };
 
-    const onClickSearchBar = (e) => {
+    const onClickSearchBar = () => {
         setShowDropDown(true);
     };
 
     const onChangeInput = (e) => {
         setSearchTerm(e.target.value);
+        setShowDropDown(true); // 입력 시 드롭다운 열기
     };
 
     const onClickHistory = (term) => {
         setSearchTerm(term);
+        setShowDropDown(false);
+        // 클릭 시 바로 검색
+        navigate(`/search?keyword=${term}`); // 검색어를 쿼리 파라미터로 포함하여 이동
     };
 
     const handleSubmit = useCallback(
@@ -49,10 +53,10 @@ const SearchBar = ({
             if (e.key === "Enter" && searchTerm.trim()) {
                 if (userId) addSearchTerm(userId, purpose, searchTerm);
                 setShowDropDown(false);
-                onSubmit(searchTerm);
+                navigate(`/search?keyword=${searchTerm.trim()}`); // 검색어를 쿼리 파라미터로 포함하여 이동
             }
         },
-        [addSearchTerm, onSubmit, userId, purpose, searchTerm],
+        [addSearchTerm, navigate, userId, purpose, searchTerm],
     );
 
     const Placeholder = () => {
@@ -87,7 +91,7 @@ const SearchBar = ({
                     )}
                 </S.TextContainer>
                 {/* 검색 기록 렌더링 */}
-                {showDropDown ? (
+                {showDropDown && (
                     <S.HistoryList>
                         {searchHistory.map((term, index) => (
                             <S.History
@@ -105,8 +109,6 @@ const SearchBar = ({
                             </S.History>
                         ))}
                     </S.HistoryList>
-                ) : (
-                    ""
                 )}
             </S.Container>
         </S.SearchBar>
