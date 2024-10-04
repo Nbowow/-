@@ -16,3 +16,4 @@ beautifulsoup4
 urllib3
 python-multipart
 cryptography
+pytz
