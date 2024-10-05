@@ -2,6 +2,7 @@ package com.recipe.yorijori.global.config;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.recipe.yorijori.global.exception.Unauthorized;
 import com.recipe.yorijori.global.filter.CustomJsonUsernamePasswordAuthenticationFilter;
 import com.recipe.yorijori.global.filter.JwtAuthenticationProcessingFilter;
 import com.recipe.yorijori.global.handler.LoginFailureHandler;
@@ -12,6 +13,7 @@ import com.recipe.yorijori.repository.UserRepository;
 import com.recipe.yorijori.service.CustomOAuth2UserService;
 import com.recipe.yorijori.service.JwtService;
 import com.recipe.yorijori.service.LoginService;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,7 +27,13 @@ import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import java.util.List;
+
+import static org.springframework.security.config.Customizer.withDefaults;
 
 
 /**
@@ -49,6 +57,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
+
                 // CSRF 비활성화
                 .csrf(csrf -> csrf.disable()) // Stateless 애플리케이션에서 CSRF 보호 비활성화
 
@@ -62,7 +71,9 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/", "/index.html","/css/**", "/images/**", "/js/**", "/favicon.ico", "/h2-console/**").permitAll() // 공용 자원에 대한 접근 허용
                         .requestMatchers("/api/v1/users/sign-up").permitAll() // 회원가입 페이지 접근 허용
-                        .requestMatchers("/api/v1/home").permitAll() // /home 경로도 인증 없이 접근 허용
+                        .requestMatchers("/api/v1/users/simple/**").permitAll() // 레시피 댓글 조회는 모두 가능
+                        .requestMatchers("/api/v1/users/rank").permitAll() // 유저 랭킹은 모두 조회 가능
+                        .requestMatchers("/api/v1/users/refresh-token").permitAll()
                         .anyRequest().authenticated() // 그 외 모든 요청은 인증된 사용자만 접근 가능
 
                 )
@@ -73,7 +84,20 @@ public class SecurityConfig {
                         .successHandler(oAuth2LoginSuccessHandler) // 로그인 성공 핸들러
                         .failureHandler(oAuth2LoginFailureHandler) // 로그인 실패 핸들러
                         .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService)) // userInfoEndpoint 대신 userService 설정
+                )
+                .exceptionHandling(exception -> exception
+                        .authenticationEntryPoint((request, response, authException) -> {
+                            if (authException.getMessage().contains("AccessToken")) {
+                                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                                response.getWriter().write("AccessToken is invalid or expired.");
+                            } else {
+                                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                                response.getWriter().write("서버에러");
+                            }
+                        })
                 );
+
+
 
         // 커스텀 필터 추가 (Jwt 및 Custom JSON 로그인 필터)
         http.addFilterAfter(customJsonUsernamePasswordAuthenticationFilter(), LogoutFilter.class);
