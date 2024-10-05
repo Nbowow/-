@@ -87,9 +87,11 @@ public class SecurityConfig {
                 )
                 .exceptionHandling(exception -> exception
                         .authenticationEntryPoint((request, response, authException) -> {
-                            throw new Unauthorized();
+                            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                            response.getWriter().write("AccessToken has expired. RefreshToken is required.");
                         })
                 );
+
 
         // 커스텀 필터 추가 (Jwt 및 Custom JSON 로그인 필터)
         http.addFilterAfter(customJsonUsernamePasswordAuthenticationFilter(), LogoutFilter.class);
