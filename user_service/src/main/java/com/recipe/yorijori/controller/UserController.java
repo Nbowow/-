@@ -6,6 +6,7 @@ import com.recipe.yorijori.data.dto.recipe.response.*;
 import com.recipe.yorijori.data.dto.user.request.UserModifyRequestDto;
 import com.recipe.yorijori.data.dto.user.request.UserSignUpDto;
 import com.recipe.yorijori.data.dto.user.response.UserResponseDto;
+import com.recipe.yorijori.global.exception.Unauthorized;
 import com.recipe.yorijori.repository.UserRepository;
 import com.recipe.yorijori.service.JwtService;
 import com.recipe.yorijori.service.UserService;
@@ -15,8 +16,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import jakarta.servlet.http.HttpServletResponse;
 
+
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -25,6 +30,7 @@ import java.util.List;
 public class UserController {
 
     private final UserService userService;
+    private final UserRepository userRepository;
     private final JwtService jwtService;
     private final RecipeServiceClient recipeServiceClient;
 
@@ -153,6 +159,40 @@ public class UserController {
 
         return ResponseEntity.status(HttpStatus.OK).body(rankResponseDtoList);
     }
+
+
+    @PostMapping("/refresh-token")
+    public ResponseEntity<?> refreshAccessToken(HttpServletRequest request, HttpServletResponse response) {
+        // 요청 헤더에서 리프레시 토큰 추출
+        String refreshToken = jwtService.extractRefreshToken(request)
+                .filter(jwtService::isTokenValid)
+                .orElseThrow(() -> new Unauthorized());
+
+        // 리프레시 토큰이 DB에 존재하고, 일치하는 경우 처리
+        return userRepository.findByRefreshToken(refreshToken)
+                .map(user -> {
+                    // 새로운 액세스 토큰 생성
+                    String newAccessToken = jwtService.createAccessToken(user.getEmail());
+
+                    // 새로운 리프레시 토큰도 재발급
+                    String newRefreshToken = jwtService.createRefreshToken();
+                    user.updateRefreshToken(newRefreshToken);  // DB에 리프레시 토큰 업데이트
+                    userRepository.saveAndFlush(user);
+
+                    // 응답 헤더에 새로운 액세스 토큰과 리프레시 토큰을 담아 전송
+                    jwtService.sendAccessAndRefreshToken(response, newAccessToken, newRefreshToken);
+
+                    // 필요 시, 바디에도 토큰을 반환 (JSON 형태)
+                    Map<String, String> tokens = new HashMap<>();
+                    tokens.put("accessToken", newAccessToken);
+                    tokens.put("refreshToken", newRefreshToken);
+
+                    return ResponseEntity.ok(tokens);
+                })
+                .orElseThrow(() -> new Unauthorized());
+    }
+
+
 
 
 }
