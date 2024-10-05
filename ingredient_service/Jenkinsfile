@@ -1,14 +1,13 @@
 pipeline {
     agent any
 
-
     environment {
         BACKEND_DIR = './ingredient_service'
         DOCKER_IMAGE_BACKEND = 'parkgc0504/ingredient-service:latest'
         GITLAB_CREDENTIALSID = 'gichangssafy'
         DOCKERHUB_CREDENTIALS = 'dockerhub-credentials'
         SSH_CREDENTIALS = 'EC2_SSH'
-        EC2_SERVER_IP = '3.34.96.79'  // 대상 EC2 서버의 IP 주소
+        EC2_SERVER_IP = '13.125.243.51'  // 대상 EC2 서버의 IP 주소
     }
 
     stages {
