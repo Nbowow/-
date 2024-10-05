@@ -2,6 +2,7 @@ package com.recipe.yorijori.global.config;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.recipe.yorijori.global.exception.Unauthorized;
 import com.recipe.yorijori.global.filter.CustomJsonUsernamePasswordAuthenticationFilter;
 import com.recipe.yorijori.global.filter.JwtAuthenticationProcessingFilter;
 import com.recipe.yorijori.global.handler.LoginFailureHandler;
@@ -12,6 +13,7 @@ import com.recipe.yorijori.repository.UserRepository;
 import com.recipe.yorijori.service.CustomOAuth2UserService;
 import com.recipe.yorijori.service.JwtService;
 import com.recipe.yorijori.service.LoginService;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -52,26 +54,9 @@ public class SecurityConfig {
     private final CustomOAuth2UserService customOAuth2UserService;
 
 
-//    @Bean
-//    public CorsConfigurationSource corsConfigurationSource() {
-//        CorsConfiguration config = new CorsConfiguration();
-//        config.setAllowCredentials(true);
-//        config.setAllowedOrigins(
-//                List.of("https://j11c206.p.ssafy.io", "http://localhost:5173", "http://j11c206a.p.ssafy.io")
-//        );
-//        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
-//        config.setAllowedHeaders(List.of("*"));
-//        config.setExposedHeaders(List.of("Authorization", "Content-Type"));
-//
-//        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-//        source.registerCorsConfiguration("/**", config);
-//        return source;
-//    }
-
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-//                .cors(cors -> cors.configurationSource(corsConfigurationSource())) // CORS 설정 적용
 
                 // CSRF 비활성화
                 .csrf(csrf -> csrf.disable()) // Stateless 애플리케이션에서 CSRF 보호 비활성화
@@ -99,6 +84,11 @@ public class SecurityConfig {
                         .successHandler(oAuth2LoginSuccessHandler) // 로그인 성공 핸들러
                         .failureHandler(oAuth2LoginFailureHandler) // 로그인 실패 핸들러
                         .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService)) // userInfoEndpoint 대신 userService 설정
+                )
+                .exceptionHandling(exception -> exception
+                        .authenticationEntryPoint((request, response, authException) -> {
+                            throw new Unauthorized();
+                        })
                 );
 
         // 커스텀 필터 추가 (Jwt 및 Custom JSON 로그인 필터)
