@@ -56,13 +56,13 @@ allergy_mapping = {
     '알류': ['달걀', '계란', '메추리알', '오리알', '거위알', '난백', '흰자', '난황', '노른자', '계란 파우더', '난백 파우더', '마요네즈', '타르타르 소스', '홀랜다이즈 소스',
            '에그누들', '팬케이크 믹스', '머랭', '크레페', '에그'],
     '우유': ['우유', '연유', '크림', '치즈', '버터', '요거트', '사워 크림', '카제인', '유청 단백질', '우유 분말'],
-    '메밀': ['메밀가루', '메밀면 (소바)', '메밀빵', '메밀 크래커', '메밀 팬케이크', '메밀'],
+    '메밀': ['메밀가루', '메밀면', '소바', '메밀빵', '메밀 크래커', '메밀 팬케이크', '메밀'],
     '땅콩': ['땅콩', '땅콩버터', '땅콩 오일', '땅콩 가루', '땅콩 소스', '땅콩 스낵'],
     '대두 (콩)': ['대두', '콩', '두부', '된장', '간장', '콩기름', '콩 단백질', '템페', '낫토', '두유', '에다마메'],
     '밀': ['밀가루', '통밀', '빵', '파스타', '크래커', '시리얼', '쿠키', '케이크', '밀가루 베이스 믹스', '밀글루텐'],
     '잣': ['잣', '잣 오일', '잣 가루', '잣 페스토'],
     '호두': ['호두', '호두 오일', '호두 가루', '호두 스낵'],
-    '게': ['게', '게살', '크랩 스틱 (가공 게 제품)', '게 소스'],
+    '게': ['게', '게살', '크랩 스틱', '게 소스'],
     '새우': ['새우', '건새우', '새우 페이스트', '새우칩'],
     '오징어': ['오징어', '마른 오징어', '오징어볼', '오징어젓갈'],
     '고등어': ['고등어', '고등어 통조림', '훈제 고등어'],
@@ -173,6 +173,7 @@ def main():
 
         print(f"Uploaded data from {file_name} to MySQL")
 
+    spark.stop()
     return {"message": "All files processed and uploaded to MySQL"}
 
 
@@ -194,22 +195,24 @@ def process_price_data(file_path):
 
     print(f"남아있는 데이터의 수: {len(rows)}")
 
-    for row in rows:
+    for idx, row in enumerate(rows, 1):  # idx는 1부터 시작
         # 각 row를 순회하며 필요한 값들을 가져옴
         item_name = row['item_name']
         unit = row['unit']
         price = row['dpr1']
         date = row['day1']
 
+        print(f"총 {len(rows)}개 중 {idx}번째 row 처리 중입니다.")
+
+        print(f"변환전 unit/price: {unit} / {price}")
         # 필요시 각 데이터를 정제
         if unit and price:
             price = convert_price_udf(unit, price)  # 가격 변환
+        print(f"변환된 가격: {price}")
 
         # 날짜 정제 (괄호 제거 및 변환)
         if date:
-            # 정규 표현식을 사용하여 괄호 안의 날짜만 추출
             match = re.search(r'\((\d{2}/\d{2})\)', date)
-
             if match:
                 extracted_date = match.group(1)  # "01/01"을 추출
                 date = f"2024/{extracted_date[:2]}/{extracted_date[3:]}"  # "2024/01/01"로 변환
@@ -219,41 +222,14 @@ def process_price_data(file_path):
 
         # 정제된 데이터를 DB에 저장
         db_material_id = get_material_id(item_name)  # DB에서 material_id 가져옴
+        print(f"material_id: {db_material_id}")
+
         save_dayprice_db(db_material_id, {'day1': date, 'dpr1': price})  # DB에 저장
 
     print("데이터 정제가 완료되고 DB에 저장되었습니다.")
 
-    #
-    # # dpr1 데이터 환산 및 날짜 형식 변환
-    # day_col = 'dpr1'
-    # unit_col = 'unit'
-    # date_col = 'day1'
-    # print(f"0")
-    #
-    # # 날짜 문자열 정제: 불필요한 괄호 제거
-    # df = df.withColumn(date_col, regexp_replace(col(date_col), r'\)', ''))
-    #
-    # convert_price = udf(convert_price_udf)
-    #
-    # df = df.withColumn(day_col,
-    #                    when(col(unit_col).isNotNull(), convert_price(col(unit_col), col(day_col))).otherwise(None)) \
-    #     .withColumn(date_col,
-    #                 to_timestamp(concat(lit('2024/'), col(date_col).substr(5, 8)),
-    #                              'yyyy/MM/dd'))
-    #
-    # print(f"6")
-    # for row in df.select('item_name', day_col, date_col).collect():
-    #     db_material_id = get_material_id(row['item_name'])
-    #     save_dayprice_db(db_material_id, row)
 
-
-# 단위에서 숫자만 추출하고 괄호 및 그 안의 내용을 제거하는 함수
-def extract_number(unit_string):
-    unit_string = re.sub(r'\(.*?\)', '', unit_string).strip()  # 괄호 제거
-    number = ''.join(filter(str.isdigit, unit_string))  # 숫자만 추출
-    return float(number) if number else 1.0  # 숫자가 없으면 기본값 1.0 반환
-
-
+# 단위별 가격 변환을 위한 UDF 등록
 def convert_price_udf(unit, price):
     if price is None or price in ['-', '']:  # 가격이 None, '-' 또는 빈 문자열일 경우
         return 0.0  # 0으로 설정
@@ -263,30 +239,36 @@ def convert_price_udf(unit, price):
     unit_value = extract_number(unit)  # 숫자만 추출하여 float로 변환
 
     if 'kg' in unit:
-        result = int(price / (unit_value * 10))
-        print(f"unit: {unit}, price: {price}, result: {result}")
-        return result
+        return int(price / (unit_value * 10))
     elif 'g' in unit:
-        result = int(price / unit_value)
-        print(f"unit: {unit}, price: {price}, result: {result}")
-        return result
+        return int(price / (unit_value / 100))
     elif any(x in unit for x in ['포기', '개', '장', '마리', '구', '손']):
-        result = int(price)
-        print(f"unit: {unit}, price: {price}, result: {result}")
-        return result
+        return int(price)
     elif 'L' in unit:
-        result = int(price)
-        print(f"unit: {unit}, price: {price}, result: {result}")
-        return result
-    else:
-        result = int(price)
-        print(f"unit: {unit}, price: {price}, result: {result}")
-        return result
+        return int(price)
+    return int(price)
+
+
+# 단위에서 숫자만 추출하고 괄호 및 그 안의 내용을 제거하는 함수
+def extract_number(unit_string):
+    unit_string = re.sub(r'\(.*?\)', '', unit_string).strip()  # 괄호 제거
+    number = ''.join(filter(str.isdigit, unit_string))  # 숫자만 추출
+    return float(number) if number else 1.0  # 숫자가 없으면 기본값 1.0 반환
 
 
 def save_dayprice_db(get_db_data, row):
     engine = engineconnection()
     session = engine.sessionmaker()
+
+    # 중복 데이터 확인 로직 추가
+    existing_price = session.query(DayPrice).filter(
+        DayPrice.material_id == get_db_data,
+        DayPrice.day_price_day == row['day1']
+    ).first()
+
+    if existing_price:
+        session.close()
+        return
 
     new_day_price = DayPrice(
         day_price_day=row['day1'],
@@ -295,6 +277,7 @@ def save_dayprice_db(get_db_data, row):
     )
     session.add(new_day_price)
     session.commit()  # 새로운 재료를 데이터베이스에 추가
+    session.close()
 
 
 def get_allergy_num(material_name):
@@ -347,8 +330,8 @@ def get_material_id(material_name):
             print(f"참조 재료 리스트가 비어 있습니다. 새 재료 추가: '{material_name}', 알레르기 번호: {allergy_num}")  # 추가될 재료 정보 확인
             new_material = Materials(
                 material_name=material_name,
+                material_price_status=True,
                 material_allergy_num=allergy_num,  # 알레르기 번호 추가
-                material_price_status=True
             )
             session.add(new_material)
             session.commit()  # 새로운 재료를 데이터베이스에 추가
