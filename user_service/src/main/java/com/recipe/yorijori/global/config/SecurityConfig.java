@@ -88,10 +88,16 @@ public class SecurityConfig {
                 )
                 .exceptionHandling(exception -> exception
                         .authenticationEntryPoint((request, response, authException) -> {
-                            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                            response.getWriter().write("AccessToken has expired. RefreshToken is required.");
+                            if (authException.getMessage().contains("AccessToken")) {
+                                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                                response.getWriter().write("AccessToken is invalid or expired.");
+                            } else {
+                                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                                response.getWriter().write("서버에러");
+                            }
                         })
                 );
+
 
 
         // 커스텀 필터 추가 (Jwt 및 Custom JSON 로그인 필터)
