@@ -1,6 +1,7 @@
     package com.recipe.yorijori.controller;
 
     import com.recipe.yorijori.client.RecipeServiceClient;
+    import com.recipe.yorijori.data.domain.User;
     import com.recipe.yorijori.data.dto.rank.RankResponseDto;
     import com.recipe.yorijori.data.dto.recipe.response.*;
     import com.recipe.yorijori.data.dto.user.request.UserModifyRequestDto;
@@ -73,6 +74,18 @@
 
             List<UserRecipeLikeResponseDto> userRecipeRegistlikeResponseDto = recipeServiceClient.getUserLikeRecipes(userId);
 
+            for (UserRecipeLikeResponseDto likeRecipe : userRecipeRegistlikeResponseDto) {
+                Long recipeUserId = likeRecipe.getUserId(); // 레시피 등록한 회원의 ID
+
+                // userId를 통해 해당 유저 정보 (닉네임과 프로필 이미지) 조회
+                User user = userRepository.findById(recipeUserId)
+                        .orElseThrow(() -> new IllegalArgumentException("해당 사용자를 찾을 수 없습니다."));
+
+                // 레시피에 사용자 정보 업데이트
+                likeRecipe.setNickname(user.getNickname());
+                likeRecipe.setProfileImage(user.getProfileImage());
+            }
+
             return ResponseEntity.status(HttpStatus.OK).body(userRecipeRegistlikeResponseDto);
         }
 
@@ -88,6 +101,18 @@
             Long userId = userService.getUserIdByEmail(userEmail);
 
             List<UserRecipeScrapResponseDto> userRecipeScrapResponseDto = recipeServiceClient.getUserScrapRecipes(userId);
+
+            for (UserRecipeScrapResponseDto scrapRecipe : userRecipeScrapResponseDto) {
+                Long recipeUserId = scrapRecipe.getUserId(); // 레시피 등록한 회원의 ID
+
+                // userId를 통해 해당 유저 정보 (닉네임과 프로필 이미지) 조회
+                User user = userRepository.findById(recipeUserId)
+                        .orElseThrow(() -> new IllegalArgumentException("해당 사용자를 찾을 수 없습니다."));
+
+                // 레시피에 사용자 정보 업데이트
+                scrapRecipe.setNickname(user.getNickname());
+                scrapRecipe.setProfileImage(user.getProfileImage());
+            }
 
             return ResponseEntity.status(HttpStatus.OK).body(userRecipeScrapResponseDto);
         }

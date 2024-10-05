@@ -27,4 +27,14 @@ public class UserRecipeScrapResponseDto {
     private Long likeCount;
     private Long scrapCount;
     private Long commentCount;
+    private String nickname ="";
+    private String profileImage ="";
+
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
+    }
+
+    public void setProfileImage(String profileImage) {
+        this.profileImage = profileImage;
+    }
 }
