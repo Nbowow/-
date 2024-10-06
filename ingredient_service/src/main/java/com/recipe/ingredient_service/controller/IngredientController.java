@@ -85,4 +85,9 @@ public class IngredientController {
         Long userId = userServiceClient.getUserId(authorization);
         return ResponseEntity.status(HttpStatus.OK).body(ingredientService.findUserLikeIngredients(userId));
     }
+
+    @PostMapping("/test/add")
+    public ResponseEntity<Ingredient> addTestIngredient(@RequestParam String name) {
+        return ResponseEntity.status(HttpStatus.OK).body(ingredientService.addIngredient(name));
+    }
 }

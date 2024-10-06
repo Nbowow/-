@@ -335,4 +335,17 @@ public class IngredientService {
         List<Long> ingredientList = userLikeMaterialsRepository.findIngredientIdsByUserId(userId);
         return ingredientRepository.findByIds(ingredientList);
     }
+
+    public Ingredient addIngredient(String name) {
+        Ingredient ingredient = Ingredient.builder()
+                .name(name)
+                .img("")
+                .allergyName("")
+                .priceStatus(true)
+                .build();
+
+        ingredientRepository.save(ingredient);
+
+        return ingredient;
+    }
 }
