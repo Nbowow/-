@@ -32,13 +32,20 @@ public class AllergyService {
     }
 
 
-    // 알러지 추가
-    public Allergys addAllergy(Long userId, AllergyRequestDto requestDto) {
+    // 알러지 추가 후 추가된 알러지 정보 반환
+    public AllergyResponseDto addAllergy(Long userId, AllergyRequestDto requestDto) {
         Allergys newAllergy = Allergys.builder()
                 .userId(userId)
                 .commonCodeNum(requestDto.getCommonCodeNum())
                 .build();
-        return allergyRepository.save(newAllergy);
+        Allergys savedAllergy = allergyRepository.save(newAllergy);
+
+        return new AllergyResponseDto(
+                savedAllergy.getAllergyId(),
+                savedAllergy.isStatus(),
+                savedAllergy.getCommonCodeNum(),
+                savedAllergy.getUserId()
+        );
     }
 
     // 알러지 삭제
