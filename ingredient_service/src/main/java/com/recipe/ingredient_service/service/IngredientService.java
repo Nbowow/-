@@ -166,9 +166,21 @@ public class IngredientService {
 
         List<Long> priceIngredientList = ingredientRepository.findMaterialIdsWithPriceStatusTrue();
 
+        if (priceIngredientList == null || priceIngredientList.isEmpty()) {
+            return new ArrayList<>();
+        }
+
         List<Object[]> priceChanges = dayPriceRepository.findIngredientPriceChanges(priceIngredientList);
 
+        if (priceChanges == null) {
+            return new ArrayList<>();
+        }
+
         List<IngredientPriceChangeResponseDto> responseDtoList = new ArrayList<>();
+
+        if (priceChanges.size() % 2 != 0) {
+            throw new IllegalStateException("priceChanges Data Wrong");
+        }
 
         for (int i = 0; i < priceChanges.size(); i += 2) {
             Long ingredientId = (Long) priceChanges.get(i)[0];
