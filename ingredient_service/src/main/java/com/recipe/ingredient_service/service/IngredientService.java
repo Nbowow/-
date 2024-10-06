@@ -155,6 +155,14 @@ public class IngredientService {
     public IngredientsSearchResponseDto findIngredientData(String name) {
         Ingredient findIngredient = findMatchingIngredient(name);
 
+        if (findIngredient == null) {
+            return IngredientsSearchResponseDto.builder()
+                    .id(null)
+                    .name("Unknown")
+                    .ingredientImage("")
+                    .build();
+        }
+
         return IngredientsSearchResponseDto.builder()
                 .id(findIngredient.getId())
                 .name(findIngredient.getName())
