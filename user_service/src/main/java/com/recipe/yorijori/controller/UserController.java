@@ -2,6 +2,8 @@
 
     import com.recipe.yorijori.client.RecipeServiceClient;
     import com.recipe.yorijori.data.domain.User;
+    import com.recipe.yorijori.data.dto.allergy.request.AllergyRequestDto;
+    import com.recipe.yorijori.data.dto.allergy.response.AllergyResponseDto;
     import com.recipe.yorijori.data.dto.common.response.CommonResponseDto;
     import com.recipe.yorijori.data.dto.rank.RankResponseDto;
     import com.recipe.yorijori.data.dto.recipe.response.*;
@@ -10,10 +12,7 @@
     import com.recipe.yorijori.data.dto.user.response.UserResponseDto;
     import com.recipe.yorijori.global.exception.Unauthorized;
     import com.recipe.yorijori.repository.UserRepository;
-    import com.recipe.yorijori.service.CommonService;
-    import com.recipe.yorijori.service.JwtService;
-    import com.recipe.yorijori.service.S3Uploader;
-    import com.recipe.yorijori.service.UserService;
+    import com.recipe.yorijori.service.*;
     import jakarta.servlet.http.HttpServletRequest;
     import lombok.RequiredArgsConstructor;
     import lombok.extern.slf4j.Slf4j;
@@ -41,6 +40,7 @@
         private final RecipeServiceClient recipeServiceClient;
         private final S3Uploader s3Uploader;
         private final CommonService commonService;
+        private final AllergyService allergyService;
 
         @PostMapping("/sign-up")
         public String signUp(@RequestBody UserSignUpDto userSignUpDto) throws Exception {
@@ -254,6 +254,52 @@
             List<CommonResponseDto> commonList = commonService.getAllCommonCodes();
             return ResponseEntity.ok(commonList);
         }
+
+        @GetMapping("/allergys")
+        public ResponseEntity<?> getAllAllergy(HttpServletRequest request) {
+            String accessToken = jwtService.extractAccessToken(request)
+                    .orElseThrow(() -> new IllegalArgumentException("AccessToken이 존재하지 않습니다."));
+
+            String userEmail = jwtService.extractEmail(accessToken)
+                    .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 AccessToken입니다."));
+
+            Long userId=userService.getUserIdByEmail(userEmail);
+
+            // 유저 ID에 해당하는 알러지 정보를 조회
+            List<AllergyResponseDto> allergies = allergyService.getAllergiesByUserId(userId);
+
+            return ResponseEntity.ok(allergies);
+        }
+
+        // 알러지 추가 API
+        @PostMapping("/allergys")
+        public ResponseEntity<?> addAllergy(HttpServletRequest request, @RequestBody AllergyRequestDto requestDto) {
+            String accessToken = jwtService.extractAccessToken(request)
+                    .orElseThrow(() -> new IllegalArgumentException("AccessToken이 존재하지 않습니다."));
+            String userEmail = jwtService.extractEmail(accessToken)
+                    .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 AccessToken입니다."));
+
+            Long userId = userService.getUserIdByEmail(userEmail);
+            allergyService.addAllergy(userId, requestDto);
+
+            return ResponseEntity.ok("알러지가 추가되었습니다.");
+        }
+
+        // 알러지 삭제 API
+        @DeleteMapping("/allergys/{id}")
+        public ResponseEntity<?> deleteAllergy(HttpServletRequest request, @PathVariable Long id) {
+            String accessToken = jwtService.extractAccessToken(request)
+                    .orElseThrow(() -> new IllegalArgumentException("AccessToken이 존재하지 않습니다."));
+            String userEmail = jwtService.extractEmail(accessToken)
+                    .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 AccessToken입니다."));
+
+            Long userId = userService.getUserIdByEmail(userEmail);
+            allergyService.deleteAllergy(id, userId);
+
+            return ResponseEntity.ok("알러지가 삭제되었습니다.");
+        }
+
+
 
 
     }

@@ -19,7 +19,7 @@
 -- Dumping data for table `allergys`
 --
 
-INSERT INTO `allergys` (`allergy_id`, `created_date`, `updated_date`, `user_status`, `common_code_num`, `user_id`)
+INSERT INTO `allergys` (`allergy_id`, `created_date`, `last_modified_date`, `user_status`, `common_code_num`, `user_id`)
 VALUES
 (1, NOW(), NOW(), true, 'A_0001', 1),
 (2, NOW(), NOW(), true, 'A_0002', 1),
