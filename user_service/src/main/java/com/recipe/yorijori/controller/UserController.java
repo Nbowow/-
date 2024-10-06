@@ -273,16 +273,16 @@
 
         // 알러지 추가 API
         @PostMapping("/allergys")
-        public ResponseEntity<?> addAllergy(HttpServletRequest request, @RequestBody AllergyRequestDto requestDto) {
+        public ResponseEntity<AllergyResponseDto> addAllergy(HttpServletRequest request, @RequestBody AllergyRequestDto requestDto) {
             String accessToken = jwtService.extractAccessToken(request)
                     .orElseThrow(() -> new IllegalArgumentException("AccessToken이 존재하지 않습니다."));
             String userEmail = jwtService.extractEmail(accessToken)
                     .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 AccessToken입니다."));
 
             Long userId = userService.getUserIdByEmail(userEmail);
-            allergyService.addAllergy(userId, requestDto);
+            AllergyResponseDto addedAllergy = allergyService.addAllergy(userId, requestDto);
 
-            return ResponseEntity.ok("알러지가 추가되었습니다.");
+            return ResponseEntity.ok(addedAllergy);
         }
 
         // 알러지 삭제 API
