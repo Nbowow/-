@@ -27,3 +27,26 @@ export const searchRecipes = async (searchTerm) => {
         throw error; // 오류를 호출한 곳으로 전달
     }
 };
+
+//레시피 등록
+export const postRecipe = async (recipeData, token) => {
+    try {
+        const response = await fetch(`${BASE_URL}/recipe`, {
+            method: "POST",
+            headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(recipeData),
+        });
+
+        if (!response.ok) {
+            throw new Error("Recipe posting failed");
+        }
+
+        return await response.json();
+    } catch (error) {
+        console.error("Error posting recipe:", error);
+        throw error;
+    }
+};
