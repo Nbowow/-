@@ -5,7 +5,6 @@ from collections.abc import Sequence
 import pytz
 from hdfs import InsecureClient
 from pyspark.sql import SparkSession
-from pyspark.sql.functions import col, when, to_timestamp, concat, lit, udf, regexp_replace
 from sqlalchemy import Column, BigInteger, String, Boolean, select, DateTime, ForeignKey, Integer
 from sqlalchemy import create_engine
 from sqlalchemy.orm import relationship
@@ -160,25 +159,18 @@ spark = SparkSession.builder \
 
 
 def main():
-    file_statuses = hdfs_client.list(hdfs_directory)
+    # 파일 경로를 이용해 데이터를 정제 및 저장
+    print("1. hdfs 파일 정제시작")
+    process_price_data()
 
-    print("1. hdfs 파일 목록 읽기")
-
-    for file_name in file_statuses:
-        file_path = f"hdfs://master:9870{hdfs_directory}{file_name}"
-
-        # 파일 경로를 이용해 데이터를 정제 및 저장
-        print("2. hdfs 파일 정제시작")
-        process_price_data(file_path)
-
-        print(f"Uploaded data from {file_name} to MySQL")
+    print(f"Uploaded data to MySQL")
 
     spark.stop()
     return {"message": "All files processed and uploaded to MySQL"}
 
 
-def process_price_data(file_path):
-    # HDFS에서 데이터 읽기
+def process_price_data():
+    print("2. hdfs 에서 파일 읽기")
     df = spark.read.csv(
         "hdfs://master:9000/user/root/price/*.csv",
         header=True,

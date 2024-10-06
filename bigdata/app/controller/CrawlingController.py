@@ -50,6 +50,8 @@ async def start_price_back_crawling(data: PriceBackAPIDto, background_tasks: Bac
         data.p_regday
     )
 
+    return {"message": "작업이 백그라운드에서 시작되었습니다."}
+
 
 @router.post("/upload-script")
 async def upload_script(file: UploadFile = File(...)):
