@@ -2,6 +2,7 @@
 
     import com.recipe.yorijori.client.RecipeServiceClient;
     import com.recipe.yorijori.data.domain.User;
+    import com.recipe.yorijori.data.dto.common.response.CommonResponseDto;
     import com.recipe.yorijori.data.dto.rank.RankResponseDto;
     import com.recipe.yorijori.data.dto.recipe.response.*;
     import com.recipe.yorijori.data.dto.user.request.UserModifyRequestDto;
@@ -9,6 +10,7 @@
     import com.recipe.yorijori.data.dto.user.response.UserResponseDto;
     import com.recipe.yorijori.global.exception.Unauthorized;
     import com.recipe.yorijori.repository.UserRepository;
+    import com.recipe.yorijori.service.CommonService;
     import com.recipe.yorijori.service.JwtService;
     import com.recipe.yorijori.service.S3Uploader;
     import com.recipe.yorijori.service.UserService;
@@ -38,6 +40,7 @@
         private final JwtService jwtService;
         private final RecipeServiceClient recipeServiceClient;
         private final S3Uploader s3Uploader;
+        private final CommonService commonService;
 
         @PostMapping("/sign-up")
         public String signUp(@RequestBody UserSignUpDto userSignUpDto) throws Exception {
@@ -245,6 +248,12 @@
             }
         }
 
+
+        @GetMapping("/common")
+        public ResponseEntity<List<CommonResponseDto>> getCommonList() {
+            List<CommonResponseDto> commonList = commonService.getAllCommonCodes();
+            return ResponseEntity.ok(commonList);
+        }
 
 
     }
