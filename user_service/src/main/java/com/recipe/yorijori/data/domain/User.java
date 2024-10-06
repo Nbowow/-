@@ -63,10 +63,6 @@ public class User extends BaseTimeEntity{
     @Column(name = "user_refresh_token")
     private String refreshToken;
 
-    public void authorizeUser() {
-        this.role = Role.USER;
-    }
-
     // 비밀번호 암호화 메소드
     public void passwordEncode(PasswordEncoder passwordEncoder) {
         this.password = passwordEncoder.encode(this.password);
