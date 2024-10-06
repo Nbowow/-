@@ -21,8 +21,8 @@
 
 INSERT INTO `allergys` (`allergy_id`, `created_date`, `updated_date`, `user_status`, `common_code_num`, `user_id`)
 VALUES
-(1, NOW(), NOW(), true, 'A_0001', 1001),
-(2, NOW(), NOW(), true, 'A_0002', 1002),
-(3, NOW(), NOW(), true, 'A_0003', 1003),
-(4, NOW(), NOW(), true, 'A_0004', 1004),
-(5, NOW(), NOW(), true, 'A_0005', 1005);
+(1, NOW(), NOW(), true, 'A_0001', 1),
+(2, NOW(), NOW(), true, 'A_0002', 1),
+(3, NOW(), NOW(), true, 'A_0003', 1),
+(4, NOW(), NOW(), true, 'A_0004', 1),
+(5, NOW(), NOW(), true, 'A_0005', 1);
