@@ -123,7 +123,10 @@ const RecipeForm = ({ recipeData, setRecipeData, categories }) => {
                         >
                             <option value="">{CATEGORY_TYPES.TYPE}</option>
                             {categories[CATEGORY_TYPES.TYPE].map((category) => (
-                                <option key={category} value={category}>
+                                <option
+                                    key={category.commonCodeNum}
+                                    value={category.commonCodeNum}
+                                >
                                     {category}
                                 </option>
                             ))}

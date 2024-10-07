@@ -1,4 +1,4 @@
-import { useState } from "react";
+/* eslint-disable react/prop-types */
 import {
     Container,
     Title,
@@ -13,11 +13,7 @@ import {
     ButtonContainer,
 } from "./MaterialForm.styled";
 
-const MaterialForm = () => {
-    const [materialGroups, setMaterialGroups] = useState([
-        { name: "", materials: [{ name: "", amount: "", unit: "" }] },
-    ]);
-
+const MaterialForm = ({ materialGroups, setMaterialGroups }) => {
     const handleChange = (groupIndex, materialIndex, field, value) => {
         const newMaterialGroups = [...materialGroups];
         if (field === "groupName") {
@@ -42,7 +38,7 @@ const MaterialForm = () => {
     const handleAddGroup = () => {
         setMaterialGroups([
             ...materialGroups,
-            { name: "", materials: [{ name: "", amount: "", unit: "" }] },
+            { name: "재료", materials: [{ name: "", amount: "", unit: "" }] },
         ]);
     };
 

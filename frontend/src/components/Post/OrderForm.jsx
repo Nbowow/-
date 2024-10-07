@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import { useState } from "react";
 import {
     Container,
@@ -20,42 +21,49 @@ import {
     RemoveButton,
 } from "./OrderForm.styled";
 
-const OrderForm = () => {
-    const [steps, setSteps] = useState([
-        { image: null, content: "", tools: "" },
-    ]);
+const OrderForm = ({ orderSteps, setOrderSteps }) => {
     const [activeStep, setActiveStep] = useState(0);
 
     const handleAddStep = () => {
-        setSteps([...steps, { image: null, content: "", tools: "" }]);
-        setActiveStep(steps.length);
+        const newStep = {
+            image: null,
+            content: "",
+            tools: "",
+            orderNum: orderSteps.length + 1,
+        };
+        setOrderSteps([...orderSteps, newStep]);
+        setActiveStep(orderSteps.length);
     };
 
     const handleImageUpload = (event) => {
         const file = event.target.files[0];
         if (file) {
-            const newSteps = [...steps];
-            newSteps[activeStep].image = URL.createObjectURL(file);
-            setSteps(newSteps);
+            const newSteps = [...orderSteps];
+            newSteps[activeStep].image = URL.createObjectURL(file); // 이미지 URL 생성
+            setOrderSteps(newSteps);
         }
     };
 
     const handleContentChange = (event) => {
-        const newSteps = [...steps];
+        const newSteps = [...orderSteps];
         newSteps[activeStep].content = event.target.value;
-        setSteps(newSteps);
+        setOrderSteps(newSteps);
     };
 
     const handleToolsChange = (event) => {
-        const newSteps = [...steps];
+        const newSteps = [...orderSteps];
         newSteps[activeStep].tools = event.target.value;
-        setSteps(newSteps);
+        setOrderSteps(newSteps);
     };
 
-    const handleImageRemove = () => {
-        const newSteps = [...steps];
-        newSteps[activeStep].image = null; // 이미지 제거
-        setSteps(newSteps);
+    const handleImageRemove = (e) => {
+        e.stopPropagation(); // 이벤트 전파 방지
+        const newSteps = [...orderSteps];
+        if (newSteps[activeStep].image) {
+            URL.revokeObjectURL(newSteps[activeStep].image); // URL 해제
+        }
+        newSteps[activeStep].image = null;
+        setOrderSteps(newSteps);
     };
 
     return (
@@ -68,7 +76,7 @@ const OrderForm = () => {
             </TitleContainer>
             <FormLayout>
                 <StepList>
-                    {steps.map((_, index) => (
+                    {orderSteps.map((_, index) => (
                         <StepButton
                             key={index}
                             active={activeStep === index}
@@ -89,32 +97,31 @@ const OrderForm = () => {
                         >
                             <input
                                 type="file"
+                                accept="image/*"
                                 onChange={handleImageUpload}
                                 style={{ display: "none" }}
                                 id="imageUpload"
                             />
-                            {steps[activeStep].image ? (
+                            {orderSteps[activeStep]?.image ? (
                                 <div style={{ position: "relative" }}>
                                     <img
-                                        src={steps[activeStep].image}
+                                        src={orderSteps[activeStep].image}
                                         alt="조리 과정"
                                         style={{
                                             maxWidth: "100%",
                                             maxHeight: "100%",
                                         }}
                                     />
-                                    <RemoveButton
-                                        onClick={(e) => {
-                                            e.stopPropagation(); // 클릭 이벤트 전파 방지
-                                            handleImageRemove();
-                                        }}
-                                    >
+                                    <RemoveButton onClick={handleImageRemove}>
                                         X
                                     </RemoveButton>
                                 </div>
                             ) : (
                                 <ButtonContainer>
-                                    <img src="/src/img/Vector.png" alt="" />
+                                    <img
+                                        src="/src/img/Vector.png"
+                                        alt="업로드 아이콘"
+                                    />
                                     <Text>조리사진 등록</Text>
                                 </ButtonContainer>
                             )}
@@ -124,7 +131,7 @@ const OrderForm = () => {
                         <Label>조리설명</Label>
                         <TextArea
                             placeholder="ex) 비커에 물과 커피 가루를 넣고 젓는다"
-                            value={steps[activeStep].content}
+                            value={orderSteps[activeStep]?.content || ""}
                             onChange={handleContentChange}
                         />
                     </TextContainer>
@@ -133,7 +140,7 @@ const OrderForm = () => {
                         <Input
                             type="text"
                             placeholder="ex) 비커, 젓가락"
-                            value={steps[activeStep].tools}
+                            value={orderSteps[activeStep]?.tools || ""}
                             onChange={handleToolsChange}
                         />
                     </InputContainer>

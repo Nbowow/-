@@ -1,3 +1,7 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable no-console */
+/* eslint-disable no-alert */
+/* eslint-disable prefer-const */
 import RecipeForm from "./../components/Post/RecipeForm";
 import MaterialForm from "../components/Post/MaterialForm";
 import OrderForm from "../components/Post/OrderForm";
@@ -46,12 +50,12 @@ const Hr = styled.hr`
 
 const PostRecipe = () => {
     const [recipeFormData, setRecipeFormData] = useState({
-        title: "",
+        title: "새 레시피", // 기본값 설정
         name: "",
         intro: "",
         image: null,
-        servings: 0,
-        time: 0,
+        servings: "",
+        time: "",
         level: "",
         cookingTools: "",
         type: "",
@@ -59,8 +63,12 @@ const PostRecipe = () => {
         ingredients: "",
         method: "",
     });
-    const [materialGroups, setMaterialGroups] = useState([]);
-    const [orderSteps, setOrderSteps] = useState([]);
+    const [materialGroups, setMaterialGroups] = useState([
+        { name: "", materials: [{ name: "", amount: "", unit: "" }] },
+    ]);
+    const [orderSteps, setOrderSteps] = useState([
+        { image: null, content: "" },
+    ]);
     const [categories, setCategories] = useState({
         [CATEGORY_TYPES.TYPE]: [],
         [CATEGORY_TYPES.SITUATION]: [],
@@ -77,27 +85,84 @@ const PostRecipe = () => {
     }, []);
 
     const handleSubmit = async () => {
+        // FormData 생성
+        const formData = new FormData();
+
+        // 재료 정보 변환
         const recipeMaterials = materialGroups.flatMap((group) =>
             group.materials.map((material) => ({
                 materialName: material.name,
                 materialAmount: material.amount,
                 materialUnit: material.unit,
-                materialSubtitle: group.name,
+                materialSubtitle: group.name || "재료", // 기본값 설정
             })),
         );
 
+        // 요리 순서 정보 변환
         const recipeOrders = orderSteps.map((step, index) => ({
             orderNum: index + 1,
-            orderImg: step.image,
+            orderImg: step.image, // 이미지 처리는 백엔드와 협의 필요
             orderContent: step.content,
         }));
 
+        // 요청 데이터 구성
         const requestData = {
-            ...recipeFormData,
+            title: recipeFormData.title || "새 레시피",
+            name: recipeFormData.name,
+            intro: recipeFormData.intro,
+            image: recipeFormData.image, // 이미지 처리는 백엔드와 협의 필요
+            servings: parseInt(recipeFormData.servings),
+            time: parseInt(recipeFormData.time),
+            level: recipeFormData.level,
+            cookingTools: recipeFormData.cookingTools || "", // 쉼표로 구분된 문자열
+            type: recipeFormData.type,
+            situation: recipeFormData.situation,
+            ingredients: recipeFormData.ingredients,
+            method: recipeFormData.method,
             recipeMaterials,
             recipeOrders,
         };
-        await postRecipe(requestData);
+        console.log(requestData);
+        // 유효성 검사
+        if (!validateRecipeData(requestData)) {
+            alert("필수 정보를 모두 입력해주세요.");
+            return;
+        }
+
+        try {
+            const response = await postRecipe(requestData);
+            if (response) {
+                alert("레시피가 성공적으로 등록되었습니다.");
+                // 성공 후 처리 (예: 페이지 이동)
+            }
+        } catch (error) {
+            alert("레시피 등록에 실패했습니다.");
+            console.error("Error posting recipe:", error);
+        }
+    };
+
+    // 유효성 검사 함수
+    const validateRecipeData = (data) => {
+        // 필수 필드 검사
+        const requiredFields = ["name", "intro", "servings", "time", "level"];
+        for (let field of requiredFields) {
+            if (!data[field]) return false;
+        }
+
+        // 재료 정보 검사
+        if (!data.recipeMaterials.length) return false;
+        for (let material of data.recipeMaterials) {
+            if (!material.materialName || !material.materialAmount)
+                return false;
+        }
+
+        // 요리 순서 검사
+        if (!data.recipeOrders.length) return false;
+        for (let order of data.recipeOrders) {
+            if (!order.orderContent) return false;
+        }
+
+        return true;
     };
 
     return (
