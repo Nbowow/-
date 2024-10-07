@@ -3,27 +3,36 @@ import Tag from "../../Tag/Tag";
 import * as S from "./RecipeHeader.styled";
 import ActionToggleGroup from "../../Toggle/ActionToggleGroup/ActionToggleGroup";
 
-function RecipeHeader({ data }) {
+function RecipeHeader({ recipe }) {
     return (
         <S.RecipeHeaderContainer>
             <S.TopSection>
-                <S.Title>{data.title}</S.Title>
+                <S.Title>{recipe.name}</S.Title>
                 <S.TagWrapper>
-                    <Tag tag={data.tag[0]} />
-                    <Tag tag={data.tag[1]} />
+                    <Tag tag={recipe.type} />
+                    <Tag tag={recipe.situation} />
+                    <Tag tag={recipe.ingredients} />
+                    <Tag tag={recipe.method} />
                 </S.TagWrapper>
 
                 <S.RecipeStats>
-                    <ActionToggleGroup />
+                    <ActionToggleGroup post={recipe} />
                 </S.RecipeStats>
             </S.TopSection>
-            <S.RecipeDescription>{data.text}</S.RecipeDescription>
+            <S.RecipeDescription>{recipe.intro}</S.RecipeDescription>
         </S.RecipeHeaderContainer>
     );
 }
 
 RecipeHeader.propTypes = {
-    data: PropTypes.object.isRequired,
+    recipe: PropTypes.shape({
+        name: PropTypes.string.isRequired,
+        type: PropTypes.string.isRequired,
+        situation: PropTypes.string.isRequired,
+        ingredients: PropTypes.array.isRequired,
+        method: PropTypes.string.isRequired,
+        intro: PropTypes.string.isRequired,
+    }).isRequired,
 };
 
 export default RecipeHeader;

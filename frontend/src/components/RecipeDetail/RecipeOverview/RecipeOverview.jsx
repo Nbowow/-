@@ -4,8 +4,8 @@ import RecipeOverviewItem from "./RecipeOverviewItem";
 
 function RecipeOverview({ recipe }) {
     const recipeDetails = [
-        { icon: "⏰", label: "시간", detail: `${recipe.minute}분` },
-        { icon: "🔥", label: "난이도", detail: recipe.difficulty },
+        { icon: "⏰", label: "시간", detail: `${recipe.time}분` },
+        { icon: "🔥", label: "난이도", detail: recipe.level },
         { icon: "🏋️‍♂️", label: "예상 칼로리", detail: `${recipe.calories}Kal` },
         { icon: "💸", label: "예상 가격", detail: `${recipe.cost}원` },
     ];
@@ -26,8 +26,8 @@ function RecipeOverview({ recipe }) {
 
 RecipeOverview.propTypes = {
     recipe: PropTypes.shape({
-        minute: PropTypes.number,
-        difficulty: PropTypes.string,
+        time: PropTypes.number,
+        level: PropTypes.string,
         calories: PropTypes.number,
         cost: PropTypes.number,
     }).isRequired,
