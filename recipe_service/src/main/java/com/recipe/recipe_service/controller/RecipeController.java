@@ -7,11 +7,9 @@ import com.recipe.recipe_service.data.domain.RecipeComments;
 import com.recipe.recipe_service.data.dto.comment.request.CommentRegisterRequestDto;
 import com.recipe.recipe_service.data.dto.comment.response.CommentResponseDto;
 import com.recipe.recipe_service.data.dto.recipe.request.RecipeRegisterRequestDto;
-import com.recipe.recipe_service.data.dto.recipe.response.RecipeDetailsResponseDto;
-import com.recipe.recipe_service.data.dto.recipe.response.UserRecipeLikeResponseDto;
-import com.recipe.recipe_service.data.dto.recipe.response.UserRecipeRegistResponseDto;
-import com.recipe.recipe_service.data.dto.recipe.response.UserRecipeScrapResponseDto;
+import com.recipe.recipe_service.data.dto.recipe.response.*;
 import com.recipe.recipe_service.data.dto.user.UserSimpleResponseDto;
+import com.recipe.recipe_service.repository.RecipeRepository;
 import com.recipe.recipe_service.service.RecipeService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,6 +30,7 @@ public class RecipeController {
     private final RecipeService recipeService;
     private final UserServiceClient userServiceClient;
     private final IngredientServiceClient ingredientServiceClient;
+    private final RecipeRepository recipeRepository;
 
     // 레시피 생성
     @PostMapping("")
@@ -145,4 +144,34 @@ public class RecipeController {
         return ResponseEntity.status(HttpStatus.OK).body(userScrapRecipes);
     }
 
+
+    @PostMapping("/list")
+    public List<RecipeResponseDto> getRecipeList(@RequestBody List<Long> recipeIds) {
+        // 1. 레시피 아이디 리스트에 해당하는 레시피들을 조회
+        List<Recipe> recipes = recipeRepository.findByIdIn(recipeIds);
+
+        // 2. 조회된 레시피들을 RecipeResponseDto로 변환하여 반환
+        return recipes.stream()
+                .map(recipe -> RecipeResponseDto.builder()
+                        .id(recipe.getId())
+                        .title(recipe.getTitle())
+                        .name(recipe.getName())
+                        .intro(recipe.getIntro())
+                        .image(recipe.getImage())
+                        .viewCount(recipe.getViewCount())
+                        .servings(recipe.getServings())
+                        .time(recipe.getTime())
+                        .level(recipe.getLevel())
+                        .cookingTools(recipe.getCookingTools())
+                        .type(recipe.getType())
+                        .situation(recipe.getSituation())
+                        .ingredients(recipe.getIngredients())
+                        .method(recipe.getMethod())
+                        .userId(recipe.getUserId())
+                        .likeCount(recipe.getLikeCount())
+                        .scrapCount(recipe.getScrapCount())
+                        .commentCount(recipe.getCommentCount())
+                        .build())
+                .collect(Collectors.toList());
+    }
 }

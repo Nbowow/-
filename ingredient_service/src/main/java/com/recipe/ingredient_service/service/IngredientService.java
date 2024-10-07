@@ -2,14 +2,18 @@ package com.recipe.ingredient_service.service;
 
 import com.recipe.ingredient_service.data.domain.DayPrice;
 import com.recipe.ingredient_service.data.domain.Ingredient;
+import com.recipe.ingredient_service.data.domain.Recipematerials;
 import com.recipe.ingredient_service.data.domain.UserLikeMaterials;
 import com.recipe.ingredient_service.data.dto.ingredient.DayDto;
 import com.recipe.ingredient_service.data.dto.ingredient.response.*;
+import com.recipe.ingredient_service.data.dto.recipe.response.RecipeResponseDto;
 import com.recipe.ingredient_service.repository.DayPriceRepository;
 import com.recipe.ingredient_service.repository.IngredientRepository;
+import com.recipe.ingredient_service.repository.RecipematerialsRepository;
 import com.recipe.ingredient_service.repository.UserLikeMaterialsRepository;
 import info.debatty.java.stringsimilarity.JaroWinkler;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -25,14 +29,15 @@ import java.util.stream.Collectors;
 
 @Service
 @Slf4j
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class IngredientService {
 
     private final UserLikeMaterialsRepository userLikeMaterialsRepository;
     private final IngredientRepository ingredientRepository;
     private final DayPriceRepository dayPriceRepository;
-    private JaroWinkler jaroWinkler = new JaroWinkler();
+    private final RecipematerialsRepository recipematerialsRepository;
 
+    private JaroWinkler jaroWinkler = new JaroWinkler();
     // 알러지 매핑 데이터
     private Map<String, List<String>> allergyMapping = new HashMap<>();
     private Map<String, String> allergyCodeMapping = new HashMap<>();
@@ -408,4 +413,17 @@ public class IngredientService {
 
         return ingredient;
     }
+
+    public List<Long> getRecipeIdByIngredients(List<Long> ingredientIds) {
+        // 재료 아이디에 해당하는 레시피 재료 조회
+        List<Recipematerials> recipematerialsList = recipematerialsRepository.findByMaterialIdIn(ingredientIds);
+
+        // 레시피 아이디를 추출하고 중복을 제거하여 반환
+        return recipematerialsList.stream()
+                .map(Recipematerials::getRecipeId)
+                .distinct()
+                .collect(Collectors.toList());
+    }
+
+
 }
