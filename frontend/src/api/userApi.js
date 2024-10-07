@@ -14,3 +14,8 @@ export const updateUser = async (data) => {
     const response = await axiosInstance.patch("/users/user", data);
     return response.data;
 };
+
+export const fetchAllergyList = async () => {
+    const response = await axiosInstance.get("/users/common");
+    return response.data.filter((item) => item.commonCodeType === "A");
+};

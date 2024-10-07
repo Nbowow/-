@@ -8,9 +8,9 @@ const CardToggleList = ({ data }) => {
         <S.CardList>
             {data.map((item) => (
                 <CardToggle
-                    key={item.code}
-                    imgUrl={getAllergyImage(item.code)}
-                    text={item.text}
+                    key={item.commonCodeId}
+                    imgUrl={getAllergyImage(item.commonCodeNum)}
+                    text={item.commonCodeName}
                 />
             ))}
         </S.CardList>
