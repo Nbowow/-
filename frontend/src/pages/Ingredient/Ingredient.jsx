@@ -1,18 +1,56 @@
 import Footer from "../../components/Footer/Footer";
-import Header from "../../components/Header/Header";
 import IngredientOverview from "../../components/IngredientPrices/IngredientOverview";
 import SearchBar from "../../components/SearchBar/SearchBar";
 import Slider from "../../components/IngredientPrices/LivePriceTracker/Slider";
-import HotIngredient from "../../components/IngredientPrices/HotIngredient/HotIngredient";
-
 import * as S from "./Ingredient.styled";
 import Title from "../../components/Title/Title";
+import HotMonthIngredients from "../../components/IngredientPrices/HotIngredient/HotMonthIngredients";
 import SearchResult from "../../components/IngredientPrices/SearchResult/SearchResult";
+
+import {
+    deleteLikeIngredient,
+    getLikeIngredients,
+    getSearchIngredient,
+    postLikeIngredient,
+} from "../../api/ingredientApi";
+
+import { useEffect, useState } from "react";
+import HotWeekIngredients from "../../components/IngredientPrices/HotIngredient/HotWeekIngredients";
+
 const Ingredient = () => {
+    const [searchResult, setSearchResult] = useState(null);
+    const [likeIngredients, setLikeIngredients] = useState([]);
+
+    const handleLike = (ingredient) => {
+        const isLiked = likeIngredients.find((i) => i.id === ingredient.id);
+        setLikeIngredients((prev) =>
+            isLiked
+                ? prev.filter((el) => el.id !== ingredient.id)
+                : [...prev, ingredient],
+        );
+
+        if (isLiked) {
+            deleteLikeIngredient(ingredient.id);
+        } else {
+            postLikeIngredient(ingredient.id);
+        }
+    };
+
+    useEffect(() => {
+        const fetchLikeIngredients = async () => {
+            const result = await getLikeIngredients();
+            setLikeIngredients(result);
+        };
+        fetchLikeIngredients();
+    }, []);
+
+    const handleSearch = async (searchTerm) => {
+        const result = await getSearchIngredient(searchTerm);
+        setSearchResult(result);
+    };
+
     return (
         <>
-            <Header />
-
             <S.Container>
                 <SearchBar
                     userId={"test"}
@@ -21,26 +59,30 @@ const Ingredient = () => {
                     grayPlacehold={
                         "재료명을 입력하고 현재 시세를 확인해보세요."
                     }
+                    onSubmit={(term) => handleSearch(term)}
                 />
-
-                {/* TODO: 검색 결과에 따른 렌더링 */}
-                <SearchResult />
-                <SearchResult />
-
-                <IngredientOverview />
+                {searchResult ? (
+                    <SearchResult
+                        onLike={handleLike}
+                        result={searchResult}
+                        like={likeIngredients.find(
+                            (i) => i.id === searchResult.id,
+                        )}
+                    />
+                ) : null}
+                <IngredientOverview
+                    like={likeIngredients}
+                    onLike={handleLike}
+                />
                 <S.RecommendSection>
-                    <S.Hot>
-                        <Title title={"주간 인기 재료"} />
-                        <HotIngredient />
-                        <HotIngredient />
-                        <HotIngredient />
-                    </S.Hot>
-                    <S.Hot>
-                        <Title title={"월간 인기 재료"} />
-                        <HotIngredient />
-                        <HotIngredient />
-                        <HotIngredient />
-                    </S.Hot>
+                    <HotWeekIngredients
+                        like={likeIngredients}
+                        onLike={handleLike}
+                    />
+                    <HotMonthIngredients
+                        like={likeIngredients}
+                        onLike={handleLike}
+                    />
                     <S.Live>
                         <Title title={"실시간 물가 변동"} />
                         <Slider />

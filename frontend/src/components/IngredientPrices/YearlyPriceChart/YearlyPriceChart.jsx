@@ -9,14 +9,14 @@ import PropTypes from "prop-types";
 
 const YearlyPriceChart = ({ priceHistory }) => {
     const priceArr = [
-        priceHistory.monthMock.map((item) => item.price),
-        priceHistory.weeklyMock.map((item) => item.price),
-        priceHistory.dayMock.map((item) => item.price),
+        priceHistory.monthPrice.map((item) => item.price),
+        priceHistory.weekPrice.map((item) => item.price),
+        priceHistory.dayPrice.map((item) => item.price),
     ];
     const labels = [
-        priceHistory.monthMock.map((item) => item.date),
-        priceHistory.weeklyMock.map((item) => item.date),
-        priceHistory.dayMock.map((item) => item.date),
+        priceHistory.monthPrice.map((item) => item.date),
+        priceHistory.weekPrice.map((item) => item.date),
+        priceHistory.dayPrice.map((item) => item.date),
     ];
 
     const yAxis = priceArr.map((priceData) => {
