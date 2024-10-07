@@ -9,7 +9,7 @@ from hdfs import InsecureClient
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import regexp_replace, col, when, regexp_extract, udf, length
 from pyspark.sql.types import StringType
-from sqlalchemy import Column, BigInteger, String, Boolean, select, Integer, DateTime, ForeignKey
+from sqlalchemy import Column, BigInteger, String, Boolean, select, Integer, DateTime, ForeignKey, Double
 from sqlalchemy import create_engine
 from sqlalchemy.orm import relationship
 from sqlalchemy.orm import sessionmaker, declarative_base
@@ -266,7 +266,7 @@ class Recipes(Base):
 
     recipe_materials = relationship("RecipeMaterials", back_populates="recipe")
 
-    # recipe_nutrient = relationship("RecipeNutrient", back_populates="recipe")
+    recipe_nutrient = relationship("RecipeNutrient", back_populates="recipe")
 
 
 class RecipeOrders(Base):
@@ -279,6 +279,23 @@ class RecipeOrders(Base):
 
     recipe_id = Column(BigInteger, ForeignKey("recipes.recipe_id"), nullable=False)
     recipe = relationship("Recipes", back_populates="recipe_orders")
+
+
+class RecipeNutrient(Base):
+    __tablename__ = "recipenutrient"
+
+    recipe_nutrient_id = Column(BigInteger, nullable=False, primary_key=True, index=True, autoincrement=True)
+    capacity = Column(String(20), nullable=False)
+    kcal = Column(BigInteger, nullable=False)
+    protein = Column(Double)
+    carbohydrate = Column(Double)
+    fat = Column(Double)
+    cholesterol = Column(Double)
+    potassium = Column(Double)
+    salt = Column(Double)
+
+    recipe_id = Column(BigInteger, ForeignKey("recipes.recipe_id"), nullable=False)
+    recipe = relationship("Recipes", back_populates="recipe_nutrient")
 
 
 def main():
