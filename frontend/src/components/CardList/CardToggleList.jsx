@@ -9,6 +9,7 @@ const CardToggleList = ({ data, userAllergyList }) => {
             {data.map((item) => (
                 <CardToggle
                     key={item.commonCodeNum}
+                    code={item.commonCodeNum}
                     imgUrl={getAllergyImage(item.commonCodeNum)}
                     text={item.commonCodeName}
                     isClicked={userAllergyList.includes(item.commonCodeNum)}

@@ -24,3 +24,17 @@ export const fetchUserAllergyList = async () => {
     const response = await axiosInstance.get("/users/allergys");
     return response.data;
 };
+
+export const addAllergy = async (commonCodeNum) => {
+    const response = await axiosInstance.post("/users/allergys", {
+        commonCodeNum,
+    });
+    return response.data;
+};
+
+export const deleteAllergy = async (commonCodeNum) => {
+    const response = await axiosInstance.delete(
+        `/users/allergys/${commonCodeNum}`,
+    );
+    return response.data;
+};
