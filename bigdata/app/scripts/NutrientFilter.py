@@ -150,3 +150,24 @@ def process_nutrient_data():
         print(f"총 {len(rows)}개 중 {idx}번째 row 처리 중입니다.")
 
         print("6. 레시피 저장")
+
+        save_nutrient_db(item_name, capacity, kcal, protein, carbohydrate, fat, cholesterol, salt)
+
+
+def save_nutrient_db(item_name, capacity, kcal, protein, carbohydrate, fat, cholesterol, salt):
+    engine = engineconnection()
+    session = engine.sessionmaker()
+
+    new_nutrient = RecipeNutrient(
+        name=item_name,
+        capacity=capacity,
+        kcal=kcal,
+        protein=protein,
+        carbohydrate=carbohydrate,
+        fat=fat,
+        cholesterol=cholesterol,
+        salt=salt
+    )
+    session.add(new_nutrient)
+    session.commit()
+    session.close()
