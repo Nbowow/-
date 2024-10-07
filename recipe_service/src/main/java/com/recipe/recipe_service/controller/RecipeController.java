@@ -6,6 +6,7 @@ import com.recipe.recipe_service.data.domain.Recipe;
 import com.recipe.recipe_service.data.dto.ingredient.response.IngredientLikeResponseDto;
 import com.recipe.recipe_service.data.dto.recipe.request.RecipeRegisterRequestDto;
 import com.recipe.recipe_service.data.dto.recipe.response.*;
+import com.recipe.recipe_service.repository.RecipeRepository;
 import com.recipe.recipe_service.data.dto.user.response.UserAllergyResponseDto;
 import com.recipe.recipe_service.data.dto.user.response.UserSimpleResponseDto;
 import com.recipe.recipe_service.service.RecipeService;
@@ -27,6 +28,7 @@ public class RecipeController {
     private final RecipeService recipeService;
     private final UserServiceClient userServiceClient;
     private final IngredientServiceClient ingredientServiceClient;
+    private final RecipeRepository recipeRepository;
 
     // 레시피 생성
     @PostMapping("")
@@ -165,6 +167,36 @@ public class RecipeController {
         List<RecipeRecommendResponseDto> recommendedRecipes = recipeService.getRecipesByIngredients(safeIngredientIds);
 
         return ResponseEntity.status(HttpStatus.OK).body(recommendedRecipes);
+    }
+
+    @PostMapping("/list")
+    public List<RecipeResponseDto> getRecipeList(@RequestBody List<Long> recipeIds) {
+        // 1. 레시피 아이디 리스트에 해당하는 레시피들을 조회
+        List<Recipe> recipes = recipeRepository.findByIdIn(recipeIds);
+
+        // 2. 조회된 레시피들을 RecipeResponseDto로 변환하여 반환
+        return recipes.stream()
+                .map(recipe -> RecipeResponseDto.builder()
+                        .id(recipe.getId())
+                        .title(recipe.getTitle())
+                        .name(recipe.getName())
+                        .intro(recipe.getIntro())
+                        .image(recipe.getImage())
+                        .viewCount(recipe.getViewCount())
+                        .servings(recipe.getServings())
+                        .time(recipe.getTime())
+                        .level(recipe.getLevel())
+                        .cookingTools(recipe.getCookingTools())
+                        .type(recipe.getType())
+                        .situation(recipe.getSituation())
+                        .ingredients(recipe.getIngredients())
+                        .method(recipe.getMethod())
+                        .userId(recipe.getUserId())
+                        .likeCount(recipe.getLikeCount())
+                        .scrapCount(recipe.getScrapCount())
+                        .commentCount(recipe.getCommentCount())
+                        .build())
+                .collect(Collectors.toList());
     }
 
     // 날씨 기반 레시피 추천
