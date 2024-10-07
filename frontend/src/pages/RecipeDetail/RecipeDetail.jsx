@@ -29,20 +29,13 @@ const RecipeDetail = () => {
             const data = await getComments(id);
             setComments(data);
         };
+
         fetchRecipe(id);
         fetchReview(id);
         fetchComment(id);
     }, [id]);
 
     const allergies = ["토마토", "우유"];
-
-    const user = {
-        id: 1,
-        imgUrl: "https://mblogthumb-phinf.pstatic.net/MjAyMTAzMjJfMjUg/MDAxNjE2Mzg4ODI3MzMx.0G6S0UjP07n30LGB4ckxTy61yx06j23nvkKxD0J3cPUg.-kIS_AzileIuNGaJ7W_-eCIVIzuKC9VmErz7zoFpDNUg.JPEG.chooddingg/E4DE992B-B5DF-44F2-AA60-E7F9D00B8BEE-16837-0000081DF5EE03C2_file.jpg?type=w800",
-        name: "명수옹",
-        followCnt: 100,
-        talk: " 명수옹의 요리조리요리조리요리조리요리조리",
-    };
 
     const step = [
         {
@@ -71,8 +64,14 @@ const RecipeDetail = () => {
                 </S.StepSection>
 
                 <S.UserSection>
-                    {/* todo : recipeUser 컴포넌트에 user props 전달 */}
-                    <RecipeUser user={user} />
+                    <RecipeUser
+                        user={{
+                            nickname: recipe.nickname,
+                            profileImage: recipe.profileImage,
+                            id: recipe.userId,
+                            summary: recipe.summary,
+                        }}
+                    />
                 </S.UserSection>
 
                 <Review reviews={reviews} rating={rating} recipe={recipe} />
