@@ -14,4 +14,5 @@ public class AllergyResponseDto {
     private boolean status;
     private String commonCodeNum;
     private Long userId;
+    
 }
