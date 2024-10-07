@@ -1,4 +1,3 @@
-import Header from "../../components/Header/Header";
 import Button from "../../components/Button/Button";
 import * as S from "./Notfound.styled";
 
@@ -9,7 +8,6 @@ const Notfound = () => {
 
     return (
         <>
-            <Header />
             <S.Notfound>
                 <S.Icon />
                 <S.ErrorCode>404</S.ErrorCode>

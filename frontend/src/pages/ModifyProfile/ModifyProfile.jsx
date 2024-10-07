@@ -1,10 +1,8 @@
-import Header from "../../components/Header/Header";
 import Tab from "../../components/Tab/Tab";
-import UserProfile from "../../components/UserProfile/UserProfile";
 import ModifyUserInfoForm from "../../components/ModifyProfile/ModifyUserInfoForm/ModifyUserInfoForm";
 import AllergyListForm from "../../components/ModifyProfile/AllergyListForm/AllergyListForm";
-import Footer from "../../components/Footer/Footer";
 import * as S from "./ModifyProfile.styled";
+import UserProfileImage from "../../components/UserProfile/UserProfileImage/UserProfileImage";
 
 const ModifyProfile = () => {
     const tabs = [
@@ -17,10 +15,10 @@ const ModifyProfile = () => {
 
     return (
         <S.ModifyProfile>
-            <Header />
-            <UserProfile />
+            <S.ProfileImageWrapper>
+                <UserProfileImage size="180px" />
+            </S.ProfileImageWrapper>
             <Tab tabs={tabs} />
-            <Footer />
         </S.ModifyProfile>
     );
 };

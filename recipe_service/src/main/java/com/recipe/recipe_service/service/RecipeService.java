@@ -364,7 +364,9 @@ public class RecipeService {
                             recipe.getUserId(),
                             recipe.getLikeCount(),
                             recipe.getScrapCount(),
-                            recipe.getCommentCount()
+                            recipe.getCommentCount(),
+                            "",
+                            ""
                     );
                 })
                 .collect(Collectors.toList());
@@ -401,7 +403,9 @@ public class RecipeService {
                             recipe.getUserId(),
                             recipe.getLikeCount(),
                             recipe.getScrapCount(),
-                            recipe.getCommentCount()
+                            recipe.getCommentCount(),
+                            "",
+                            ""
                     );
                 })
                 .collect(Collectors.toList());

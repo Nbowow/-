@@ -27,4 +27,6 @@ public class UserRecipeScrapResponseDto {
     private Long likeCount;
     private Long scrapCount;
     private Long commentCount;
+    private String nickname;
+    private String profileImage;
 }

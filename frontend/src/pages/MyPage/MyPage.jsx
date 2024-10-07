@@ -1,18 +1,17 @@
 import * as S from "./MyPage.styled";
-import Header from "../../components/Header/Header";
 import UserProfile from "../../components/UserProfile/UserProfile";
 import UserProfileLevel from "../../components/UserProfile/UserProfileLevel/UserProfileLevel";
 import Tab from "../../components/Tab/Tab";
 import RecipeCardList from "../../components/CardList/RecipeCardList";
-
-const testProfile = {
-    profileImgUrl:
-        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQC3mWTEKRD3X8xKRx2mx9RGBWk072IZFdJIg&s",
-    nickName: "흑종원",
-    discription: "조보아씨 일루 내려와바유",
-};
+import { useUserStore } from "../../store/userStore";
+import useUser from "../../hooks/useUser";
 
 const MyPage = () => {
+    const { isLoading } = useUser();
+    const user = useUserStore((state) => state.user);
+
+    if (isLoading) return <div></div>;
+
     //TODO : 테스트용 데이터
     const recipes = [
         {
@@ -224,15 +223,8 @@ const MyPage = () => {
     return (
         <S.MyPage>
             <div>
-                <Header />
-                <UserProfile
-                    showInfo={true}
-                    profileImgUrl={testProfile.profileImgUrl}
-                    UserProfileStat={testProfile.profileStat}
-                    nickName={testProfile.nickName}
-                    discription={testProfile.discription}
-                />
-                <UserProfileLevel />
+                <UserProfile showInfo={true} member={user} />
+                <UserProfileLevel score={user.score} />
             </div>
             <Tab tabs={tabs} />
         </S.MyPage>

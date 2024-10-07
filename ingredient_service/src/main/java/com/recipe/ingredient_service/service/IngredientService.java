@@ -1,24 +1,34 @@
 package com.recipe.ingredient_service.service;
 
+import com.recipe.ingredient_service.data.domain.DayPrice;
 import com.recipe.ingredient_service.data.domain.Ingredient;
-import com.recipe.ingredient_service.data.dto.ingredient.response.IngredientIdResponseDto;
+import com.recipe.ingredient_service.data.domain.UserLikeMaterials;
+import com.recipe.ingredient_service.data.dto.ingredient.DayDto;
+import com.recipe.ingredient_service.data.dto.ingredient.response.*;
+import com.recipe.ingredient_service.repository.DayPriceRepository;
 import com.recipe.ingredient_service.repository.IngredientRepository;
+import com.recipe.ingredient_service.repository.UserLikeMaterialsRepository;
 import info.debatty.java.stringsimilarity.JaroWinkler;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoField;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
 @AllArgsConstructor
 public class IngredientService {
 
+    private final UserLikeMaterialsRepository userLikeMaterialsRepository;
     private final IngredientRepository ingredientRepository;
+    private final DayPriceRepository dayPriceRepository;
     private JaroWinkler jaroWinkler = new JaroWinkler();
 
     // 알러지 매핑 데이터
@@ -68,12 +78,12 @@ public class IngredientService {
         allergyCodeMapping.put("아황산류 (황산화물)", "A_0019");
     }
 
-    public Long findMatchingIngredient(String ingredientName) {
+    public Ingredient findMatchingIngredient(String ingredientName) {
 
         Optional<Ingredient> foundIngredient = ingredientRepository.findByNameIgnoreCase(ingredientName);
 
         if (foundIngredient.isPresent()) {
-            return foundIngredient.get().getId();
+            return foundIngredient.get();
         }
 
         List<Ingredient> ingredients = ingredientRepository.findAll();
@@ -91,9 +101,9 @@ public class IngredientService {
         }
 
         if (bestMatch != null) {
-            return bestMatch.getId();
+            return bestMatch;
         }
-        return 0L;
+        return null;
     }
 
     private String findMatchingAllergyCode(String ingredientName) {
@@ -120,10 +130,9 @@ public class IngredientService {
     }
 
     public IngredientIdResponseDto findSimilarName(String name) {
-        long result = findMatchingIngredient(name);
+        Ingredient findIngredient = findMatchingIngredient(name);
 
-        if (result == 0L) {
-
+        if (findIngredient == null) {
             String allergyCode = findMatchingAllergyCode(name);
             Ingredient newIngredient = Ingredient.builder()
                     .name(name)
@@ -137,8 +146,214 @@ public class IngredientService {
                     .id(saveIngredient.getId())
                     .build();
         }
+
         return IngredientIdResponseDto.builder()
-                .id(result)
+                .id(findIngredient.getId())
                 .build();
+    }
+
+    public IngredientsSearchResponseDto findIngredientData(String name) {
+        Ingredient findIngredient = findMatchingIngredient(name);
+
+        if (findIngredient == null) {
+            return IngredientsSearchResponseDto.builder()
+                    .id(null)
+                    .name("Unknown")
+                    .ingredientImage("")
+                    .build();
+        }
+
+        return IngredientsSearchResponseDto.builder()
+                .id(findIngredient.getId())
+                .name(findIngredient.getName())
+                .ingredientImage(findIngredient.getImg())
+                .build();
+    }
+
+    public List<IngredientPriceChangeResponseDto> findAllIngredientPriceData() {
+
+        List<Long> priceIngredientList = ingredientRepository.findMaterialIdsWithPriceStatusTrue();
+
+        if (priceIngredientList == null || priceIngredientList.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        List<Object[]> priceChanges = dayPriceRepository.findIngredientPriceChanges(priceIngredientList);
+
+        if (priceChanges == null) {
+            return new ArrayList<>();
+        }
+
+        List<IngredientPriceChangeResponseDto> responseDtoList = new ArrayList<>();
+
+        if (priceChanges.size() % 2 != 0) {
+            throw new IllegalStateException("priceChanges Data Wrong");
+        }
+
+        for (int i = 0; i < priceChanges.size(); i += 2) {
+            Long ingredientId = (Long) priceChanges.get(i)[0];
+            Integer currentPrice = (Integer) priceChanges.get(i)[1];
+            Integer yesterdayPrice = (Integer) priceChanges.get(i + 1)[1];
+
+            String ingredientName = ingredientRepository.findById(ingredientId)
+                    .map(Ingredient::getName)
+                    .orElse("Unknown Ingredient");
+
+            if (!ingredientName.equals("Unknown Ingredient")) {
+                IngredientPriceChangeResponseDto dto = IngredientPriceChangeResponseDto.builder()
+                        .name(ingredientName)
+                        .currentPrice(currentPrice.toString())
+                        .yesterdayPrice(yesterdayPrice.toString())
+                        .build();
+
+                responseDtoList.add(dto);
+            }
+        }
+
+        return responseDtoList;
+    }
+
+    public IngredientPriceDetailsResponseDto findAllDayIngredientPriceData(Long ingredientId) {
+        IngredientPriceDetailsResponseDto newIngredient = new IngredientPriceDetailsResponseDto();
+
+        // 일간
+        Pageable pageable = PageRequest.of(0, 12);
+        LocalDateTime today = LocalDateTime.now();
+        List<DayPrice> findTopDayIngredientPrice = dayPriceRepository.findRecentDays(ingredientId, today, pageable);
+
+        List<DayDto> dayPriceList = new ArrayList<>();
+        LocalDateTime currentDate = today;
+
+        DayPrice closestDayPrice = findTopDayIngredientPrice.isEmpty() ? null : findTopDayIngredientPrice.get(0);
+
+        for (int i = 0; i < 12; i++) {
+            LocalDateTime finalCurrentDate = currentDate;
+
+            DayPrice currentDayPrice = findTopDayIngredientPrice.stream()
+                    .filter(dp -> dp.getDay().toLocalDate().equals(finalCurrentDate.toLocalDate()))
+                    .findFirst()
+                    .orElse(null);
+
+            if (currentDayPrice != null && currentDayPrice.getPrice() != 0) {
+                closestDayPrice = currentDayPrice;
+            }
+
+            if (closestDayPrice != null) {
+                int daysAgo = i + 1;
+                dayPriceList.add(new DayDto(daysAgo, closestDayPrice.getPrice()));
+            }
+
+            currentDate = currentDate.minusDays(1);
+        }
+
+        newIngredient.setDayPriceData(dayPriceList);
+
+        // 주간
+        LocalDateTime endDate = LocalDateTime.now();
+
+        List<Object[]> weeklyAverages = dayPriceRepository.findWeeklyAveragePriceInPast(ingredientId, endDate);
+
+        List<DayDto> weeklyAveragePriceList = weeklyAverages.stream()
+                .map(result -> {
+                    int weekNum = (int) result[0];
+                    double avgPrice = (double) result[1];
+
+                    int currentWeekNum = endDate.get(ChronoField.ALIGNED_WEEK_OF_YEAR);
+                    int weeksAgo = currentWeekNum - weekNum;
+
+                    return new DayDto(weeksAgo, (int) avgPrice);
+                })
+                .limit(12)
+                .collect(Collectors.toList());
+
+        newIngredient.setWeekPriceData(weeklyAveragePriceList);
+
+        // 월간
+        List<Object[]> monthlyAverages = dayPriceRepository.findMonthlyAveragePriceInPast(ingredientId, endDate);
+
+        List<DayDto> monthlyAveragePriceList = monthlyAverages.stream()
+                .map(result -> {
+                    int monthNum = (int) result[0];
+                    double avgPrice = (double) result[1];
+
+                    int currentMonthNum = endDate.getMonthValue();
+                    int monthsAgo = currentMonthNum - monthNum;
+
+                    if (monthsAgo < 0) {
+                        monthsAgo += 12;
+                    }
+
+                    return new DayDto(monthsAgo, (int) avgPrice);
+                })
+                .limit(12)
+                .collect(Collectors.toList());
+
+        newIngredient.setMonthPriceData(monthlyAveragePriceList);
+
+        return newIngredient;
+    }
+
+    public List<IngredientPopularResponseDto> findPopularIngredients(int day) {
+
+        LocalDateTime startDate = LocalDateTime.now().minusDays(day);
+        Pageable pageable = PageRequest.of(0, 3);
+
+        List<Object[]> topLikedIngredients = userLikeMaterialsRepository.findTop3LikedIngredients(startDate, pageable);
+
+        return topLikedIngredients.stream().map(result -> {
+            Long ingredientId = (Long) result[0];
+            Long likeCount = (Long) result[1];
+
+            Ingredient ingredient = ingredientRepository.findById(ingredientId)
+                    .orElseThrow(() -> new NoSuchElementException("재료를 찾을 수 없습니다. ID: " + ingredientId));
+
+            Pageable pricePageable = PageRequest.of(0, 1);
+            int price = dayPriceRepository.findRecentDays(ingredientId, LocalDateTime.now(), pricePageable)
+                    .stream()
+                    .findFirst()
+                    .map(DayPrice::getPrice)
+                    .orElse(0);
+
+            return new IngredientPopularResponseDto(
+                    ingredientId,
+                    ingredient.getName(),
+                    ingredient.getImg(),
+                    price,
+                    likeCount
+            );
+        }).collect(Collectors.toList());
+    }
+
+    public void addUserIngredientLike(Long userId, Long ingredientId) {
+        UserLikeMaterials newLike = UserLikeMaterials.builder()
+                .userId(userId)
+                .ingredientId(ingredientId)
+                .date(LocalDateTime.now())
+                .build();
+
+        userLikeMaterialsRepository.save(newLike);
+    }
+
+    @Transactional
+    public void removeUserIngredientLike(Long userId, Long ingredientId) {
+        userLikeMaterialsRepository.deleteByUserIdAndIngredientId(userId, ingredientId);
+    }
+
+    public List<Ingredient> findUserLikeIngredients(Long userId) {
+        List<Long> ingredientList = userLikeMaterialsRepository.findIngredientIdsByUserId(userId);
+        return ingredientRepository.findByIds(ingredientList);
+    }
+
+    public Ingredient addIngredient(String name) {
+        Ingredient ingredient = Ingredient.builder()
+                .name(name)
+                .img("")
+                .allergyName("")
+                .priceStatus(true)
+                .build();
+
+        ingredientRepository.save(ingredient);
+
+        return ingredient;
     }
 }

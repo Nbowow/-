@@ -40,7 +40,11 @@ import java.io.IOException;
 public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
 
     private static final String NO_CHECK_URL = "/api/v1/users/login"; // "/login"으로 들어오는 요청은 Filter 작동 X
-
+    private static final String NO_CHECK_URL2 = "/api/v1/users/refresh-token";
+    private static final String NO_CHECK_URL3 = "/oauth2/authorization/naver";
+    private static final String NO_CHECK_URL4 = "/login/oauth2/code/naver";
+    private static final String NO_CHECK_URL5 = "/favicon.ico";
+    private static final String NO_CHECK_URL6 = "/api/v1/users/common";
     private final JwtService jwtService;
     private final UserRepository userRepository;
 
@@ -49,11 +53,12 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         log.info("Request URI: " + request.getRequestURI());
-        if (request.getRequestURI().equals(NO_CHECK_URL)) {
+        if (request.getRequestURI().equals(NO_CHECK_URL) || request.getRequestURI().equals(NO_CHECK_URL2)|| request.getRequestURI().equals(NO_CHECK_URL3)|| request.getRequestURI().equals(NO_CHECK_URL4)|| request.getRequestURI().equals(NO_CHECK_URL5) || request.getRequestURI().equals(NO_CHECK_URL6)) {
             log.info("No check URL : {}", request.getRequestURI());
             filterChain.doFilter(request, response); // "/login" 요청이 들어오면, 다음 필터 호출
             return; // return으로 이후 현재 필터 진행 막기 (안해주면 아래로 내려가서 계속 필터 진행시킴)
         }
+
 
 
 
@@ -64,6 +69,8 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
         String refreshToken = jwtService.extractRefreshToken(request)
                 .filter(jwtService::isTokenValid)
                 .orElse(null);
+
+        log.info("Refresh token: {}", refreshToken);
 
         // 리프레시 토큰이 요청 헤더에 존재했다면, 사용자가 AccessToken이 만료되어서
         // RefreshToken까지 보낸 것이므로 리프레시 토큰이 DB의 리프레시 토큰과 일치하는지 판단 후,
@@ -76,9 +83,20 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
         // RefreshToken이 없거나 유효하지 않다면, AccessToken을 검사하고 인증을 처리하는 로직 수행
         // AccessToken이 없거나 유효하지 않다면, 인증 객체가 담기지 않은 상태로 다음 필터로 넘어가기 때문에 403 에러 발생
         // AccessToken이 유효하다면, 인증 객체가 담긴 상태로 다음 필터로 넘어가기 때문에 인증 성공
+
+
+        // Handle AccessToken errors separately for 401 response
         if (refreshToken == null) {
-            checkAccessTokenAndAuthentication(request, response, filterChain);
+            boolean isAccessTokenValid = checkAccessTokenAndAuthentication(request, response, filterChain);
+            if (!isAccessTokenValid) {
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.getWriter().write("AccessToken is invalid or expired. Please provide a valid token.");
+                return;
+            }
         }
+
+        filterChain.doFilter(request, response);
+
     }
 
     /**
@@ -93,7 +111,8 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
                 .ifPresent(user -> {
                     String reIssuedRefreshToken = reIssueRefreshToken(user);
                     jwtService.sendAccessAndRefreshToken(response, jwtService.createAccessToken(user.getEmail()),
-                            reIssuedRefreshToken);
+                                reIssuedRefreshToken);
+
                 });
     }
 
@@ -117,16 +136,20 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
      * 인증 허가 처리된 객체를 SecurityContextHolder에 담기
      * 그 후 다음 인증 필터로 진행
      */
-    public void checkAccessTokenAndAuthentication(HttpServletRequest request, HttpServletResponse response,
-                                                  FilterChain filterChain) throws ServletException, IOException {
-        log.info("checkAccessTokenAndAuthentication() 호출");
-        jwtService.extractAccessToken(request)
+    public boolean checkAccessTokenAndAuthentication(HttpServletRequest request, HttpServletResponse response,
+                                                     FilterChain filterChain) throws ServletException, IOException {
+        boolean isValid = jwtService.extractAccessToken(request)
                 .filter(jwtService::isTokenValid)
-                .ifPresent(accessToken -> jwtService.extractEmail(accessToken)
-                        .ifPresent(email -> userRepository.findByEmail(email)
-                                .ifPresent(this::saveAuthentication)));
+                .map(accessToken -> jwtService.extractEmail(accessToken)
+                        .map(email -> userRepository.findByEmail(email)
+                                .map(user -> {
+                                    saveAuthentication(user);
+                                    return true;
+                                }).orElse(false))
+                        .orElse(false))
+                .orElse(false);
 
-        filterChain.doFilter(request, response);
+        return isValid;
     }
 
     /**

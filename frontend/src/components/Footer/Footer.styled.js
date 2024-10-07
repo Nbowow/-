@@ -10,6 +10,7 @@ export const Section = styled.section`
     padding: 3.125rem;
     height: fit-content;
     background-color: ${({ theme }) => theme.color.gray.darker};
+    margin-top: 100px;
 `;
 
 export const FooterLogo = styled.img`

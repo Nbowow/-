@@ -188,4 +188,12 @@ public class UserService {
                 })
                 .collect(Collectors.toList());
     }
+
+    public void updateUserProfileImage(Long userId, String profileImageUrl) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 사용자를 찾을 수 없습니다."));
+
+        user.setProfileImage(profileImageUrl);  // 프로필 이미지 URL 업데이트
+        userRepository.save(user);  // 변경사항 저장
+    }
 }
