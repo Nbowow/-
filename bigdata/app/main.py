@@ -9,7 +9,7 @@ from app.database.database import engineconn
 
 # 모델을 명시적으로 임포트 (필수)
 from app.models import Users, DayPrice, Materials, MonthPrice, RecipeMaterials, RecipeNutrient, RecipeOrders, \
-    Recipes, WeekPrice, YearPrice  # noqa
+    Recipes, WeekPrice  # noqa
 
 app = FastAPI()
 
