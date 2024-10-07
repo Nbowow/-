@@ -61,7 +61,7 @@ export const ContentArea = styled.div`
     margin-left: 100px;
 `;
 
-export const ImageUpload = styled.label`
+export const ImageUpload = styled.div`
     width: 400px;
     height: 400px;
     border: 1px dashed #ccc;
@@ -69,12 +69,14 @@ export const ImageUpload = styled.label`
     display: flex;
     justify-content: center;
     align-items: center;
-    cursor: pointer;
+    cursor: pointer; /* 클릭 가능하도록 설정 */
     margin-bottom: 20px;
     background-color: #f2f2f2;
 `;
+
 export const ButtonContainer = styled.div`
     text-align: center; /* 텍스트 중앙 정렬 */
+    cursor: pointer; /* 클릭 가능하도록 설정 */
 `;
 
 export const TextArea = styled.textarea`

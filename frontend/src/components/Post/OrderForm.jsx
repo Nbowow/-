@@ -82,7 +82,17 @@ const OrderForm = () => {
                 <ContentArea>
                     <ImageContainer>
                         <Label>조리사진</Label>
-                        <ImageUpload>
+                        <ImageUpload
+                            onClick={() =>
+                                document.getElementById("imageUpload").click()
+                            }
+                        >
+                            <input
+                                type="file"
+                                onChange={handleImageUpload}
+                                style={{ display: "none" }}
+                                id="imageUpload"
+                            />
                             {steps[activeStep].image ? (
                                 <div style={{ position: "relative" }}>
                                     <img
@@ -93,28 +103,20 @@ const OrderForm = () => {
                                             maxHeight: "100%",
                                         }}
                                     />
-                                    <RemoveButton onClick={handleImageRemove}>
+                                    <RemoveButton
+                                        onClick={(e) => {
+                                            e.stopPropagation(); // 클릭 이벤트 전파 방지
+                                            handleImageRemove();
+                                        }}
+                                    >
                                         X
                                     </RemoveButton>
                                 </div>
                             ) : (
-                                <>
-                                    <input
-                                        type="file"
-                                        onChange={handleImageUpload}
-                                        style={{ display: "none" }}
-                                        id="imageUpload"
-                                    />
-                                    <label htmlFor="imageUpload">
-                                        <ButtonContainer>
-                                            <img
-                                                src="/src/img/Vector.png"
-                                                alt=""
-                                            />
-                                            <Text>조리사진 등록</Text>
-                                        </ButtonContainer>
-                                    </label>
-                                </>
+                                <ButtonContainer>
+                                    <img src="/src/img/Vector.png" alt="" />
+                                    <Text>조리사진 등록</Text>
+                                </ButtonContainer>
                             )}
                         </ImageUpload>
                     </ImageContainer>

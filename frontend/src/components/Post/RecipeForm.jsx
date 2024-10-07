@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { PropTypes } from "prop-types";
 import {
     Container,
     Title,
@@ -21,20 +21,14 @@ import {
     Text,
 } from "./RecipeForm.styled";
 
-const RecipeForm = () => {
-    const [recipeData, setRecipeData] = useState({
-        name: "",
-        description: "",
-        category1: "",
-        category2: "",
-        category3: "",
-        category4: "",
-        servings: "",
-        difficulty: "",
-        time: "",
-    });
-    const [recipeImage, setRecipeImage] = useState("");
+const CATEGORY_TYPES = {
+    TYPE: "종류",
+    SITUATION: "상황",
+    INGREDIENT: "재료",
+    METHOD: "방법",
+};
 
+const RecipeForm = ({ recipeData, setRecipeData, categories }) => {
     const handleChange = (e) => {
         const { name, value } = e.target;
         setRecipeData((prevState) => ({
@@ -45,17 +39,32 @@ const RecipeForm = () => {
 
     const handleImageChange = (e) => {
         const file = e.target.files[0];
-        if (file) setRecipeImage(file);
+        if (file) {
+            setRecipeData((prev) => ({
+                ...prev,
+                image: file,
+            }));
+        }
     };
 
-    const handleImageRemove = () => setRecipeImage(null);
+    const handleImageRemove = (e) => {
+        e.stopPropagation(); // 이벤트 전파 방지
+        setRecipeData((prev) => ({
+            ...prev,
+            image: null,
+        }));
+    };
+
+    const handleUploadClick = (e) => {
+        e.stopPropagation(); // 이벤트 전파 방지
+        document.getElementById("imageInput").click(); // 파일 선택 창 열기
+    };
 
     return (
         <Container>
             <Form>
                 <Title>레시피 등록</Title>
 
-                {/* 레시피명 입력 필드 */}
                 <InputGroup>
                     <Label>레시피명</Label>
                     <Input
@@ -66,13 +75,12 @@ const RecipeForm = () => {
                     />
                 </InputGroup>
 
-                {/* 대표사진 등록 섹션 */}
                 <InputGroup3>
-                    <ImageUploadButton>
-                        {recipeImage ? (
+                    <ImageUploadButton onClick={handleUploadClick}>
+                        {recipeData.image ? (
                             <>
                                 <ImagePreview
-                                    src={URL.createObjectURL(recipeImage)}
+                                    src={URL.createObjectURL(recipeData.image)}
                                     alt="preview"
                                 />
                                 <CloseButton onClick={handleImageRemove}>
@@ -83,6 +91,7 @@ const RecipeForm = () => {
                             <>
                                 <input
                                     type="file"
+                                    id="imageInput"
                                     onChange={handleImageChange}
                                     style={{ display: "none" }}
                                 />
@@ -95,60 +104,77 @@ const RecipeForm = () => {
                     </ImageUploadButton>
                 </InputGroup3>
 
-                {/* 요리소개 입력 필드 */}
                 <InputGroup2>
                     <Label>요리소개</Label>
                     <TextArea
-                        name="description"
-                        value={recipeData.description}
+                        name="intro"
+                        value={recipeData.intro}
                         onChange={handleChange}
                     />
                 </InputGroup2>
 
-                {/* 카테고리 선택 필드 */}
                 <InputGroup4>
                     <Label>카테고리</Label>
                     <CategoryGroup>
                         <Select
-                            name="category1"
-                            value={recipeData.category1}
+                            name="type"
+                            value={recipeData.type}
                             onChange={handleChange}
                         >
-                            <option value="">종류</option>
-                            <option value="양식">양식</option>
-                            <option value="한식">한식</option>
+                            <option value="">{CATEGORY_TYPES.TYPE}</option>
+                            {categories[CATEGORY_TYPES.TYPE].map((category) => (
+                                <option key={category} value={category}>
+                                    {category}
+                                </option>
+                            ))}
                         </Select>
                         <Select
-                            name="category2"
-                            value={recipeData.category2}
+                            name="ingredients"
+                            value={recipeData.ingredients}
                             onChange={handleChange}
                         >
-                            <option value="">재료</option>
-                            <option value="고기">고기</option>
-                            <option value="채소">채소</option>
+                            <option value="">
+                                {CATEGORY_TYPES.INGREDIENT}
+                            </option>
+                            {categories[CATEGORY_TYPES.INGREDIENT].map(
+                                (category) => (
+                                    <option key={category} value={category}>
+                                        {category}
+                                    </option>
+                                ),
+                            )}
                         </Select>
                         <Select
-                            name="category3"
-                            value={recipeData.category3}
+                            name="situation"
+                            value={recipeData.situation}
                             onChange={handleChange}
                         >
-                            <option value="">상황</option>
-                            <option value="간식">간식</option>
-                            <option value="식사">식사</option>
+                            <option value="">{CATEGORY_TYPES.SITUATION}</option>
+                            {categories[CATEGORY_TYPES.SITUATION].map(
+                                (category) => (
+                                    <option key={category} value={category}>
+                                        {category}
+                                    </option>
+                                ),
+                            )}
                         </Select>
                         <Select
-                            name="category4"
-                            value={recipeData.category4}
+                            name="method"
+                            value={recipeData.method}
                             onChange={handleChange}
                         >
-                            <option value="">방법</option>
-                            <option value="볶기">볶기</option>
-                            <option value="굽기">굽기</option>
+                            <option value="">{CATEGORY_TYPES.METHOD}</option>
+                            {categories[CATEGORY_TYPES.METHOD].map(
+                                (category) => (
+                                    <option key={category} value={category}>
+                                        {category}
+                                    </option>
+                                ),
+                            )}
                         </Select>
                     </CategoryGroup>
                 </InputGroup4>
 
-                {/* 인분, 난이도, 시간 선택 필드 */}
                 <BottomRow>
                     <InputGroup5>
                         <Label>인분</Label>
@@ -161,14 +187,17 @@ const RecipeForm = () => {
                             <option value="1">1인분</option>
                             <option value="2">2인분</option>
                             <option value="3">3인분</option>
+                            <option value="4">4인분</option>
+                            <option value="5">5인분</option>
+                            <option value="6">6인분</option>
                         </Select>
                     </InputGroup5>
 
                     <InputGroup5>
                         <Label>난이도</Label>
                         <Select
-                            name="difficulty"
-                            value={recipeData.difficulty}
+                            name="level"
+                            value={recipeData.level}
                             onChange={handleChange}
                         >
                             <option value="">난이도</option>
@@ -186,15 +215,38 @@ const RecipeForm = () => {
                             onChange={handleChange}
                         >
                             <option value="">시간</option>
-                            <option value="30분">30분</option>
-                            <option value="1시간">1시간</option>
-                            <option value="1시간 30분">1시간 30분</option>
+                            <option value="15">15분</option>
+                            <option value="30">30분</option>
+                            <option value="45">45분</option>
+                            <option value="60">1시간</option>
+                            <option value="90">1시간 30분</option>
+                            <option value="120">2시간</option>
                         </Select>
                     </InputGroup5>
                 </BottomRow>
             </Form>
         </Container>
     );
+};
+
+RecipeForm.propTypes = {
+    recipeData: PropTypes.shape({
+        name: PropTypes.string,
+        image: PropTypes.oneOfType([
+            PropTypes.string,
+            PropTypes.instanceOf(File),
+        ]),
+        intro: PropTypes.string,
+        type: PropTypes.string,
+        ingredients: PropTypes.string,
+        situation: PropTypes.string,
+        method: PropTypes.string,
+        servings: PropTypes.string,
+        level: PropTypes.string,
+        time: PropTypes.string,
+    }).isRequired,
+    setRecipeData: PropTypes.func.isRequired,
+    categories: PropTypes.object.isRequired,
 };
 
 export default RecipeForm;

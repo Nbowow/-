@@ -57,7 +57,7 @@ const MaterialForm = () => {
                     <GroupContainer key={groupIndex}>
                         <GroupLabel
                             type="text"
-                            placeholder="음식명"
+                            placeholder="재료"
                             value={group.name}
                             onChange={(e) =>
                                 handleChange(

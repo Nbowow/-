@@ -75,6 +75,7 @@ const PostRecipe = () => {
         };
         getCategories();
     }, []);
+
     const handleSubmit = async () => {
         const recipeMaterials = materialGroups.flatMap((group) =>
             group.materials.map((material) => ({
