@@ -31,6 +31,11 @@ public class IngredientController {
         return ingredientService.findSimilarName(name).getId();
     }
 
+    @GetMapping("/get-id/{id}")
+    public String getIngredientNameById(@PathVariable("id") Long materialId) {
+        return ingredientService.findById(materialId).getName();
+    }
+
     @GetMapping("/{search}")
     public ResponseEntity<IngredientsSearchResponseDto> getIngredientData(
             @PathVariable("search") String name) {

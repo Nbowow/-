@@ -16,8 +16,10 @@ public interface IngredientServiceClient {
     @GetMapping("/api/v1/ingredient/get-num/{name}")
     Long getIngredientIdByName(@PathVariable("name") String name);
 
+    @GetMapping("/api/v1/ingredient/get-id/{id}")
+    String getIngredientNameById(@PathVariable("id") Long materialId);
+
     @GetMapping("/api/v1/ingredient/like")
     ResponseEntity<List<IngredientLikeResponseDto>> findUserLikeIngredientList(
             @RequestHeader("Authorization") String authorization);
-
 }

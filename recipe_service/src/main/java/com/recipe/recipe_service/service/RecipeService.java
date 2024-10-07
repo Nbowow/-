@@ -4,6 +4,7 @@ import com.recipe.recipe_service.client.IngredientServiceClient;
 import com.recipe.recipe_service.client.UserServiceClient;
 import com.recipe.recipe_service.data.domain.*;
 import com.recipe.recipe_service.data.dto.ingredient.response.IngredientLikeResponseDto;
+import com.recipe.recipe_service.data.dto.ingredient.response.RecipeMaterialsResponseDto;
 import com.recipe.recipe_service.data.dto.recipe.request.RecipeRegisterRequestDto;
 import com.recipe.recipe_service.data.dto.recipe.response.*;
 import com.recipe.recipe_service.data.dto.user.response.UserAllergyResponseDto;
@@ -139,6 +140,20 @@ public class RecipeService {
         // 유저 정보 조회
         UserSimpleResponseDto userInfo = userServiceClient.getUserInfo(recipe.getUserId());
 
+        // 레시피 재료 가져오기
+        List<RecipeMaterials> recipeMaterials = recipeMaterialsRepository.findByRecipeId(recipeId);
+
+        // 재료를 DTO로 변환
+        List<RecipeMaterialsResponseDto> recipeMaterialsResponseDto = recipeMaterials.stream()
+                .map(material -> RecipeMaterialsResponseDto.builder()
+                        .materialId(material.getMaterialId())
+                        .materialName(ingredientServiceClient.getIngredientNameById(material.getMaterialId())) // 재료 이름 가져오기
+                        .amount(material.getAmount())
+                        .unit(material.getUnit())
+                        .subtitle(material.getSubtitle())
+                        .build())
+                .toList();
+
         // 레시피 요리 순서 가져오기
         List<RecipeOrders> recipeOrders = recipeOrdersRepository.findByRecipeId(recipeId);
 
@@ -177,7 +192,8 @@ public class RecipeService {
                 .commentCount(recipe.getCommentCount())
                 .calorie(null)
                 .price(null)
-                .recipeOrders(recipeOrdersResponseDto)
+                .materials(recipeMaterialsResponseDto) // 재료 추가
+                .recipeOrders(recipeOrdersResponseDto) // 요리 순서 추가
                 .build();
 
         return recipeDetailsResponseDto;

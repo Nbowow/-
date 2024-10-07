@@ -408,4 +408,9 @@ public class IngredientService {
 
         return ingredient;
     }
+
+    public Ingredient findById(Long materialId) {
+        return ingredientRepository.findById(materialId)
+                .orElseThrow(() -> new NoSuchElementException("해당 재료가 존재하지 않습니다."));
+    }
 }
