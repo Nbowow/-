@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Category from "../components/Category/Category";
