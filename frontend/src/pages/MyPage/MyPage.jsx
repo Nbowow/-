@@ -127,6 +127,10 @@ const MyPage = () => {
             label: "스크랩 레시피",
             content: <RecipeCardList recipes={scraps} />,
         },
+        {
+            label: "좋아요한 레시피",
+            content: <RecipeCardList recipes={scraps} />,
+        },
     ];
 
     return (
