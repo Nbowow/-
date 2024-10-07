@@ -14,4 +14,5 @@ public interface UserServiceClient {
 
     @GetMapping("/api/v1/users/simple/{userId}")
     UserSimpleResponseDto getUserInfo(@PathVariable("userId") Long userId);
+
 }
