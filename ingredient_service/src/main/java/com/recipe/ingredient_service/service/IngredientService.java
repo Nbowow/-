@@ -20,6 +20,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoField;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 @Service
@@ -261,24 +262,41 @@ public class IngredientService {
 
 
         if (weeklyAverages != null && !weeklyAverages.isEmpty()) {
-            weeklyAveragePriceList = weeklyAverages.stream()
-                    .map(result -> {
-                        int weekNum = (int) result[0];
-                        BigDecimal avgPrice = (BigDecimal) result[1];
-
-                        int currentWeekNum = endDate.get(ChronoField.ALIGNED_WEEK_OF_YEAR);
-                        int weeksAgo = currentWeekNum - weekNum;
-
-                        return new DayDto(weeksAgo, avgPrice != null ? avgPrice.intValue() : null);
-                    })
-                    .limit(12)
-                    .collect(Collectors.toList());
-        } else {
-            // 주간 데이터가 없을 경우 null로 처리
+            AtomicReference<BigDecimal> closestWeekPrice = new AtomicReference<>(null);  // 최근 주간 데이터를 저장할 변수
             for (int i = 0; i < 12; i++) {
-                weeklyAveragePriceList.add(new DayDto(i + 1, 0));
+                final int currentWeekOffset = i;
+                DayDto weekPriceDto = weeklyAverages.stream()
+                        .map(result -> {
+                            int weekNum = (int) result[0];
+                            BigDecimal avgPrice = (BigDecimal) result[1];
+
+                            int currentWeekNum = endDate.get(ChronoField.ALIGNED_WEEK_OF_YEAR);
+                            int weeksAgo = currentWeekNum - weekNum;
+
+                            if (weeksAgo < 0) {
+                                weeksAgo += 52; // 주간 데이터는 52주로 나누어 처리
+                            }
+
+                            if (weeksAgo == currentWeekOffset && avgPrice != null && avgPrice.intValue() != 0) {
+                                closestWeekPrice.set(avgPrice);  // AtomicReference를 통해 최근 주간 데이터를 저장
+                            }
+
+                            return closestWeekPrice.get() != null ? new DayDto(currentWeekOffset + 1, closestWeekPrice.get().intValue()) : null;
+                        })
+                        .filter(Objects::nonNull)  // null이 아닌 값만 필터링
+                        .findFirst()
+                        .orElse(new DayDto(currentWeekOffset + 1, closestWeekPrice.get() != null ? closestWeekPrice.get().intValue() : 0)); // 최근 값 유지
+
+                weeklyAveragePriceList.add(weekPriceDto); // 리스트에 추가
+            }
+        } else {
+            // 주간 데이터가 없을 경우 최근 값 유지하며 12주 데이터를 추가
+            AtomicReference<BigDecimal> closestWeekPrice = new AtomicReference<>(null);  // 최근 값 저장
+            for (int i = 0; i < 12; i++) {
+                weeklyAveragePriceList.add(new DayDto(i + 1, closestWeekPrice.get() != null ? closestWeekPrice.get().intValue() : 0));
             }
         }
+
 
         newIngredient.setWeekPriceData(weeklyAveragePriceList);
 
@@ -287,26 +305,38 @@ public class IngredientService {
 
         List<DayDto> monthlyAveragePriceList = new ArrayList<>();
         if (monthlyAverages != null && !monthlyAverages.isEmpty()) {
-            monthlyAveragePriceList = monthlyAverages.stream()
-                    .map(result -> {
-                        int monthNum = (int) result[0];
-                        BigDecimal avgPrice = (BigDecimal) result[1];
-
-                        int currentMonthNum = endDate.getMonthValue();
-                        int monthsAgo = currentMonthNum - monthNum;
-
-                        if (monthsAgo < 0) {
-                            monthsAgo += 12;
-                        }
-
-                        return new DayDto(monthsAgo, avgPrice != null ? avgPrice.intValue() : null);
-                    })
-                    .limit(12)
-                    .collect(Collectors.toList());
-        } else {
-            // 월간 데이터가 없을 경우 null로 처리
+            AtomicReference<BigDecimal> closestMonthPrice = new AtomicReference<>(null);  // 최근 월간 데이터를 저장할 변수
             for (int i = 0; i < 12; i++) {
-                monthlyAveragePriceList.add(new DayDto(i + 1, 0));
+                final int currentMonthOffset = i;
+                DayDto monthPriceDto = monthlyAverages.stream()
+                        .map(result -> {
+                            int monthNum = (int) result[0];
+                            BigDecimal avgPrice = (BigDecimal) result[1];
+
+                            int currentMonthNum = endDate.getMonthValue();
+                            int monthsAgo = currentMonthNum - monthNum;
+
+                            if (monthsAgo < 0) {
+                                monthsAgo += 12; // 월간 데이터는 12개월 기준으로 처리
+                            }
+
+                            if (monthsAgo == currentMonthOffset && avgPrice != null && avgPrice.intValue() != 0) {
+                                closestMonthPrice.set(avgPrice);  // AtomicReference를 통해 최근 월간 데이터를 저장
+                            }
+
+                            return closestMonthPrice.get() != null ? new DayDto(currentMonthOffset + 1, closestMonthPrice.get().intValue()) : null;
+                        })
+                        .filter(Objects::nonNull)  // null이 아닌 값만 필터링
+                        .findFirst()
+                        .orElse(new DayDto(currentMonthOffset + 1, closestMonthPrice.get() != null ? closestMonthPrice.get().intValue() : 0)); // 최근 값 유지
+
+                monthlyAveragePriceList.add(monthPriceDto); // 리스트에 추가
+            }
+        } else {
+            // 월간 데이터가 없을 경우 최근 값 유지하며 12개월 데이터를 추가
+            AtomicReference<BigDecimal> closestMonthPrice = new AtomicReference<>(null);  // 최근 값 저장
+            for (int i = 0; i < 12; i++) {
+                monthlyAveragePriceList.add(new DayDto(i + 1, closestMonthPrice.get() != null ? closestMonthPrice.get().intValue() : 0));
             }
         }
 
