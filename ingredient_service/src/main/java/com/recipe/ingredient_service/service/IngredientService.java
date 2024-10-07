@@ -241,6 +241,9 @@ public class IngredientService {
             if (closestDayPrice != null) {
                 int daysAgo = i + 1;
                 dayPriceList.add(new DayDto(daysAgo, closestDayPrice.getPrice()));
+            } else {
+                // 데이터가 없을 경우 null로 처리
+                dayPriceList.add(new DayDto(i + 1, 0));
             }
 
             currentDate = currentDate.minusDays(1);
@@ -253,40 +256,58 @@ public class IngredientService {
 
         List<Object[]> weeklyAverages = dayPriceRepository.findWeeklyAveragePriceInPast(ingredientId, endDate);
 
-        List<DayDto> weeklyAveragePriceList = weeklyAverages.stream()
-                .map(result -> {
-                    int weekNum = (int) result[0];
-                    double avgPrice = (double) result[1];
+        List<DayDto> weeklyAveragePriceList = new ArrayList<>();
 
-                    int currentWeekNum = endDate.get(ChronoField.ALIGNED_WEEK_OF_YEAR);
-                    int weeksAgo = currentWeekNum - weekNum;
 
-                    return new DayDto(weeksAgo, (int) avgPrice);
-                })
-                .limit(12)
-                .collect(Collectors.toList());
+        if (weeklyAverages != null && !weeklyAverages.isEmpty()) {
+            weeklyAveragePriceList = weeklyAverages.stream()
+                    .map(result -> {
+                        int weekNum = (int) result[0];
+                        double avgPrice = (double) result[1];
+
+                        int currentWeekNum = endDate.get(ChronoField.ALIGNED_WEEK_OF_YEAR);
+                        int weeksAgo = currentWeekNum - weekNum;
+
+                        return new DayDto(weeksAgo, (int) avgPrice);
+                    })
+                    .limit(12)
+                    .collect(Collectors.toList());
+        } else {
+            // 주간 데이터가 없을 경우 null로 처리
+            for (int i = 0; i < 12; i++) {
+                weeklyAveragePriceList.add(new DayDto(i + 1, 0));
+            }
+        }
 
         newIngredient.setWeekPriceData(weeklyAveragePriceList);
 
         // 월간
         List<Object[]> monthlyAverages = dayPriceRepository.findMonthlyAveragePriceInPast(ingredientId, endDate);
 
-        List<DayDto> monthlyAveragePriceList = monthlyAverages.stream()
-                .map(result -> {
-                    int monthNum = (int) result[0];
-                    double avgPrice = (double) result[1];
+        List<DayDto> monthlyAveragePriceList = new ArrayList<>();
+        if (monthlyAverages != null && !monthlyAverages.isEmpty()) {
+            monthlyAveragePriceList = monthlyAverages.stream()
+                    .map(result -> {
+                        int monthNum = (int) result[0];
+                        double avgPrice = (double) result[1];
 
-                    int currentMonthNum = endDate.getMonthValue();
-                    int monthsAgo = currentMonthNum - monthNum;
+                        int currentMonthNum = endDate.getMonthValue();
+                        int monthsAgo = currentMonthNum - monthNum;
 
-                    if (monthsAgo < 0) {
-                        monthsAgo += 12;
-                    }
+                        if (monthsAgo < 0) {
+                            monthsAgo += 12;
+                        }
 
-                    return new DayDto(monthsAgo, (int) avgPrice);
-                })
-                .limit(12)
-                .collect(Collectors.toList());
+                        return new DayDto(monthsAgo, (int) avgPrice);
+                    })
+                    .limit(12)
+                    .collect(Collectors.toList());
+        } else {
+            // 월간 데이터가 없을 경우 null로 처리
+            for (int i = 0; i < 12; i++) {
+                monthlyAveragePriceList.add(new DayDto(i + 1, 0));
+            }
+        }
 
         newIngredient.setMonthPriceData(monthlyAveragePriceList);
 
