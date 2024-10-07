@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import Category from "../components/Category/Category";
@@ -15,7 +16,7 @@ const PopularRecipe = styled.h2`
 `;
 
 const Emoji = styled.span`
-    font-family: "tossemoji";
+    font-family: "tossface";
 `;
 
 const SearchRecipe = () => {
@@ -70,7 +71,6 @@ const SearchRecipe = () => {
         };
 
         loadRecipes();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [location.search]); // URL이 변경될 때마다 실행
 
     // 상태가 변경될 때마다 URL 업데이트
@@ -94,7 +94,6 @@ const SearchRecipe = () => {
         }
 
         navigate(`?${params.toString()}`, { replace: true });
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [
         selectedType,
         selectedSituation,

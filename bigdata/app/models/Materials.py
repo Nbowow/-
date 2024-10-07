@@ -5,7 +5,7 @@ from app.database.base import Base
 
 
 class Materials(Base):
-    __tablename__ = "Materials"
+    __tablename__ = "materials"
 
     material_id = Column(BigInteger, primary_key=True, index=True, autoincrement=True, nullable=False)
     material_name = Column(String(20), nullable=False)
@@ -18,3 +18,4 @@ class Materials(Base):
     month_price = relationship("MonthPrice", back_populates="material")
     week_price = relationship("WeekPrice", back_populates="material")
     day_price = relationship("DayPrice", back_populates="material")
+    recipe_materials = relationship("RecipeMaterials", back_populates="material")

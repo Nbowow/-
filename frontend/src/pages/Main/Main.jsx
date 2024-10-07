@@ -1,11 +1,10 @@
-import Header from "../../components/Header/Header";
 import BannerSlider from "../../components/Slider/BannerSlider/BannerSlider";
 import SearchBar from "../../components/SearchBar/SearchBar";
 import CardSlider from "../../components/Slider/CardSlider/CardSlider";
 import LinkBanner from "../../components/Banner/LinkBanner";
-import Footer from "../../components/Footer/Footer";
 
 import * as S from "./Main.styled";
+import { useNavigate } from "react-router-dom";
 
 // TODO: 테스트용 데이터
 const winterMenus = [
@@ -215,10 +214,14 @@ const kimchiDishes = [
 ];
 
 const Main = () => {
+    const navigate = useNavigate();
+
+    const handleSearchSubmit = (term) => {
+        navigate(`/search?keyword=${encodeURIComponent(term)}`);
+    };
     return (
         <S.Main>
             <div>
-                <Header />
                 <BannerSlider />
                 <SearchBar
                     userId={"test"}
@@ -227,6 +230,7 @@ const Main = () => {
                     grayPlacehold={
                         "재료와 요리명으로 추천 레시피를 검색해보세요."
                     }
+                    onSubmit={handleSearchSubmit}
                 />
             </div>
             <div>
@@ -241,7 +245,6 @@ const Main = () => {
             </div>
 
             <LinkBanner />
-            <Footer />
         </S.Main>
     );
 };

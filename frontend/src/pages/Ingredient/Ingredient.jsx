@@ -7,13 +7,26 @@ import HotIngredient from "../../components/IngredientPrices/HotIngredient/HotIn
 
 import * as S from "./Ingredient.styled";
 import Title from "../../components/Title/Title";
+import SearchResult from "../../components/IngredientPrices/SearchResult/SearchResult";
 const Ingredient = () => {
     return (
         <>
             <Header />
 
             <S.Container>
-                <SearchBar />
+                <SearchBar
+                    userId={"test"}
+                    purpose={"ingredient"}
+                    boldPlacehold={"어떤 재료를 찾고 계신가요?"}
+                    grayPlacehold={
+                        "재료명을 입력하고 현재 시세를 확인해보세요."
+                    }
+                />
+
+                {/* TODO: 검색 결과에 따른 렌더링 */}
+                <SearchResult />
+                <SearchResult />
+
                 <IngredientOverview />
                 <S.RecommendSection>
                     <S.Hot>

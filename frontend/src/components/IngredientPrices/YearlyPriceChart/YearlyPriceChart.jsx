@@ -1,5 +1,5 @@
 import { calculatePriceChangeRange } from "../../../util/price-range";
-import { lineOptions } from "../../../util/get-chart-config";
+import { lineConfig, lineOptions } from "../../../util/get-chart-config";
 import * as S from "./YearlyPriceChart.styled";
 import Tag from "../../Tag/Tag";
 import { useState } from "react";
@@ -32,7 +32,7 @@ const YearlyPriceChart = ({ priceHistory }) => {
     const handleClick = (status) => {
         setViewType(status);
     };
-
+    const config = lineConfig("#2DB400");
     const tag = ["월간", "주간", "일간"];
     return (
         <S.Wrapper>
@@ -51,6 +51,7 @@ const YearlyPriceChart = ({ priceHistory }) => {
                     labels={labels[viewType]}
                     data={priceArr[viewType]}
                     options={chartOptions[viewType]}
+                    config={config}
                 />
             </S.ChartWrapper>
         </S.Wrapper>

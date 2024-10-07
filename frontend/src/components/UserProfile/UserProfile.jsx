@@ -5,16 +5,11 @@ import PropTypes from "prop-types";
 import { useNavigate } from "react-router-dom";
 import { formatNumber } from "../../util/format-number";
 
-const UserProfile = ({
-    userId,
-    showInfo,
-    profileImgUrl,
-    nickName,
-    discription,
-}) => {
+const UserProfile = ({ showInfo, member }) => {
     const buttonText = "정보 수정";
-    const follow = formatNumber(0);
-    const following = formatNumber(2000000);
+
+    const follow = formatNumber(member.followers.length);
+    const following = formatNumber(member.followings.length);
 
     const navigate = useNavigate();
 
@@ -25,13 +20,16 @@ const UserProfile = ({
     return (
         <S.UserProfile>
             <S.ProfileImage>
-                <UserProfileImage imageUrl={profileImgUrl} size="180px" />
+                <UserProfileImage imageUrl={member.profileImage} size="180px" />
             </S.ProfileImage>
             {showInfo && (
                 <S.UserStat>
                     <S.TextWrapper>
-                        <div className="nickname">{nickName}</div>
-                        <div className="discription">{discription}</div>
+                        <div className="nickname">
+                            {member.nickname}({member.name})
+                        </div>
+                        <div className="discription">{member.summary}</div>
+                        <div className="discription">{member.email}</div>
                         <S.StatWrapper>
                             <S.Stat>
                                 <div className="stat">팔로우</div>{" "}
@@ -56,13 +54,23 @@ const UserProfile = ({
     );
 };
 
+const FollowerFollowingShape = PropTypes.shape({
+    id: PropTypes.number,
+    nickname: PropTypes.string,
+    profileImage: PropTypes.string,
+});
+
 UserProfile.propTypes = {
-    userId: PropTypes.string,
     showInfo: PropTypes.bool,
-    profileImgUrl: PropTypes.string,
-    UserProfileStat: PropTypes.node,
-    nickName: PropTypes.string,
-    discription: PropTypes.string,
+    member: PropTypes.shape({
+        profileImage: PropTypes.string,
+        nickname: PropTypes.string,
+        name: PropTypes.string,
+        summary: PropTypes.string,
+        email: PropTypes.string,
+        followers: PropTypes.arrayOf(FollowerFollowingShape),
+        followings: PropTypes.arrayOf(FollowerFollowingShape),
+    }).isRequired,
 };
 
 export default UserProfile;
