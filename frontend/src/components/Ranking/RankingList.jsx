@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /* eslint-disable react/prop-types */
 import { useState, useEffect, useMemo } from "react";
 import { useTable, useSortBy } from "react-table";
@@ -10,57 +11,7 @@ import {
     UserImage,
 } from "./RankingList.styled"; // 스타일드 컴포넌트 가져오기
 import Pagination from "./../Pagination/Pagination";
-
-const userData = [
-    {
-        id: 1,
-        nickname: "User 1",
-        posts: 10,
-        likes: 20,
-        score: 4.5,
-        image: "https://via.placeholder.com/150",
-    },
-    {
-        id: 2,
-        nickname: "User 2",
-        posts: 5,
-        likes: 15,
-        score: 4.0,
-        image: "https://via.placeholder.com/150",
-    },
-    {
-        id: 3,
-        nickname: "User 3",
-        posts: 8,
-        likes: 25,
-        score: 4.8,
-        image: "https://via.placeholder.com/150",
-    },
-    {
-        id: 4,
-        nickname: "User 4",
-        posts: 12,
-        likes: 30,
-        score: 4.2,
-        image: "https://via.placeholder.com/150",
-    },
-    {
-        id: 5,
-        nickname: "User 5",
-        posts: 6,
-        likes: 18,
-        score: 4.1,
-        image: "https://via.placeholder.com/150",
-    },
-    {
-        id: 6,
-        nickname: "User 6",
-        posts: 7,
-        likes: 22,
-        score: 4.4,
-        image: "https://via.placeholder.com/150",
-    },
-];
+import { fetchRanking } from "./../../api/ranking";
 
 const columns = [
     {
@@ -80,12 +31,12 @@ const columns = [
     },
     {
         Header: "게시글수",
-        accessor: "posts",
+        accessor: "recipeCount", // API의 필드에 맞게 수정
         sortType: "basic",
     },
     {
         Header: "좋아요수",
-        accessor: "likes",
+        accessor: "likeCount", // API의 필드에 맞게 수정
         sortType: "basic",
     },
     {
@@ -98,13 +49,27 @@ const columns = [
 const UserTable = () => {
     const [searchTerm, setSearchTerm] = useState("");
     const [currentPage, setCurrentPage] = useState(0);
+    const [userData, setUserData] = useState([]); // 사용자 데이터를 저장할 상태
     const itemsPerPage = 5;
+
+    useEffect(() => {
+        const loadRankingData = async () => {
+            try {
+                const data = await fetchRanking(currentPage, itemsPerPage);
+                setUserData(data); // API에서 받은 데이터를 상태에 저장
+            } catch (error) {
+                console.error("Failed to fetch ranking data:", error);
+            }
+        };
+
+        loadRankingData();
+    }, [currentPage]); // 페이지가 변경될 때마다 데이터 재호출
 
     const filteredData = useMemo(() => {
         return userData.filter((user) =>
             user.nickname.toLowerCase().includes(searchTerm.toLowerCase()),
         );
-    }, [searchTerm]);
+    }, [searchTerm, userData]);
 
     const sortedData = useMemo(() => {
         return [...filteredData].sort((a, b) => b.score - a.score);
