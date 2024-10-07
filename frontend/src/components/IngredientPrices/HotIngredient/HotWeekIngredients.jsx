@@ -20,12 +20,13 @@ const HotWeekIngredients = ({ onLike, like }) => {
     return (
         <S.Hot>
             <Title title={"월간 인기 재료"} />
-            {hotWeekIngredients.map((ingredient) => (
+            {hotWeekIngredients.map((ingredient, idx) => (
                 <HotIngredient
                     onLike={() => onLike(ingredient)}
                     key={ingredient.id}
                     like={like.find((i) => i.id === ingredient.id)}
                     ingredient={ingredient}
+                    idx={idx + 1}
                 />
             ))}
         </S.Hot>
