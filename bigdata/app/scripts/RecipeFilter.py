@@ -7,7 +7,7 @@ from datetime import datetime
 import pytz
 from hdfs import InsecureClient
 from pyspark.sql import SparkSession
-from pyspark.sql.functions import regexp_replace, col, when, regexp_extract, udf
+from pyspark.sql.functions import regexp_replace, col, when, regexp_extract, udf, length
 from pyspark.sql.types import StringType
 from sqlalchemy import Column, BigInteger, String, Boolean, select, Integer, DateTime, ForeignKey
 from sqlalchemy import create_engine
@@ -282,31 +282,28 @@ class RecipeOrders(Base):
 
 
 def main():
-    file_statuses = hdfs_client.list(hdfs_directory)
+    # 파일 경로를 이용해 데이터를 정제 및 저장
+    print("1. hdfs 파일 정제시작")
+    process_recipe_data()
 
-    print("1. hdfs 파일 목록 읽기")
+    print(f"Uploaded data to MySQL")
 
-    for file_name in file_statuses:
-        file_path = f"hdfs://master:9870{hdfs_directory}{file_name}"
-
-        # 파일 경로를 이용해 데이터를 정제 및 저장
-        print("2. hdfs 파일 정제시작")
-        process_recipe_data(file_path)
-
-        print(f"Uploaded data from {file_name} to MySQL")
-
+    spark.stop()
     return {"message": "All files processed and uploaded to MySQL"}
 
 
 # HDFS 파일을 읽고 Spark DataFrame으로 처리하여 정제하는 함수
-def process_recipe_data(file_path):
-    # HDFS에서 데이터 읽기
+def process_recipe_data():
+    print("2. hdfs 에서 파일 읽기")
     df = spark.read.csv(
         "hdfs://master:9000/user/root/recipe/*.csv",
         header=True,
         inferSchema=True,
         encoding='utf-8'
     )
+
+    # DataFrame 캐싱 적용
+    df = df.cache()
 
     # Spark UDF로 각 매핑 함수 등록
     map_category_udf = udf(lambda x: map_category(x, category_mapping), StringType())
@@ -318,6 +315,9 @@ def process_recipe_data(file_path):
     # 레시피이름, 글 제목, 조리순서가 null이 아닌 행만 필터링
     df = df.filter(df['레시피이름'].isNotNull() & df['글 제목'].isNotNull() & df['조리순서'].isNotNull() &
                    (df['조리순서'] != '[]'))
+
+    # intro가 500자를 넘지 않는 데이터만 필터링
+    df = df.filter(length(col('소개글')) <= 500)
 
     # 조회수 데이터에서 콤마를 제거하고 정수형으로 변환
     df = df.withColumn("조회수", regexp_replace(col("조회수"), ",", "").cast("int"))
@@ -351,9 +351,17 @@ def process_recipe_data(file_path):
     print("4. 유저클래스 먼저 넣기 아이디는 모두의 레시피")
     save_user_to_db()
 
+    # 데이터를 리스트로 변환 (collect 사용)
+    rows = df.collect()
+
+    print(f"남아있는 데이터의 수: {len(rows)}")
+
     print("5. 재료, 조리순서 db 추가")
     # 재료, 조리순서 컬럼 db데이터 추가
-    for row in df.collect():
+    for idx, row in enumerate(rows, 1):  # idx는 1부터 시작
+        # 각 row를 순회하며 필요한 값들을 가져옴
+        print(f"총 {len(rows)}개 중 {idx}번째 row 처리 중입니다.")
+
         print("6. 레시피 저장")
         recipe_id = save_recipe_to_db(row)  # 레시피 저장 함수, 각 레시피에 대해 recipe_id 반환
 
@@ -368,6 +376,8 @@ def process_recipe_data(file_path):
             process_recipe_orders(recipe_orders, recipe_id)
         except json.JSONDecodeError as e:
             print(f"조리순서 데이터를 처리하는 중 오류 발생: {str(e)}")
+
+    print("데이터 정제가 완료되고 DB에 저장되었습니다.")
 
 
 def map_category(value, mapping):
@@ -444,8 +454,8 @@ def save_recipe_to_db(row):
     recipe_intro = row_dict['소개글']
     if recipe_intro is None:  # None 체크
         recipe_intro = ''  # None인 경우 빈 문자열로 설정
-    elif len(recipe_intro) > 1000:  # 500자로 제한
-        recipe_intro = recipe_intro[:1000] + '...'
+    elif len(recipe_intro) > 490:  # 500자로 제한
+        recipe_intro = recipe_intro[:490] + '...'
 
     new_recipe = Recipes(
         recipe_id=recipe_id_value,
