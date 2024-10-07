@@ -13,12 +13,16 @@ import com.recipe.recipe_service.repository.*;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.elasticsearch.index.query.QueryBuilders;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.elasticsearch.core.SearchHits;
+import org.springframework.data.elasticsearch.core.query.Query;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 
 import java.util.List;
 import java.util.Optional;
@@ -518,4 +522,17 @@ public class RecipeService {
                         .build())
                 .toList();
     }
+
+    public List<Recipe> searchByTitle(String title) {
+        return recipeRepository.findByTitleContaining(title);
+    }
+
+    // 접두어로 검색하는 메서드
+    public List<Recipe> searchByPrefix(String prefix) {
+        return recipeRepository.findByNameStartingWith(prefix);
+    }
+
+
+
+
 }

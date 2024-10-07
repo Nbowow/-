@@ -9,6 +9,7 @@ import com.recipe.recipe_service.data.dto.recipe.response.*;
 import com.recipe.recipe_service.repository.RecipeRepository;
 import com.recipe.recipe_service.data.dto.user.response.UserAllergyResponseDto;
 import com.recipe.recipe_service.data.dto.user.response.UserSimpleResponseDto;
+import com.recipe.recipe_service.service.RecipeIndexingService;
 import com.recipe.recipe_service.service.RecipeService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,6 +30,7 @@ public class RecipeController {
     private final UserServiceClient userServiceClient;
     private final IngredientServiceClient ingredientServiceClient;
     private final RecipeRepository recipeRepository;
+    private final RecipeIndexingService recipeIndexingService;
 
     // 레시피 생성
     @PostMapping("")
@@ -197,6 +199,28 @@ public class RecipeController {
                         .commentCount(recipe.getCommentCount())
                         .build())
                 .collect(Collectors.toList());
+    }
+
+    @GetMapping("/search")
+    public List<Recipe> searchBooks(@RequestParam String title) {
+        return recipeService.searchByTitle(title);
+    }
+
+    // Prefix 검색 API
+    @GetMapping("/search/prefix")
+    public List<Recipe> searchByPrefix(@RequestParam String prefix) {
+        return recipeService.searchByPrefix(prefix);
+    }
+
+    @PostMapping("/index-all")
+    public ResponseEntity<String> indexAllRecipes() {
+        try {
+            recipeIndexingService.indexAllRecipes();
+            return ResponseEntity.status(HttpStatus.OK).body("Recipe indexing completed successfully.");
+        } catch (Exception e) {
+            log.error("Error during recipe indexing", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Recipe indexing failed.");
+        }
     }
 
     // 날씨 기반 레시피 추천

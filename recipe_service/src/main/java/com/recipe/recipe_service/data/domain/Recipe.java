@@ -5,6 +5,8 @@ import jakarta.ws.rs.DefaultValue;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import org.springframework.data.elasticsearch.annotations.CompletionField;
+import org.springframework.data.elasticsearch.annotations.Document;
 
 @Entity
 @Getter
@@ -12,6 +14,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "recipes")
+@Document(indexName = "recipes")
 public class Recipe {
 
     @Id
@@ -19,9 +22,11 @@ public class Recipe {
     @Column(name = "recipe_id")
     private Long id;
 
+
     @Column(name = "recipe_title")
     private String title;
 
+    @CompletionField(maxInputLength = 100)
     @Column(name = "recipe_name")
     private String name;
 
