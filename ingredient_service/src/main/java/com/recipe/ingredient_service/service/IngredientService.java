@@ -16,6 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoField;
 import java.util.*;
@@ -263,12 +264,12 @@ public class IngredientService {
             weeklyAveragePriceList = weeklyAverages.stream()
                     .map(result -> {
                         int weekNum = (int) result[0];
-                        double avgPrice = (double) result[1];
+                        BigDecimal avgPrice = (BigDecimal) result[1];
 
                         int currentWeekNum = endDate.get(ChronoField.ALIGNED_WEEK_OF_YEAR);
                         int weeksAgo = currentWeekNum - weekNum;
 
-                        return new DayDto(weeksAgo, (int) avgPrice);
+                        return new DayDto(weeksAgo, avgPrice != null ? avgPrice.intValue() : null);
                     })
                     .limit(12)
                     .collect(Collectors.toList());
@@ -289,7 +290,7 @@ public class IngredientService {
             monthlyAveragePriceList = monthlyAverages.stream()
                     .map(result -> {
                         int monthNum = (int) result[0];
-                        double avgPrice = (double) result[1];
+                        BigDecimal avgPrice = (BigDecimal) result[1];
 
                         int currentMonthNum = endDate.getMonthValue();
                         int monthsAgo = currentMonthNum - monthNum;
@@ -298,7 +299,7 @@ public class IngredientService {
                             monthsAgo += 12;
                         }
 
-                        return new DayDto(monthsAgo, (int) avgPrice);
+                        return new DayDto(monthsAgo, avgPrice != null ? avgPrice.intValue() : null);
                     })
                     .limit(12)
                     .collect(Collectors.toList());
