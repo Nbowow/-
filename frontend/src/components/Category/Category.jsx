@@ -8,7 +8,7 @@ import {
 import PropTypes from "prop-types";
 import { useRecipeStore } from "./../../store/recipeStore";
 import { useEffect, useState } from "react";
-import { CATEGORY_TYPES, fetchCategories } from "./../../Api/category";
+import { CATEGORY_TYPES, fetchCategories } from "../../api/category";
 
 const CategoryComponent = ({
     onTypeSelect,
@@ -48,7 +48,6 @@ const CategoryComponent = ({
             const categorizedData = await fetchCategories();
             setCategories(categorizedData);
         };
-
         getCategories();
     }, []);
 
@@ -67,7 +66,6 @@ const CategoryComponent = ({
             onMethodSelect(item);
         }
     };
-
     return (
         <Container>
             {Object.entries(categories).map(([categoryKey, items]) => (

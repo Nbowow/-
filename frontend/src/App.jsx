@@ -14,7 +14,7 @@ import ModifyProfile from "./pages/ModifyProfile/ModifyProfile";
 import Login from "./pages/Login/Login";
 import LoginLoading from "./pages/Login/LoginLoding";
 import Footer from "./components/Footer/Footer";
-import SearchRecipe from "./pages/SerachRecipe";
+import SearchRecipe from "./pages/SearchRecipe";
 
 function App() {
     return (

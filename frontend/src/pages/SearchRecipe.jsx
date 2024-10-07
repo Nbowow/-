@@ -3,12 +3,12 @@ import { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import Category from "../components/Category/Category";
 import Pagination from "../components/Pagination/Pagination";
-import SortSelector from "./../components/SortSelector/SortSelector";
+import SortSelector from "../components/SortSelector/SortSelector";
 import styled from "styled-components";
 import { useSearchResultStore } from "../store/recipeStore";
-import RecipeCardList from "./../components/CardList/RecipeCardList";
-import { fetchRecipes, searchRecipes } from "../Api/recipe";
-import SearchBar from "./../components/SearchBar/SearchBar";
+import RecipeCardList from "../components/CardList/RecipeCardList";
+import { fetchRecipes, searchRecipes } from "../api/recipe";
+import SearchBar from "../components/SearchBar/SearchBar";
 
 const PopularRecipe = styled.h2`
     font-family: "SUITEXTRABOLD";
