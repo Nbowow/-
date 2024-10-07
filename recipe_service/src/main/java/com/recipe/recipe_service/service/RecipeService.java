@@ -445,4 +445,16 @@ public class RecipeService {
         // 6. 레시피 삭제
         recipeRepository.deleteById(recipeId);
     }
+
+    public void deleteComment(Long commentId, Long userId) {
+
+        RecipeComments comments = recipeCommentsRepository.findById(commentId)
+                .orElseThrow(() -> new EntityNotFoundException("해당 댓글이 존재하지 않습니다."));
+
+        if (!comments.getUserId().equals(userId)) {
+            throw new IllegalStateException("해당 댓글을 삭제할 권한이 없습니다.");
+        }
+
+        recipeCommentsRepository.deleteById(commentId);
+    }
 }
