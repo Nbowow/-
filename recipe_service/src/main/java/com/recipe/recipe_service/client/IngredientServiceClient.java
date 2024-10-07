@@ -10,4 +10,6 @@ public interface IngredientServiceClient {
 
     @GetMapping("/api/v1/ingredient/get-num/{name}")
     Long getIngredientIdByName(@PathVariable("name") String name);
+
+
 }

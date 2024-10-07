@@ -140,6 +140,7 @@ public class UserService {
                 .userId(user.getUserId())
                 .profileImage(user.getProfileImage())
                 .nickname(user.getNickname())
+                .summary(user.getSummary())
                 .build();
     }
 

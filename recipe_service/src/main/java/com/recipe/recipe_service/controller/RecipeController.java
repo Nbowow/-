@@ -7,7 +7,7 @@ import com.recipe.recipe_service.data.domain.RecipeComments;
 import com.recipe.recipe_service.data.dto.comment.request.CommentRegisterRequestDto;
 import com.recipe.recipe_service.data.dto.comment.response.CommentResponseDto;
 import com.recipe.recipe_service.data.dto.recipe.request.RecipeRegisterRequestDto;
-import com.recipe.recipe_service.data.dto.recipe.response.ResponseRecipe;
+import com.recipe.recipe_service.data.dto.recipe.response.RecipeDetailsResponseDto;
 import com.recipe.recipe_service.data.dto.recipe.response.UserRecipeLikeResponseDto;
 import com.recipe.recipe_service.data.dto.recipe.response.UserRecipeRegistResponseDto;
 import com.recipe.recipe_service.data.dto.recipe.response.UserRecipeScrapResponseDto;
@@ -55,16 +55,25 @@ public class RecipeController {
     
     // 레시피 삭제
     @DeleteMapping("")
+    public ResponseEntity<?> deleteRecipe(
+            @RequestHeader("Authorization") String authorization,
+            @RequestParam("id") Long recipeId) {
+
+        Long userId = userServiceClient.getUserId(authorization);
+
+        recipeService.deleteRecipe(recipeId, userId);
+        return ResponseEntity.ok().build();
+    }
 
     // 레시피 전체 조회
     @GetMapping("")
-    public ResponseEntity<List<ResponseRecipe>> getAllRecipes(
+    public ResponseEntity<List<RecipeDetailsResponseDto>> getAllRecipes(
             @RequestParam("pageSize") int pageSize,
             @RequestParam("pageNumber") int pageNumber) {
 
         // 서비스에서 페이징 처리된 레시피 목록 가져오기
         // pageNumber가 1부터 시작한다고 가정하고 0부터 시작하도록 맞춤
-        List<ResponseRecipe> recipeList = recipeService.getAllRecipes(pageNumber - 1, pageSize);
+        List<RecipeDetailsResponseDto> recipeList = recipeService.getAllRecipes(pageNumber - 1, pageSize);
 
         return ResponseEntity.status(HttpStatus.OK).body(recipeList);
 
@@ -72,20 +81,20 @@ public class RecipeController {
 
     // 레시피 상세 조회
     @GetMapping("/{id}")
-    public ResponseEntity<ResponseRecipe> getRecipe(
-            @PathVariable("id") Long id) {
+    public ResponseEntity<RecipeDetailsResponseDto> getRecipe(
+            @PathVariable("id") Long recipeId) {
 
-        ResponseRecipe recipe = recipeService.getRecipe(id);
+        RecipeDetailsResponseDto recipe = recipeService.getRecipe(recipeId);
 
         return ResponseEntity.status(HttpStatus.OK).body(recipe);
     }
 
     // 레시피 검색
     @GetMapping("/search")
-    public ResponseEntity<List<ResponseRecipe>> searchRecipe(
+    public ResponseEntity<List<RecipeDetailsResponseDto>> searchRecipe(
             @RequestParam("keyword") String keyword) {
 
-        List<ResponseRecipe> recipeList = recipeService.searchRecipe(keyword);
+        List<RecipeDetailsResponseDto> recipeList = recipeService.searchRecipe(keyword);
 
         return ResponseEntity.status(HttpStatus.OK).body(recipeList);
     }

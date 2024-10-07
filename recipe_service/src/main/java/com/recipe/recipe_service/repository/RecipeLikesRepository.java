@@ -13,4 +13,5 @@ public interface RecipeLikesRepository extends JpaRepository<RecipeLikes, Intege
 
     List<RecipeLikes> findByUserIdAndStatusTrue(Long userId);
 
+    List<RecipeLikes> findByRecipeId(Long recipeId);
 }

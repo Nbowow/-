@@ -11,4 +11,6 @@ public interface RecipeScrapsRepository extends JpaRepository<RecipeScraps, Inte
     Optional<RecipeScraps> findByRecipeIdAndUserId(Long recipeId, Long userId);
 
     List<RecipeScraps> findByUserIdAndStatusTrue(Long userId);
+
+    List<RecipeScraps> findByRecipeId(Long recipeId);
 }

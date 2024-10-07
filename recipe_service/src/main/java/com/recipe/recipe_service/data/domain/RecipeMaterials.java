@@ -17,7 +17,7 @@ public class RecipeMaterials {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "recipe_material_id")
-    private long id;
+    private Long id;
 
     @Column(name = "recipe_material_amount")
     private String amount;

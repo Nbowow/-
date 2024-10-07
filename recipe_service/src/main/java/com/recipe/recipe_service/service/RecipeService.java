@@ -1,11 +1,10 @@
 package com.recipe.recipe_service.service;
 
+import com.recipe.recipe_service.client.UserServiceClient;
 import com.recipe.recipe_service.data.domain.*;
 import com.recipe.recipe_service.data.dto.recipe.request.RecipeRegisterRequestDto;
-import com.recipe.recipe_service.data.dto.recipe.response.ResponseRecipe;
-import com.recipe.recipe_service.data.dto.recipe.response.UserRecipeLikeResponseDto;
-import com.recipe.recipe_service.data.dto.recipe.response.UserRecipeRegistResponseDto;
-import com.recipe.recipe_service.data.dto.recipe.response.UserRecipeScrapResponseDto;
+import com.recipe.recipe_service.data.dto.recipe.response.*;
+import com.recipe.recipe_service.data.dto.user.UserSimpleResponseDto;
 import com.recipe.recipe_service.repository.*;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
@@ -31,6 +30,8 @@ public class RecipeService {
     private final RecipeScrapsRepository recipeScrapsRepository;
     private final RecipeMaterialsRepository recipeMaterialsRepository;
     private final RecipeOrdersRepository recipeOrdersRepository;
+
+    private final UserServiceClient userServiceClient;
 
     public Recipe createRecipe(RecipeRegisterRequestDto createRecipeDto, Long userId) {
 
@@ -92,15 +93,15 @@ public class RecipeService {
         return recipeRepository.findByUserId(userId);
     }
 
-    public List<ResponseRecipe> getAllRecipes(int pageNumber, int pageSize) {
+    public List<RecipeDetailsResponseDto> getAllRecipes(int pageNumber, int pageSize) {
         // 페이지 요청을 생성하여 레시피를 페이징 처리
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
 
         Page<Recipe> recipePage = recipeRepository.findAll(pageable);
 
         // 페이지 결과에서 데이터를 추출하여 DTO로 변환
-        List<ResponseRecipe> recipeList = recipePage.getContent().stream()
-                .map(recipe -> ResponseRecipe.builder()
+        List<RecipeDetailsResponseDto> recipeList = recipePage.getContent().stream()
+                .map(recipe -> RecipeDetailsResponseDto.builder()
                         .id(recipe.getId())
                         .title(recipe.getTitle())
                         .name(recipe.getName())
@@ -124,19 +125,68 @@ public class RecipeService {
         return recipeList;
     }
 
-    public ResponseRecipe getRecipe(Long id) {
+    public RecipeDetailsResponseDto getRecipe(Long recipeId) {
 
-        return recipeRepository.findById(id)
+        // 레시피 조회
+        Recipe recipe = recipeRepository.findById(recipeId)
                 .orElseThrow(() -> new EntityNotFoundException("해당 ID에 해당하는 레시피가 존재하지 않습니다."));
+
+        // 유저 정보 조회
+        UserSimpleResponseDto userInfo = userServiceClient.getUserInfo(recipe.getUserId());
+
+        // 레시피 요리 순서 가져오기
+        List<RecipeOrders> recipeOrders = recipeOrdersRepository.findByRecipeId(recipeId);
+
+        // 요리 순서를 DTO로 변환
+        List<RecipeOrdersResponseDto> recipeOrdersResponseDto = recipeOrders.stream()
+                .map(order -> RecipeOrdersResponseDto.builder()
+                        .orderNum(order.getOrderNum())
+                        .orderImg(order.getImage())
+                        .orderContent(order.getContent())
+                        .build())
+                .toList();
+
+
+        // 레시피 상세 정보를 RecipeDetailsResponseDto로 변환
+        RecipeDetailsResponseDto recipeDetailsResponseDto = RecipeDetailsResponseDto.builder()
+                .id(recipe.getId())
+                .title(recipe.getTitle())
+                .name(recipe.getName())
+                .intro(recipe.getIntro())
+                .image(recipe.getImage())
+                .viewCount(recipe.getViewCount())
+                .servings(recipe.getServings())
+                .time(recipe.getTime())
+                .level(recipe.getLevel())
+                .cookingTools(recipe.getCookingTools())
+                .type(recipe.getType())
+                .situation(recipe.getSituation())
+                .ingredients(recipe.getIngredients())
+                .method(recipe.getMethod())
+                .userId(userInfo.getUserId())
+                .nickname(userInfo.getNickname())
+                .profileImage(userInfo.getProfileImage())
+                .summary(userInfo.getSummary())
+                .likeCount(recipe.getLikeCount())
+                .scrapCount(recipe.getScrapCount())
+                .commentCount(recipe.getCommentCount())
+                .calorie(null)
+                .price(null)
+                .recipeOrders(recipeOrdersResponseDto)
+                .build();
+
+        return recipeDetailsResponseDto;
+
     }
 
-    public List<ResponseRecipe> searchRecipe(String keyword) {
+    public List<RecipeDetailsResponseDto> searchRecipe(String keyword) {
 
         List<Recipe> recipes = recipeRepository.searchByKeyword(keyword);
 
+
         // Recipe -> ResponseRecipe로 변환
         return recipes.stream()
-                .map(recipe -> ResponseRecipe.builder()
+                .map(recipe -> RecipeDetailsResponseDto.builder()
                         .id(recipe.getId())
                         .title(recipe.getTitle())
                         .name(recipe.getName())
@@ -293,7 +343,7 @@ public class RecipeService {
         // 레시피 ID에 해당하는 레시피 정보를 가져와 DTO로 변환
         List<UserRecipeLikeResponseDto> likedRecipeDtos = likedRecipes.stream()
                 .map(recipeLike -> {
-                    ResponseRecipe recipe = recipeRepository.findById(recipeLike.getRecipeId())
+                    Recipe recipe = recipeRepository.findById(recipeLike.getRecipeId())
                             .orElseThrow(() -> new EntityNotFoundException("Recipe not found"));
 
                     return new UserRecipeLikeResponseDto(
@@ -330,7 +380,7 @@ public class RecipeService {
         // 레시피 ID에 해당하는 레시피 정보를 가져와 DTO로 변환
         List<UserRecipeScrapResponseDto> scrapedRecipeDtos = scrapedRecipes.stream()
                 .map(recipeScraps -> {
-                    ResponseRecipe recipe = recipeRepository.findById(recipeScraps.getRecipeId())
+                    Recipe recipe = recipeRepository.findById(recipeScraps.getRecipeId())
                             .orElseThrow(() -> new EntityNotFoundException("Recipe not found"));
 
                     return new UserRecipeScrapResponseDto(
@@ -360,4 +410,35 @@ public class RecipeService {
     }
 
 
+    public void deleteRecipe(Long recipeId, Long userId) {
+        Recipe recipe = recipeRepository.findById(recipeId)
+                .orElseThrow(() -> new EntityNotFoundException("해당 아이디를 가진 레시피가 존재하지 않습니다."));
+
+        if (!recipe.getUserId().equals(userId)) {
+            throw new IllegalStateException("해당 레시피를 삭제할 권한이 없습니다.");
+        }
+
+        // 1. 레시피에 대한 모든 재료 삭제
+        List<RecipeMaterials> materials = recipeMaterialsRepository.findByRecipeId(recipeId);
+        recipeMaterialsRepository.deleteAll(materials);
+
+        // 2. 레시피에 대한 모든 순서 삭제
+        List<RecipeOrders> orders = recipeOrdersRepository.findByRecipeId(recipeId);
+        recipeOrdersRepository.deleteAll(orders);
+
+        // 3. 레시피에 대한 모든 좋아요 삭제
+        List<RecipeLikes> likes = recipeLikesRepository.findByRecipeId(recipeId);
+        recipeLikesRepository.deleteAll(likes);
+
+        // 4. 레시피에 대한 모든 스크랩 삭제
+        List<RecipeScraps> scraps = recipeScrapsRepository.findByRecipeId(recipeId);
+        recipeScrapsRepository.deleteAll(scraps);
+
+        // 5. 레시피에 대한 모든 댓글 삭제
+        List<RecipeComments> comments = recipeCommentsRepository.findByRecipeId(recipeId);
+        recipeCommentsRepository.deleteAll(comments);
+
+        // 6. 레시피 삭제
+        recipeRepository.deleteById(recipeId);
+    }
 }

@@ -1,7 +1,7 @@
 package com.recipe.recipe_service.repository;
 
 import com.recipe.recipe_service.data.domain.Recipe;
-import com.recipe.recipe_service.data.dto.recipe.response.ResponseRecipe;
+import com.recipe.recipe_service.data.dto.recipe.response.RecipeDetailsResponseDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -16,7 +16,7 @@ public interface RecipeRepository extends JpaRepository<Recipe, Integer> {
 
     Page<Recipe> findAll(Pageable pageable);
 
-    Optional<ResponseRecipe> findById(Long recipeId);
+    Optional<Recipe> findById(Long recipeId);
 
     @Query("SELECT r FROM Recipe r WHERE " +
             "LOWER(r.title) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
@@ -24,6 +24,7 @@ public interface RecipeRepository extends JpaRepository<Recipe, Integer> {
             "OR LOWER(r.intro) LIKE LOWER(CONCAT('%', :keyword, '%'))")
     List<Recipe> searchByKeyword(String keyword);
 
+    void deleteById(Long recipeId);
 
 
 
