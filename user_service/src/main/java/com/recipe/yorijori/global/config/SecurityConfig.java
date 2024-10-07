@@ -75,6 +75,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/users/rank").permitAll() // 유저 랭킹은 모두 조회 가능
                         .requestMatchers("/api/v1/users/refresh-token").permitAll()
                         .requestMatchers("/oauth2/authorization/naver").permitAll()
+                        .requestMatchers("/api/v1/users/common").permitAll()
                         .anyRequest().authenticated() // 그 외 모든 요청은 인증된 사용자만 접근 가능
 
                 )

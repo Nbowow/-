@@ -44,6 +44,7 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
     private static final String NO_CHECK_URL3 = "/oauth2/authorization/naver";
     private static final String NO_CHECK_URL4 = "/login/oauth2/code/naver";
     private static final String NO_CHECK_URL5 = "/favicon.ico";
+    private static final String NO_CHECK_URL6 = "/api/v1/users/common";
     private final JwtService jwtService;
     private final UserRepository userRepository;
 
@@ -52,7 +53,7 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         log.info("Request URI: " + request.getRequestURI());
-        if (request.getRequestURI().equals(NO_CHECK_URL) || request.getRequestURI().equals(NO_CHECK_URL2)|| request.getRequestURI().equals(NO_CHECK_URL3)|| request.getRequestURI().equals(NO_CHECK_URL4)|| request.getRequestURI().equals(NO_CHECK_URL5)) {
+        if (request.getRequestURI().equals(NO_CHECK_URL) || request.getRequestURI().equals(NO_CHECK_URL2)|| request.getRequestURI().equals(NO_CHECK_URL3)|| request.getRequestURI().equals(NO_CHECK_URL4)|| request.getRequestURI().equals(NO_CHECK_URL5) || request.getRequestURI().equals(NO_CHECK_URL6)) {
             log.info("No check URL : {}", request.getRequestURI());
             filterChain.doFilter(request, response); // "/login" 요청이 들어오면, 다음 필터 호출
             return; // return으로 이후 현재 필터 진행 막기 (안해주면 아래로 내려가서 계속 필터 진행시킴)
