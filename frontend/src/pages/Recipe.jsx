@@ -6,7 +6,7 @@ import SortSelector from "./../components/SortSelector/SortSelector";
 import styled from "styled-components";
 import { useRecipeStore } from "../store/recipeStore"; // zustand 스토어 가져오기
 import RecipeCardList from "./../components/CardList/RecipeCardList";
-import { fetchRecipes } from "../Api/recipe";
+import { fetchRecipes } from "../api/recipe";
 import SearchBar from "./../components/SearchBar/SearchBar";
 
 const PopularRecipe = styled.h2`

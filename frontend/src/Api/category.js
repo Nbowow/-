@@ -1,4 +1,6 @@
-import axiosInstance from "./axios";
+import axios from "axios";
+
+const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export const CATEGORY_TYPES = {
     TYPE: "종류",
@@ -8,7 +10,8 @@ export const CATEGORY_TYPES = {
 };
 
 export const fetchCategories = async () => {
-    const response = await axiosInstance.get("/users/common");
+    const response = await axios.get(`${BASE_URL}/users/common`);
+
     const data = response.data;
 
     // API 응답 데이터를 카테고리별로 분류
