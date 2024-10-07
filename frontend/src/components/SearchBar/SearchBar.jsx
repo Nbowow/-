@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom"; // 추가
+import { useNavigate } from "react-router-dom";
 import useSearchHistoryStore from "../../store/searchHistoryStore";
 import * as S from "./SearchBar.styled";
 import PropTypes from "prop-types";
@@ -15,7 +15,7 @@ const SearchBar = ({
     const [showDropDown, setShowDropDown] = useState(false);
     const { getSearchTerm, addSearchTerm, removeSearchTerm } =
         useSearchHistoryStore();
-    const navigate = useNavigate(); // navigate 추가
+    const navigate = useNavigate(); 
 
     const searchBarRef = useRef(null);
     const searchHistory = purpose ? getSearchTerm(userId, purpose) : [];
