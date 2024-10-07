@@ -82,6 +82,9 @@ public class Recipe {
     @Column(name = "recipe_comment_count")
     private Long commentCount = 0L;
 
+    @Column(name = "recipe_kcal")
+    private Long kcal;
+
     // 데이터가 저장되기 전 자동으로 현재 시간과 기본값 설정
     @PrePersist
     protected void onCreate() {
