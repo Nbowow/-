@@ -37,17 +37,6 @@ const RecipeDetail = () => {
 
     const allergies = ["토마토", "우유"];
 
-    const step = [
-        {
-            img: "https://cdn.pixabay.com/photo/2021/07/19/16/04/pizza-6478478_1280.jpg",
-            text: "밀가루, 소금, 설탕, 이스트를 넣고 섞어주세요.",
-        },
-        {
-            img: "https://cdn.pixabay.com/photo/2021/07/19/16/04/pizza-6478478_1280.jpg",
-            text: "밀가루, 소금, 설탕, 이스트를 넣고 섞어주세요.",
-        },
-    ];
-
     const rating = [100, 50, 30, 1, 5];
     return (
         <>
@@ -59,8 +48,7 @@ const RecipeDetail = () => {
                 </S.InfoSection>
 
                 <S.StepSection>
-                    {/* todo: RecipeStep 컴포넌트에 step props 전달 */}
-                    <RecipeStep recipe={step} />
+                    <RecipeStep recipe={recipe.recipeOrders} />
                 </S.StepSection>
 
                 <S.UserSection>
