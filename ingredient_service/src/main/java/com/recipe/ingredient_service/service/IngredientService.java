@@ -144,7 +144,7 @@ public class IngredientService {
             Ingredient newIngredient = Ingredient.builder()
                     .name(name)
                     .priceStatus(false)
-                    .allergyName(allergyCode)
+                    .allergyNum(allergyCode)
                     .build();
 
             Ingredient saveIngredient = ingredientRepository.save(newIngredient);
@@ -405,7 +405,7 @@ public class IngredientService {
         Ingredient ingredient = Ingredient.builder()
                 .name(name)
                 .img("")
-                .allergyName("")
+                .allergyNum("")
                 .priceStatus(true)
                 .build();
 
@@ -413,6 +413,7 @@ public class IngredientService {
 
         return ingredient;
     }
+
 
     public List<Long> getRecipeIdByIngredients(List<Long> ingredientIds) {
         // 재료 아이디에 해당하는 레시피 재료 조회
@@ -425,5 +426,10 @@ public class IngredientService {
                 .collect(Collectors.toList());
     }
 
+
+    public Ingredient findById(Long materialId) {
+        return ingredientRepository.findById(materialId)
+                .orElseThrow(() -> new NoSuchElementException("해당 재료가 존재하지 않습니다."));
+    }
 
 }

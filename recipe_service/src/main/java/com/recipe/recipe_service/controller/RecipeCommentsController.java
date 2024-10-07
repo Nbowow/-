@@ -4,7 +4,7 @@ import com.recipe.recipe_service.client.UserServiceClient;
 import com.recipe.recipe_service.data.domain.RecipeComments;
 import com.recipe.recipe_service.data.dto.comment.request.CommentRegisterRequestDto;
 import com.recipe.recipe_service.data.dto.comment.response.CommentResponseDto;
-import com.recipe.recipe_service.data.dto.user.UserSimpleResponseDto;
+import com.recipe.recipe_service.data.dto.user.response.UserSimpleResponseDto;
 import com.recipe.recipe_service.repository.RecipeCommentsRepository;
 import com.recipe.recipe_service.service.RecipeService;
 import lombok.AllArgsConstructor;
