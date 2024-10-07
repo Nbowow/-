@@ -1,23 +1,20 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import Comment from "./Comment";
-import CommentReply from "./CommentReply";
 import CommentInput from "./CommentInput";
 import * as S from "./Comment.styled";
-function Comments({ comments: initialComments }) {
-    const [showReplies, setShowReplies] = useState({});
-    const [comments, setComments] = useState(initialComments);
+import { postComment } from "../../api/recipe";
+function Comments({ initComments, id }) {
+    const [comments, setComments] = useState([]);
 
-    const addComment = (newComment) => {
+    const addComment = async (newComment) => {
         setComments((prevComments) => [...prevComments, newComment]);
+        await postComment(id, newComment.content);
     };
 
-    const toggleReplies = (index) => {
-        setShowReplies((prev) => ({
-            ...prev,
-            [index]: !prev[index],
-        }));
-    };
+    useEffect(() => {
+        setComments(initComments);
+    }, [initComments]);
 
     return (
         <>
@@ -26,14 +23,7 @@ function Comments({ comments: initialComments }) {
             </S.CommentInputWrapper>
             {comments.map((comment, index) => (
                 <S.CommentsWrapper key={comment.id}>
-                    <Comment
-                        setShowReplies={() => toggleReplies(index)}
-                        isReply={false}
-                        comment={comment}
-                    />
-                    {showReplies[index] && comment.reply && (
-                        <CommentReply replies={comment.reply} />
-                    )}
+                    <Comment comment={comment} />
                 </S.CommentsWrapper>
             ))}
         </>
@@ -41,7 +31,8 @@ function Comments({ comments: initialComments }) {
 }
 
 Comments.propTypes = {
-    comments: PropTypes.array.isRequired,
+    initComments: PropTypes.array.isRequired,
+    id: PropTypes.number.isRequired,
 };
 
 export default Comments;

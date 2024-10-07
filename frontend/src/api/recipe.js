@@ -22,3 +22,21 @@ export const postRecipe = async (recipeData) => {
     const response = await axiosInstance.post("/recipe", recipeData);
     return response.data;
 };
+
+export const postComment = async (id, content) => {
+    const response = await axiosInstance.post(
+        "/recipe/comment",
+        { content },
+        {
+            params: { id },
+        },
+    );
+    return response.data;
+};
+
+export const getComments = async (id) => {
+    const response = await axiosInstance.get("/recipe/comment", {
+        params: { id },
+    });
+    return response.data;
+};
