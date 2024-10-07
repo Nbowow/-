@@ -10,7 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.List;
 import java.util.Optional;
 
-public interface RecipeRepository extends JpaRepository<Recipe, Integer> {
+public interface RecipeRepository extends JpaRepository<Recipe, Long> {
 
     List<Recipe> findByUserId(Long userId);
 

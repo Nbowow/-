@@ -141,7 +141,7 @@ public class RecipeController {
     }
 
 
-    // 사용자 레시피 추천
+    // 사용자 알러지 기반 레시피 추천
     @GetMapping("/recommend")
     public ResponseEntity<List<RecipeRecommendResponseDto>> getUserRecommendations(
             @RequestHeader("Authorization") String authorization) {
@@ -167,6 +167,6 @@ public class RecipeController {
         return ResponseEntity.status(HttpStatus.OK).body(recommendedRecipes);
     }
 
-    // 날씨 기반
+    // 날씨 기반 레시피 추천
 
 }
