@@ -7,7 +7,7 @@ from app.database.base import Base
 
 
 class Recipes(Base):
-    __tablename__ = "Recipes"
+    __tablename__ = "recipes"
 
     recipe_id = Column(BigInteger, primary_key=True, index=True, autoincrement=True, nullable=False)
     recipe_title = Column(String(255))
@@ -27,7 +27,7 @@ class Recipes(Base):
     modified_date = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
     user_status = Column(Boolean, default=True, nullable=False)
 
-    user_id = Column(BigInteger, ForeignKey("Users.user_id"), nullable=False)
+    user_id = Column(BigInteger, ForeignKey("users.user_id"), nullable=False)
     user = relationship("Users", back_populates="recipe")
 
     recipe_orders = relationship("RecipeOrders", back_populates="recipe")

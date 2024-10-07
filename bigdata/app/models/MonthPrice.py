@@ -5,10 +5,10 @@ from app.database.base import Base
 
 
 class MonthPrice(Base):
-    __tablename__ = "MonthPrice"
+    __tablename__ = "monthprice"
 
     month_price_id = Column(BigInteger, primary_key=True, autoincrement=True, index=True, nullable=False)
     month_price_day = Column(DateTime, nullable=False)
 
-    material_id = Column(BigInteger, ForeignKey("Materials.material_id"), nullable=False)
+    material_id = Column(BigInteger, ForeignKey("materials.material_id"), nullable=False)
     material = relationship("Materials", back_populates="month_price")

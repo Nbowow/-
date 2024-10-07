@@ -6,6 +6,8 @@ from datetime import datetime, timedelta
 import requests
 from dotenv import load_dotenv
 
+from app.globals import set_price_back_crawling_status
+
 # .env 파일에서 환경 변수 로드
 load_dotenv()
 
@@ -66,50 +68,44 @@ async def price_back_data_api_scheduler(get_start_date):
     now_date = datetime.now()
 
     while start_date <= now_date:
-
         for category_code in p_category_item_name.keys():
-
             for cls_code in p_cls_code:
-                url = api_url
+                try:
+                    url = api_url
 
-                # 파라미터 설정
-                params = {
-                    "action": "dailyPriceByCategoryList",  # API 액션
-                    "p_product_cls_code": cls_code,  # 상품 구분 코드
-                    "p_country_code": "1101",  # 국가 코드
-                    "p_regday": start_date.strftime("%Y-%m-%d"),  # 조회 날짜
-                    "p_convert_kg_yn": "Y",  # kg 단위 변환 여부
-                    "p_item_category_code": category_code,  # 품목 대분류 코드
-                    "p_cert_key": cert_key,  # 인증 키
-                    "p_cert_id": cert_id,  # 인증 ID
-                    "p_returntype": "json",  # 반환 형식
-                }
+                    # 파라미터 설정
+                    params = {
+                        "action": "dailyPriceByCategoryList",  # API 액션
+                        "p_product_cls_code": cls_code,  # 상품 구분 코드
+                        "p_country_code": "1101",  # 국가 코드
+                        "p_regday": start_date.strftime("%Y-%m-%d"),  # 조회 날짜
+                        "p_convert_kg_yn": "N",  # kg 단위 변환 여부
+                        "p_item_category_code": category_code,  # 품목 대분류 코드
+                        "p_cert_key": cert_key,  # 인증 키
+                        "p_cert_id": cert_id,  # 인증 ID
+                        "p_returntype": "json",  # 반환 형식
+                    }
 
-                # API 요청 보내기
-                response = requests.get(url, params=params)
-                await asyncio.sleep(2)
+                    # API 요청 보내기
+                    response = requests.get(url, params=params)
+                    await asyncio.sleep(2)
 
-                # 응답 상태 코드 확인
-                if response.status_code == 200:
+                    # 응답 상태 코드 확인
+                    if response.status_code == 200:
+                        data = response.json()
 
-                    data = response.json()
+                        # data가 리스트인 경우 (에러 상황이거나 건너뛰어야 할 경우)
+                        if isinstance(data["data"], list):
+                            print(
+                                f"{start_date.strftime('%Y-%m-%d')} - 상품 구분 코드: {cls_code} - 카테고리 코드: {category_code} - 잘못된 응답 형식 또는 에러 발생, 건너뜁니다.")
+                            continue
 
-                    # data가 리스트인 경우 (에러 상황이거나 건너뛰어야 할 경우)
-                    if isinstance(data["data"], list):
-                        print(
-                            f"{start_date.strftime('%Y-%m-%d')} - 상품 구분 코드: {cls_code} - 카테고리 코드: {category_code} - 잘못된 응답 형식 또는 에러 발생, 건너뜁니다.")
-                        continue
-
-                    # 정상적인 데이터 처리 (딕셔너리인 경우)
-                    if isinstance(data, dict):
-
-                        if data["data"]["error_code"] == "000":
+                        # 정상적인 데이터 처리 (딕셔너리인 경우)
+                        if isinstance(data, dict) and data["data"]["error_code"] == "000":
                             items = data["data"]["item"]
 
                             for item in items:
-
                                 item_name = item["item_name"]
-
                                 category_items = p_category_item_name[category_code]
 
                                 for category_item in category_items:
@@ -123,7 +119,6 @@ async def price_back_data_api_scheduler(get_start_date):
                                                 kind_rules = value
                                                 # kind_rules가 set인지 확인
                                                 if isinstance(kind_rules, set):
-                                                    # set 내부의 각 요소를 처리
                                                     for kind_rule in kind_rules:
                                                         if "=" in kind_rule:
                                                             kind_key, kind_value = kind_rule.split("=")
@@ -136,8 +131,7 @@ async def price_back_data_api_scheduler(get_start_date):
                                                                 process_item(item, kind_rule)
                                                 else:
                                                     # kind_rules가 문자열일 경우 처리
-                                                    kind_rules_list = kind_rules.split(
-                                                        ",")  # 필요시 ,로 나눔. 기본적으로 & 또는 =을 사용할 것
+                                                    kind_rules_list = kind_rules.split(",")
                                                     for kind_rule in kind_rules_list:
                                                         if "=" in kind_rule:
                                                             kind_key, kind_value = kind_rule.split("=")
@@ -149,12 +143,15 @@ async def price_back_data_api_scheduler(get_start_date):
                                                             if kind_rule in item["kind_name"]:
                                                                 process_item(item, kind_rule)
 
+                            print(
+                                f"{start_date.strftime('%Y-%m-%d')} - 상품 구분 코드: {cls_code} - 카테고리 코드: {category_code} - API 요청 성공!")
+                    else:
                         print(
-                            f"{start_date.strftime('%Y-%m-%d')} - 상품 구분 코드: {cls_code} - 카테고리 코드: {category_code} - API 요청 성공!")
+                            f"API 요청 실패. 상태 코드: {response.status_code} - 날짜: {start_date.strftime('%Y-%m-%d')}, 상품 구분 코드: {cls_code}, 카테고리 코드: {category_code}")
 
-                else:
+                except Exception as e:
                     print(
-                        f"API 요청 실패. 상태 코드: {response.status_code} - 날짜: {start_date.strftime('%Y-%m-%d')}, 상품 구분 코드: {cls_code}, 카테고리 코드: {category_code}")
+                        f"에러 발생: {str(e)} - 날짜: {start_date.strftime('%Y-%m-%d')}, 상품 구분 코드: {cls_code}, 카테고리 코드: {category_code}")
 
         save_to_csv(filtered_items, start_date.strftime("%Y-%m-%d"))
         seen = {}
@@ -162,6 +159,8 @@ async def price_back_data_api_scheduler(get_start_date):
 
         # 날짜를 하루씩 증가시킴
         start_date += timedelta(days=1)
+
+    set_price_back_crawling_status(False)
 
 
 def process_item(item, item_name):
