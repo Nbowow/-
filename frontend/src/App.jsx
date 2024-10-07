@@ -14,6 +14,7 @@ import ModifyProfile from "./pages/ModifyProfile/ModifyProfile";
 import Login from "./pages/Login/Login";
 import LoginLoading from "./pages/Login/LoginLoding";
 import Footer from "./components/Footer/Footer";
+import SearchRecipe from "./pages/SerachRecipe";
 
 function App() {
     return (
@@ -35,6 +36,7 @@ function App() {
                             element={<LoginLoading />}
                         />
                         <Route path="/ingredient" element={<Ingredient />} />
+                        <Route path="/search" element={<SearchRecipe />} />
                         <Route path="*" element={<Notfound />} />
                     </Routes>
                     <Footer />

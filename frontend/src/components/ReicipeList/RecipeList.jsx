@@ -8,11 +8,11 @@ const RecipeListComponent = ({ Recipes }) => {
             <RecipeList>
                 {Recipes.map((recipe) => (
                     <RecipeCard
-                        key={recipe.recipe_id}
+                        key={recipe.id}
                         recipeId={recipe.recipe_id}
-                        imgUrl={recipe.recipe_image}
-                        title={recipe.recipe_title}
-                        text={recipe.recipe_intro}
+                        imgUrl={recipe.image}
+                        title={recipe.title}
+                        text={recipe.intro}
                         showProfile={recipe.user_status}
                         profileImgUrl={recipe.profileImgUrl}
                         author={recipe.author}

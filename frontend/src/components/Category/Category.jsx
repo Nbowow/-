@@ -1,4 +1,3 @@
-import { useState } from "react";
 import {
     CategoryItem,
     CategoryList,
@@ -6,61 +5,10 @@ import {
     CategoryTitle,
     Container,
 } from "./Category.styled";
-import { PropTypes } from "prop-types";
-
-const categories = {
-    종류: [
-        "전체",
-        "디저트",
-        "밑반찬",
-        "메인반찬",
-        "국/탕",
-        "찌개",
-        "면/만두",
-        "김치",
-        "양념",
-        "양식",
-    ],
-    상황: [
-        "전체",
-        "다이어트",
-        "일상",
-        "초스피드",
-        "손님접대",
-        "술안주",
-        "도시락",
-        "영양식",
-        "간식",
-        "야식",
-        "푸드스타일",
-    ],
-    재료: [
-        "전체",
-        "채소류",
-        "소고기",
-        "돼지고기",
-        "육류",
-        "해물류",
-        "달걀",
-        "가공식품",
-        "쌀",
-        "밀가루",
-        "건어물",
-    ],
-    방법: [
-        "전체",
-        "볶음",
-        "굽기",
-        "부침",
-        "조림",
-        "무침",
-        "비빔",
-        "찜",
-        "절임",
-        "튀김",
-        "삶기",
-    ],
-};
+import PropTypes from "prop-types";
+import { useRecipeStore } from "./../../store/recipeStore";
+import { useEffect, useState } from "react";
+import { CATEGORY_TYPES, fetchCategories } from "./../../Api/category";
 
 const CategoryComponent = ({
     onTypeSelect,
@@ -68,36 +16,67 @@ const CategoryComponent = ({
     onIngredientsSelect,
     onMethodSelect,
 }) => {
-    const [selectedCategories, setSelectedCategories] = useState({
-        종류: "전체",
-        상황: "전체",
-        재료: "전체",
-        방법: "전체",
+    const [categories, setCategories] = useState({
+        [CATEGORY_TYPES.TYPE]: [],
+        [CATEGORY_TYPES.SITUATION]: [],
+        [CATEGORY_TYPES.INGREDIENT]: [],
+        [CATEGORY_TYPES.METHOD]: [],
     });
 
-    const handleCategoryClick = (category, item) => {
-        const newSelectedCategories = {
-            ...selectedCategories,
-            [category]: item,
-        };
-        setSelectedCategories(newSelectedCategories);
+    const {
+        selectedType,
+        selectedSituation,
+        selectedIngredients,
+        selectedMethod,
+        setSelectedType,
+        setSelectedSituation,
+        setSelectedIngredients,
+        setSelectedMethod,
+    } = useRecipeStore((state) => ({
+        selectedType: state.selectedType,
+        selectedSituation: state.selectedSituation,
+        selectedIngredients: state.selectedIngredients,
+        selectedMethod: state.selectedMethod,
+        setSelectedType: state.setSelectedType,
+        setSelectedSituation: state.setSelectedSituation,
+        setSelectedIngredients: state.setSelectedIngredients,
+        setSelectedMethod: state.setSelectedMethod,
+    }));
 
-        // 부모 컴포넌트에 선택된 값 전달
-        if (category === "종류") onTypeSelect(item);
-        else if (category === "상황") onSituationSelect(item);
-        else if (category === "재료") onIngredientsSelect(item);
-        else if (category === "방법") onMethodSelect(item);
+    useEffect(() => {
+        const getCategories = async () => {
+            const categorizedData = await fetchCategories();
+            setCategories(categorizedData);
+        };
+
+        getCategories();
+    }, []);
+
+    const handleCategoryClick = (category, item) => {
+        if (category === CATEGORY_TYPES.TYPE) {
+            setSelectedType(item);
+            onTypeSelect(item);
+        } else if (category === CATEGORY_TYPES.SITUATION) {
+            setSelectedSituation(item);
+            onSituationSelect(item);
+        } else if (category === CATEGORY_TYPES.INGREDIENT) {
+            setSelectedIngredients(item);
+            onIngredientsSelect(item);
+        } else if (category === CATEGORY_TYPES.METHOD) {
+            setSelectedMethod(item);
+            onMethodSelect(item);
+        }
     };
 
     return (
         <Container>
-            {Object.entries(categories).map(([title, items]) => (
-                <CategorySection key={title}>
-                    <CategoryTitle>{title}</CategoryTitle>
+            {Object.entries(categories).map(([categoryKey, items]) => (
+                <CategorySection key={categoryKey}>
+                    <CategoryTitle>{categoryKey}</CategoryTitle>
                     <CategoryList>
                         {items.map((item, index) => (
                             <div
-                                key={item}
+                                key={`${item}-${index}`}
                                 style={{
                                     display: "flex",
                                     alignItems: "center",
@@ -105,10 +84,20 @@ const CategoryComponent = ({
                             >
                                 <CategoryItem
                                     selected={
-                                        selectedCategories[title] === item
+                                        (categoryKey === CATEGORY_TYPES.TYPE &&
+                                            selectedType === item) ||
+                                        (categoryKey ===
+                                            CATEGORY_TYPES.SITUATION &&
+                                            selectedSituation === item) ||
+                                        (categoryKey ===
+                                            CATEGORY_TYPES.INGREDIENT &&
+                                            selectedIngredients === item) ||
+                                        (categoryKey ===
+                                            CATEGORY_TYPES.METHOD &&
+                                            selectedMethod === item)
                                     }
                                     onClick={() =>
-                                        handleCategoryClick(title, item)
+                                        handleCategoryClick(categoryKey, item)
                                     }
                                 >
                                     {item}
