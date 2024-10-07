@@ -6,9 +6,17 @@ function RecipeOverview({ recipe }) {
     const recipeDetails = [
         { icon: "⏰", label: "시간", detail: `${recipe.time}분` },
         { icon: "🔥", label: "난이도", detail: recipe.level },
-        { icon: "🏋️‍♂️", label: "예상 칼로리", detail: `${recipe.calories}Kal` },
-        { icon: "💸", label: "예상 가격", detail: `${recipe.cost}원` },
-    ];
+        {
+            icon: "🏋️‍♂️",
+            label: "예상 칼로리",
+            detail: recipe.calorie ? `${recipe.calorie}Kal` : null,
+        },
+        {
+            icon: "💸",
+            label: "예상 가격",
+            detail: recipe.price ? `${recipe.price}원` : null,
+        },
+    ].filter((item) => item.detail !== null);
 
     return (
         <S.Wrapper>
@@ -28,8 +36,8 @@ RecipeOverview.propTypes = {
     recipe: PropTypes.shape({
         time: PropTypes.number,
         level: PropTypes.string,
-        calories: PropTypes.number,
-        cost: PropTypes.number,
+        calorie: PropTypes.number,
+        price: PropTypes.number,
     }).isRequired,
 };
 
