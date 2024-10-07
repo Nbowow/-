@@ -29,7 +29,7 @@ public class Ingredient {
     private String img;
 
     @Column(name = "material_allergy_num")
-    private String allergyName;
+    private String allergyNum;
 
 
 }

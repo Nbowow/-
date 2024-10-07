@@ -256,9 +256,8 @@
         }
 
         @GetMapping("/allergys")
-        public ResponseEntity<?> getAllAllergy(HttpServletRequest request) {
-            String accessToken = jwtService.extractAccessToken(request)
-                    .orElseThrow(() -> new IllegalArgumentException("AccessToken이 존재하지 않습니다."));
+        public ResponseEntity<?> getAllAllergy(@RequestHeader("Authorization") String authorization) {
+            String accessToken = authorization.split(" ")[1];
 
             String userEmail = jwtService.extractEmail(accessToken)
                     .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 AccessToken입니다."));

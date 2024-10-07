@@ -139,7 +139,7 @@ public class IngredientService {
             Ingredient newIngredient = Ingredient.builder()
                     .name(name)
                     .priceStatus(false)
-                    .allergyName(allergyCode)
+                    .allergyNum(allergyCode)
                     .build();
 
             Ingredient saveIngredient = ingredientRepository.save(newIngredient);
@@ -400,7 +400,7 @@ public class IngredientService {
         Ingredient ingredient = Ingredient.builder()
                 .name(name)
                 .img("")
-                .allergyName("")
+                .allergyNum("")
                 .priceStatus(true)
                 .build();
 

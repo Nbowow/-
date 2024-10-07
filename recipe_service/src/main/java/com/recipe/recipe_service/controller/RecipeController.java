@@ -3,19 +3,14 @@ package com.recipe.recipe_service.controller;
 import com.recipe.recipe_service.client.IngredientServiceClient;
 import com.recipe.recipe_service.client.UserServiceClient;
 import com.recipe.recipe_service.data.domain.Recipe;
-import com.recipe.recipe_service.data.domain.RecipeComments;
-import com.recipe.recipe_service.data.dto.comment.request.CommentRegisterRequestDto;
-import com.recipe.recipe_service.data.dto.comment.response.CommentResponseDto;
+import com.recipe.recipe_service.data.dto.ingredient.response.IngredientLikeResponseDto;
 import com.recipe.recipe_service.data.dto.recipe.request.RecipeRegisterRequestDto;
-import com.recipe.recipe_service.data.dto.recipe.response.RecipeDetailsResponseDto;
-import com.recipe.recipe_service.data.dto.recipe.response.UserRecipeLikeResponseDto;
-import com.recipe.recipe_service.data.dto.recipe.response.UserRecipeRegistResponseDto;
-import com.recipe.recipe_service.data.dto.recipe.response.UserRecipeScrapResponseDto;
-import com.recipe.recipe_service.data.dto.user.UserSimpleResponseDto;
+import com.recipe.recipe_service.data.dto.recipe.response.*;
+import com.recipe.recipe_service.data.dto.user.response.UserAllergyResponseDto;
+import com.recipe.recipe_service.data.dto.user.response.UserSimpleResponseDto;
 import com.recipe.recipe_service.service.RecipeService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -145,4 +140,30 @@ public class RecipeController {
         return ResponseEntity.status(HttpStatus.OK).body(userScrapRecipes);
     }
 
+
+    // 사용자 레시피 추천
+    @GetMapping("/recommend")
+    public ResponseEntity<List<RecipeRecommendResponseDto>> getUserRecommendations(
+            @RequestHeader("Authorization") String authorization) {
+
+        Long userId = userServiceClient.getUserId(authorization);
+
+        // 1. 사용자 알러지 정보 조회
+        List<UserAllergyResponseDto> userAllergies = userServiceClient.getUserAllergies(authorization).getBody();
+
+        // 2. 사용자 선호 재료 조회
+        List<IngredientLikeResponseDto> likedIngredients = ingredientServiceClient.findUserLikeIngredientList(authorization).getBody();
+
+        // 알러지에 해당하는 재료는 제외한 재료 목록 생성
+        List<Long> safeIngredientIds = likedIngredients.stream()
+                .filter(likedIngredient ->
+                        userAllergies.stream().noneMatch(allergy -> allergy.getCommonCodeNum().equals(likedIngredient.getAllergyNum())))
+                .map(IngredientLikeResponseDto::getId)
+                .collect(Collectors.toList());
+        
+        // 사용자 선호 재료 기반 레시피 추천
+        List<RecipeRecommendResponseDto> recommendedRecipes = recipeService.getRecipesByIngredients(safeIngredientIds);
+
+        return ResponseEntity.status(HttpStatus.OK).body(recommendedRecipes);
+    }
 }
