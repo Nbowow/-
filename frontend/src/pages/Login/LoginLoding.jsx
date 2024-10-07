@@ -19,7 +19,7 @@ const LoginLoading = () => {
     useEffect(() => {
         if (accessToken && refreshToken) {
             setTokens(accessToken, refreshToken);
-            // navigate("/");
+            navigate("/");
         }
     }, [accessToken, refreshToken, setTokens, navigate]);
 

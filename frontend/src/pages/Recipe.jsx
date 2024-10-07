@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Category from "../components/Category/Category";
@@ -24,7 +23,6 @@ const Recipe = () => {
     const navigate = useNavigate();
 
     const handleSearchSubmit = (term) => {
-        console.log("Recipe: Search submitted:", term);
         navigate(`/search?keyword=${encodeURIComponent(term)}`);
     };
     const {
