@@ -25,7 +25,9 @@ const UserProfile = ({ showInfo, member }) => {
             {showInfo && (
                 <S.UserStat>
                     <S.TextWrapper>
-                        <div className="nickname">{member.nickname}</div>
+                        <div className="nickname">
+                            {member.nickname}({member.name})
+                        </div>
                         <div className="discription">{member.summary}</div>
                         <div className="discription">{member.email}</div>
                         <S.StatWrapper>
@@ -63,6 +65,7 @@ UserProfile.propTypes = {
     member: PropTypes.shape({
         profileImage: PropTypes.string,
         nickname: PropTypes.string,
+        name: PropTypes.string,
         summary: PropTypes.string,
         email: PropTypes.string,
         followers: PropTypes.arrayOf(FollowerFollowingShape),
