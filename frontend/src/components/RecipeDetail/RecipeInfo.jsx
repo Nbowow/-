@@ -1,6 +1,8 @@
 import PropTypes from "prop-types";
 import AllergyAlert from "./AllergyAlert/AllergyAlert";
 import * as S from "./RecipeInfo.styled";
+import RecipeIngredient from "./RecipeIngredient/RecipeIngredient";
+import RecipeOverview from "./RecipeOverview/RecipeOverview";
 const RecipeInfo = ({ recipe, allergies }) => {
     return (
         <S.Wrapper>
@@ -10,15 +12,16 @@ const RecipeInfo = ({ recipe, allergies }) => {
                     <S.Title>재료</S.Title>
                     <AllergyAlert allergies={allergies} />
                 </S.RecipeIngredientLabel>
+                <RecipeIngredient ingredients={recipe.materials} />
+                <RecipeOverview recipe={recipe} />
             </S.Layout>
         </S.Wrapper>
     );
 };
 RecipeInfo.propTypes = {
     recipe: PropTypes.shape({
-        recipe: PropTypes.object.isRequired,
-        ingredients: PropTypes.array.isRequired,
         image: PropTypes.string.isRequired,
+        materials: PropTypes.array.isRequired,
     }).isRequired,
     allergies: PropTypes.array.isRequired,
 };

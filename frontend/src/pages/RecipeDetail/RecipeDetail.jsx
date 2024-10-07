@@ -11,8 +11,8 @@ import * as S from "./RecipeDetail.styled";
 import { getRecipe, getReviews, getComments } from "../../api/recipe";
 
 const RecipeDetail = () => {
-    const [recipe, setRecipes] = useState({});
-    const [reviews, setReviews] = useState([]);
+    const [recipe, setRecipes] = useState(null);
+    const [reviews, setReviews] = useState(null);
     const [comments, setComments] = useState([]);
     const { id } = useParams();
 
@@ -41,32 +41,41 @@ const RecipeDetail = () => {
     return (
         <>
             <S.Container>
-                <S.InfoSection>
-                    <RecipeHeader recipe={recipe} />
-                    {/* todo: RecipeInfo 컴포넌트에 allergies props전달 */}
-                    <RecipeInfo recipe={recipe} allergies={allergies} />
-                </S.InfoSection>
+                {recipe && (
+                    <>
+                        <S.InfoSection>
+                            <RecipeHeader recipe={recipe} />
+                            <RecipeInfo recipe={recipe} allergies={allergies} />
+                        </S.InfoSection>
 
-                <S.StepSection>
-                    <RecipeStep recipe={recipe.recipeOrders} />
-                </S.StepSection>
+                        <S.StepSection>
+                            <RecipeStep recipe={recipe.recipeOrders} />
+                        </S.StepSection>
 
-                <S.UserSection>
-                    <RecipeUser
-                        user={{
-                            nickname: recipe.nickname,
-                            profileImage: recipe.profileImage,
-                            id: recipe.userId,
-                            summary: recipe.summary,
-                        }}
-                    />
-                </S.UserSection>
+                        <S.UserSection>
+                            <RecipeUser
+                                user={{
+                                    nickname: recipe.nickname,
+                                    profileImage: recipe.profileImage,
+                                    id: recipe.userId,
+                                    summary: recipe.summary,
+                                }}
+                            />
+                        </S.UserSection>
+                    </>
+                )}
 
-                <Review reviews={reviews} rating={rating} recipe={recipe} />
-                <S.CommentSection>
-                    <S.CommentTitle>댓글 {comments.length}개</S.CommentTitle>
-                    <Comments initComments={comments} id={id} />
-                </S.CommentSection>
+                {reviews && (
+                    <Review reviews={reviews} rating={rating} recipe={recipe} />
+                )}
+                {comments && (
+                    <S.CommentSection>
+                        <S.CommentTitle>
+                            댓글 {comments.length}개
+                        </S.CommentTitle>
+                        <Comments initComments={comments} id={id} />
+                    </S.CommentSection>
+                )}
             </S.Container>
         </>
     );
