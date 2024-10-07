@@ -23,6 +23,10 @@ const Emoji = styled.span`
 const Recipe = () => {
     const navigate = useNavigate();
 
+    const handleSearchSubmit = (term) => {
+        console.log("Recipe: Search submitted:", term);
+        navigate(`/search?keyword=${encodeURIComponent(term)}`);
+    };
     const {
         selectedType,
         selectedSituation,
@@ -104,7 +108,7 @@ const Recipe = () => {
                 purpose="recipeSearch" // purpose prop을 전달
                 boldPlacehold="레시피 검색"
                 grayPlacehold="키워드를 입력하세요"
-                onSubmit={(term) => console.log(term)}
+                onSubmit={handleSearchSubmit}
             />
             <PopularRecipe>
                 <Emoji>🔥</Emoji> 인기 레시피
