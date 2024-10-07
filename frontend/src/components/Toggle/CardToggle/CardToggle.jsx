@@ -2,8 +2,8 @@ import * as S from "./CardToggle.styled";
 import PropTypes from "prop-types";
 import { useState } from "react";
 
-const CardToggle = ({ imgUrl, text }) => {
-    const [isActive, setIsActive] = useState(false);
+const CardToggle = ({ imgUrl, text, isClicked = false }) => {
+    const [isActive, setIsActive] = useState(isClicked);
 
     return (
         <S.CardToggle
@@ -19,6 +19,7 @@ const CardToggle = ({ imgUrl, text }) => {
 CardToggle.propTypes = {
     imgUrl: PropTypes.string,
     text: PropTypes.string,
+    isClicked: PropTypes.bool,
 };
 
 export default CardToggle;
