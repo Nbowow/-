@@ -37,5 +37,7 @@ public interface RecipeRepository extends JpaRepository<Recipe, Long>,
 
     List<Recipe> findByNameStartingWith(String prefix);
 
+    @Query("{ \"match\": { \"recipe_title\": { \"query\": \"?0\", \"fuzziness\": \"AUTO\" } } }")
+    List<Recipe> findByTitleWithTypoCorrection(String title);
 
 }

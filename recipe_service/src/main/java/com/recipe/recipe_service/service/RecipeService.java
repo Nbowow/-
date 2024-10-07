@@ -531,6 +531,10 @@ public class RecipeService {
         return recipeRepository.findByNameStartingWith(prefix);
     }
 
+    public List<Recipe> searchByTitleWithTypoCorrection(String title) {
+        return recipeRepository.findByTitleWithTypoCorrection(title);
+    }
+
 
 
 

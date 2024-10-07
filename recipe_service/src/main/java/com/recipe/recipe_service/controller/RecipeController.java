@@ -201,8 +201,8 @@ public class RecipeController {
                 .collect(Collectors.toList());
     }
 
-    @GetMapping("/search")
-    public List<Recipe> searchBooks(@RequestParam String title) {
+    @GetMapping("/searchRecipe")
+    public List<Recipe> searchRecipes(@RequestParam String title) {
         return recipeService.searchByTitle(title);
     }
 
@@ -221,6 +221,11 @@ public class RecipeController {
             log.error("Error during recipe indexing", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Recipe indexing failed.");
         }
+    }
+
+    @GetMapping("/search/typo")
+    public List<Recipe> searchWithTypoCorrection(@RequestParam String title) {
+        return recipeService.searchByTitleWithTypoCorrection(title);
     }
 
     // 날씨 기반 레시피 추천
