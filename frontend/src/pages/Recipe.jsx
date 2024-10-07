@@ -13,6 +13,7 @@ import SearchBar from "./../components/SearchBar/SearchBar";
 const PopularRecipe = styled.h2`
     font-family: "SUITEXTRABOLD";
     padding: 20px;
+    margin-left: 50px;
 `;
 
 const Emoji = styled.span`
@@ -101,9 +102,9 @@ const Recipe = () => {
             <SearchBar
                 userId="yourUserId" // 적절한 userId를 전달
                 purpose="recipeSearch" // purpose prop을 전달
-                boldPlacehold="레시피 검색" // 필요한 경우 추가
-                grayPlacehold="키워드를 입력하세요" // 필요한 경우 추가
-                onSubmit={(term) => console.log(term)} // 검색어 제출 시 처리
+                boldPlacehold="레시피 검색"
+                grayPlacehold="키워드를 입력하세요"
+                onSubmit={(term) => console.log(term)}
             />
             <PopularRecipe>
                 <Emoji>🔥</Emoji> 인기 레시피
