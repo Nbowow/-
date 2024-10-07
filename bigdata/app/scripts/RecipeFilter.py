@@ -1,10 +1,8 @@
-import difflib
 import json
 import re
 from collections.abc import Sequence
 from datetime import datetime
 
-import numpy as np
 import pytz
 from hdfs import InsecureClient
 from pyspark.sql import SparkSession
@@ -588,8 +586,12 @@ def process_recipe_ingredients(ingredients_str, recipe_id):
                     amount, unit = "", ""  # 양과 단위를 None으로 설정
 
                 # 재료 ID 확인 또는 추가
-                material_info = get_material_id(material)
-                material_id = material_info['material_id']
+                material_id = get_material_id(material)
+                if isinstance(material_id, int):
+                    print(f"재료 ID: {material_id}")
+                else:
+                    print(f"material_id가 정수가 아닙니다: {material_id}")
+                    continue
 
                 # RecipeMaterials 테이블에 재료 저장
                 add_recipe_material(recipe_id, material_id, amount, unit)
@@ -669,21 +671,40 @@ def add_recipe_material(recipe_id, material_id, amount, unit):
 
 # 유사도 계산 함수
 def get_best_match(item_name, reference_names, match_value):
-    all_names = [item_name] + reference_names
-    vectorizer = TfidfVectorizer().fit_transform(all_names)
-    vectors = vectorizer.toarray()
+    # 입력값 유효성 검사
+    if not item_name or not reference_names:
+        print(f"item_name 또는 reference_names가 비어 있습니다.")
+        return item_name
 
-    cosine_similarities = cosine_similarity([vectors[0]], vectors[1:])
+    # 빈 문자열 제거
+    reference_names = [name for name in reference_names if name.strip()]
+    if not reference_names:  # 만약 모든 reference_names가 비었다면
+        print(f"유효한 reference_names가 없습니다.")
+        return item_name
 
-    best_match_index = np.argmax(cosine_similarities)
-    best_match_score = cosine_similarities[0][best_match_index]
+    try:
+        vectorizer = TfidfVectorizer().fit_transform([item_name] + reference_names)
+        vectors = vectorizer.toarray()
 
-    if best_match_score >= match_value:
-        best_match = reference_names[best_match_index]
-        if abs(len(item_name) - len(best_match)) <= 2:
-            return best_match
-        else:
-            return item_name
+        item_vector = vectors[0]
+        reference_vectors = vectors[1:]
+
+        similarities = cosine_similarity([item_vector], reference_vectors)[0]
+
+        # 가장 높은 유사도 찾기
+        best_match_idx = similarities.argmax()
+        best_match_score = similarities[best_match_idx]
+        best_match_name = reference_names[best_match_idx]
+
+        # 유사도가 기준 값 이상이고, 단어 길이 차이가 2 이하인 경우만 매칭
+        if best_match_score >= match_value and abs(len(item_name) - len(best_match_name)) <= 2:
+            return best_match_name
+
+    except ValueError as ve:
+        # 벡터화 실패 시 처리
+        print(f"TfidfVectorizer 처리 중 에러 발생: {ve}")
+        return item_name
+
     return item_name
 
 
@@ -708,17 +729,23 @@ def get_allergy_num(material_name):
         '쇠고기': 'A_0018',
         '아황산류': 'A_0019'
     }
-    print(f"6")
+
     for keyword, allergy_code in specific_keywords.items():
         if keyword in material_name:
             print(f"'{material_name}'이(가) '{keyword}'와 관련된 재료로 자동 매핑되었습니다.")
             return allergy_code
 
-        print(f"7")
         # 유사도 기반 매칭
     for allergy_category, items in allergy_mapping.items():
-        for item in items:  # 각 항목을 material_name과 비교
-            print(f"8 - {item}")
+        for item in items:
+
+            if material_name == item:
+                print(f"'{material_name}'이(가) 직접 매칭되었습니다. 알레르기 카테고리: {allergy_category}")
+                allergy_code = allergy_code_mapping.get(allergy_category)
+
+                if allergy_code:
+                    return allergy_code
+
             best_match = get_best_match(material_name, [item], 0.85)
 
             if best_match != material_name:
@@ -728,11 +755,12 @@ def get_allergy_num(material_name):
                 if allergy_code:
                     return allergy_code
 
-    return ""  # 알레르기 코드가 없는 경우 None 반환
+    return ""
 
 
 def get_material_id(material_name):
     material_name = material_name.replace("_", "")
+    material_name = material_name.replace(" ", "")
     # 재료 존재여부 확인하고 테이블 추가
     engine = engineconnection()
     session = engine.sessionmaker()
@@ -743,19 +771,17 @@ def get_material_id(material_name):
         # 기존 재료 리스트 추출 (재료 이름 리스트)
         stmt_reference = select(Materials.material_name)
         reference_materials: Sequence[str] = session.execute(stmt_reference).scalars().all()  # Sequence로 변경
-        print(f"1")
+
         # 재료가 존재하는지 먼저 확인하는 쿼리
         stmt = select(Materials).where(Materials.material_name == material_name)
         material = session.execute(stmt).scalars().first()
-        print(f"2")
+
         if material:
-            print(f"3")
             print(f"'{material_name}'이(가) 이미 존재합니다. ID: {material.material_id}")
             return material.material_id  # material_id만 반환
-        print(f"4")
+
         # 참조 재료 리스트가 비어 있는 경우 바로 새로운 재료 추가
         if not reference_materials:
-            print(f"5")
             allergy_num = get_allergy_num(material_name)
             print(f"참조 재료 리스트가 비어 있습니다. 새 재료 추가: '{material_name}', 알레르기 번호: {allergy_num}")  # 추가될 재료 정보 확인
             new_material = Materials(
@@ -769,8 +795,25 @@ def get_material_id(material_name):
             return new_material.material_id  # material_id만 반환
 
         # 재료명 유사도 계산하여 가장 유사한 이름 반환
-        best_match = get_best_match(material_name, reference_materials, 0.85)
-        print(f"최고 매칭 재료명: '{best_match}'")
+        try:
+            best_match = get_best_match(material_name, reference_materials, 0.85)
+            print(f"최고 매칭 재료명: '{best_match}'")
+
+        except ValueError as ve:
+            # 벡터화 실패 시 처리
+            print(f"재료명 유사도 계산 중 에러 발생: {ve}")
+            # 벡터화 실패 시 새로운 재료로 추가
+            allergy_num = get_allergy_num(material_name)
+            print(f"벡터화 실패로 새 재료 추가: '{material_name}', 알레르기 번호: {allergy_num}")
+            new_material = Materials(
+                material_name=material_name,
+                material_allergy_num=allergy_num,  # 알레르기 번호 추가
+                material_price_status=True
+            )
+            session.add(new_material)
+            session.commit()  # 새로운 재료를 데이터베이스에 추가
+            print(f"'{material_name}' 재료가 추가되었습니다. 새로운 ID: {new_material.material_id}")
+            return new_material.material_id
 
         # 매칭된 재료가 이미 존재하는지 확인
         stmt = select(Materials).where(Materials.material_name == best_match)

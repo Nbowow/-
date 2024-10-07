@@ -1,6 +1,6 @@
-import difflib
 import re
 from collections.abc import Sequence
+from datetime import datetime, timedelta
 
 import pytz
 from hdfs import InsecureClient
@@ -85,20 +85,9 @@ class Materials(Base):
     material_img = Column(String(512))
     material_allergy_num = Column(String(20))
 
-    year_price = relationship("YearPrice", back_populates="material")
     month_price = relationship("MonthPrice", back_populates="material")
     week_price = relationship("WeekPrice", back_populates="material")
     day_price = relationship("DayPrice", back_populates="material")
-
-
-class YearPrice(Base):
-    __tablename__ = "yearprice"
-
-    year_price_id = Column(BigInteger, primary_key=True, autoincrement=True, index=True, nullable=False)
-    year_price_day = Column(DateTime, nullable=False)
-
-    material_id = Column(BigInteger, ForeignKey("materials.material_id"), nullable=False)
-    material = relationship("Materials", back_populates="year_price")
 
 
 class MonthPrice(Base):
@@ -106,6 +95,7 @@ class MonthPrice(Base):
 
     month_price_id = Column(BigInteger, primary_key=True, autoincrement=True, index=True, nullable=False)
     month_price_day = Column(DateTime, nullable=False)
+    month_price = Column(Integer, default=0)
 
     material_id = Column(BigInteger, ForeignKey("materials.material_id"), nullable=False)
     material = relationship("Materials", back_populates="month_price")
@@ -116,6 +106,7 @@ class WeekPrice(Base):
 
     week_price_id = Column(BigInteger, primary_key=True, autoincrement=True, index=True, nullable=False)
     week_price_day = Column(DateTime, nullable=False)
+    week_price = Column(Integer, default=0)
 
     material_id = Column(BigInteger, ForeignKey("materials.material_id"), nullable=False)
     material = relationship("Materials", back_populates="week_price")
@@ -194,6 +185,8 @@ def process_price_data():
         unit = row['unit']
         price = row['dpr1']
         date = row['day1']
+        price_week = row['dpr3']
+        price_month = row['dpr5']
 
         print(f"총 {len(rows)}개 중 {idx}번째 row 처리 중입니다.")
 
@@ -202,6 +195,17 @@ def process_price_data():
         if unit and price:
             price = convert_price_udf(unit, price)  # 가격 변환
         print(f"변환된 가격: {price}")
+        if price == 0:
+            continue
+
+        if price_week and unit:
+            price_week = convert_price_udf(unit, price_week)  # 1주일 전 가격 변환
+        print(f"1주일 전 변환된 가격: {price_week}")
+
+        # 1개월 전 데이터 정제
+        if price_month and unit:
+            price_month = convert_price_udf(unit, price_month)  # 1개월 전 가격 변환
+        print(f"1개월 전 변환된 가격: {price_month}")
 
         # 날짜 정제 (괄호 제거 및 변환)
         if date:
@@ -210,16 +214,37 @@ def process_price_data():
                 extracted_date = match.group(1)  # "01/01"을 추출
                 date = f"2024/{extracted_date[:2]}/{extracted_date[3:]}"  # "2024/01/01"로 변환
                 print(f"변환된 날짜: {date}")
+                # 날짜를 datetime 객체로 변환
+
+                date_day1_dt = datetime.strptime(date, "%Y/%m/%d")
+
+                date_day3_dt = date_day1_dt - timedelta(days=7)
+                date_day3 = date_day3_dt.strftime("%Y/%m/%d")
+                print(f"1주일 전 계산된 날짜: {date_day3}")
+
+                date_day5_dt = date_day1_dt - timedelta(days=30)
+                date_day5 = date_day5_dt.strftime("%Y/%m/%d")
+                print(f"1개월 전 계산된 날짜: {date_day5}")
+
+                # 정제된 데이터를 DB에 저장
+                db_material_id = get_material_id(item_name)  # DB에서 material_id 가져옴
+                print(f"material_id: {db_material_id}")
+
+                # 일간
+                save_dayprice_db(1, db_material_id, {'day': date, 'price': price})
+
+                # 주간
+                if price_week:
+                    save_dayprice_db(2, db_material_id, {'day': date_day3, 'price': price_week})
+
+                # 월간
+                if price_month:
+                    save_dayprice_db(3, db_material_id, {'day': date_day5, 'price': price_month})
+                print("데이터 정제가 완료되고 DB에 저장되었습니다.")
+
             else:
                 print("날짜 형식이 맞지 않습니다.")
-
-        # 정제된 데이터를 DB에 저장
-        db_material_id = get_material_id(item_name)  # DB에서 material_id 가져옴
-        print(f"material_id: {db_material_id}")
-
-        save_dayprice_db(db_material_id, {'day1': date, 'dpr1': price})  # DB에 저장
-
-    print("데이터 정제가 완료되고 DB에 저장되었습니다.")
+                continue
 
 
 # 단위별 가격 변환을 위한 UDF 등록
@@ -249,26 +274,64 @@ def extract_number(unit_string):
     return float(number) if number else 1.0  # 숫자가 없으면 기본값 1.0 반환
 
 
-def save_dayprice_db(get_db_data, row):
+def save_dayprice_db(num, get_db_data, row):
     engine = engineconnection()
     session = engine.sessionmaker()
 
-    # 중복 데이터 확인 로직 추가
-    existing_price = session.query(DayPrice).filter(
-        DayPrice.material_id == get_db_data,
-        DayPrice.day_price_day == row['day1']
-    ).first()
+    if num == 1:
+        # 중복 데이터 확인 로직 추가
+        existing_price = session.query(DayPrice).filter(
+            DayPrice.material_id == get_db_data,
+            DayPrice.day_price_day == row['day']
+        ).first()
 
-    if existing_price:
-        session.close()
-        return
+        if existing_price:
+            session.close()
+            return
 
-    new_day_price = DayPrice(
-        day_price_day=row['day1'],
-        material_id=get_db_data,  # material_id는 별도로 조회해야 함
-        day_price=row['dpr1']  # dpr1 가격 추가
-    )
-    session.add(new_day_price)
+        new_day_price = DayPrice(
+            day_price_day=row['day'],
+            material_id=get_db_data,  # material_id는 별도로 조회해야 함
+            day_price=row['price']  # dpr1 가격 추가
+        )
+        session.add(new_day_price)
+
+    elif num == 2:
+        # 중복 데이터 확인 로직 추가
+        existing_price = session.query(WeekPrice).filter(
+            WeekPrice.material_id == get_db_data,
+            WeekPrice.week_price_day == row['day']
+        ).first()
+
+        if existing_price:
+            session.close()
+            return
+
+        new_day_price = WeekPrice(
+            week_price_day=row['day'],
+            material_id=get_db_data,  # material_id는 별도로 조회해야 함
+            week_price=row['price']  # dpr1 가격 추가
+        )
+        session.add(new_day_price)
+
+    elif num == 3:
+        # 중복 데이터 확인 로직 추가
+        existing_price = session.query(MonthPrice).filter(
+            MonthPrice.material_id == get_db_data,
+            MonthPrice.month_price_day == row['day']
+        ).first()
+
+        if existing_price:
+            session.close()
+            return
+
+        new_day_price = MonthPrice(
+            month_price_day=row['day'],
+            material_id=get_db_data,  # material_id는 별도로 조회해야 함
+            month_price=row['price']  # dpr1 가격 추가
+        )
+        session.add(new_day_price)
+
     session.commit()  # 새로운 재료를 데이터베이스에 추가
     session.close()
 
@@ -294,17 +357,22 @@ def get_allergy_num(material_name):
         '쇠고기': 'A_0018',
         '아황산류': 'A_0019'
     }
-    print(f"6")
     for keyword, allergy_code in specific_keywords.items():
         if keyword in material_name:
             print(f"'{material_name}'이(가) '{keyword}'와 관련된 재료로 자동 매핑되었습니다.")
             return allergy_code
 
-        print(f"7")
         # 유사도 기반 매칭
     for allergy_category, items in allergy_mapping.items():
-        for item in items:  # 각 항목을 material_name과 비교
-            print(f"8 - {item}")
+        for item in items:
+
+            if material_name == item:
+                print(f"'{material_name}'이(가) 직접 매칭되었습니다. 알레르기 카테고리: {allergy_category}")
+                allergy_code = allergy_code_mapping.get(allergy_category)
+
+                if allergy_code:
+                    return allergy_code
+
             best_match = get_best_match(material_name, [item], 0.85)
 
             if best_match != material_name:
@@ -314,17 +382,10 @@ def get_allergy_num(material_name):
                 if allergy_code:
                     return allergy_code
 
-    print(f"10")
-    return ""  # 알레르기 코드가 없는 경우 None 반환
+    return ""
 
 
 def get_best_match(item_name, reference_names, match_value):
-    # match = difflib.get_close_matches(item_name, reference_names, n=1,
-    #                                   cutoff=match_value)
-    # if match:
-    #     return match[0]
-    # return item_name
-
     # 입력값 유효성 검사
     if not item_name or not reference_names:
         print(f"item_name 또는 reference_names가 비어 있습니다.")
@@ -336,7 +397,6 @@ def get_best_match(item_name, reference_names, match_value):
         print(f"유효한 reference_names가 없습니다.")
         return item_name
 
-    print(f"9, item_name: {item_name}, reference_names: {reference_names}")
     try:
         vectorizer = TfidfVectorizer().fit_transform([item_name] + reference_names)
         vectors = vectorizer.toarray()
@@ -358,40 +418,32 @@ def get_best_match(item_name, reference_names, match_value):
     except ValueError as ve:
         # 벡터화 실패 시 처리
         print(f"TfidfVectorizer 처리 중 에러 발생: {ve}")
-        return item_name  # 기본적으로 벡터화 실패 시 원본 이름 반환
+        return item_name
 
-    print(f"10")
     return item_name
 
 
 def get_material_id(material_name):
     material_name = material_name.replace("_", "")
     print(f"material_name after replace: {material_name}")
-    # 재료 존재여부 확인하고 테이블 추가
+
     engine = engineconnection()
     session = engine.sessionmaker()
 
     try:
-        print(f"입력된 재료명: '{material_name}'")  # 입력된 재료명 확인
-
-        # 기존 재료 리스트 추출 (재료 이름 리스트)
         stmt_reference = select(Materials.material_name)
         reference_materials: Sequence[str] = session.execute(stmt_reference).scalars().all()  # Sequence로 변경
 
-        print(f"1")
         # 재료가 존재하는지 먼저 확인하는 쿼리
         stmt = select(Materials).where(Materials.material_name == material_name)
         material = session.execute(stmt).scalars().first()
-        print(f"2")
+
         if material:
-            print(f"3")
             print(f"'{material_name}'이(가) 이미 존재합니다. ID: {material.material_id}")
             return material.material_id  # material_id만 반환
 
-        print(f"4")
         # 참조 재료 리스트가 비어 있는 경우 바로 새로운 재료 추가
         if not reference_materials:
-            print(f"6")
             allergy_num = get_allergy_num(material_name)
             print(f"참조 재료 리스트가 비어 있습니다. 새 재료 추가: '{material_name}', 알레르기 번호: {allergy_num}")  # 추가될 재료 정보 확인
             new_material = Materials(

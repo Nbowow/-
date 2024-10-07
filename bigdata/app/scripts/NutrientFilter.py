@@ -1,17 +1,9 @@
-import difflib
-import json
-import re
-from collections.abc import Sequence
-from datetime import datetime
-
 import pytz
 from hdfs import InsecureClient
 from pyspark.sql import SparkSession
-from pyspark.sql.functions import regexp_replace, col, when, regexp_extract, udf, length
-from pyspark.sql.types import StringType
-from sqlalchemy import Column, BigInteger, String, Boolean, select, Integer, DateTime, ForeignKey, Double
+from pyspark.sql.functions import col, when
+from sqlalchemy import Column, BigInteger, String, Double
 from sqlalchemy import create_engine
-from sqlalchemy.orm import relationship
 from sqlalchemy.orm import sessionmaker, declarative_base
 
 Base = declarative_base()
@@ -46,7 +38,7 @@ hdfs_directory = "/user/root/nutrient/"
 
 # Spark 세션 생성
 spark = SparkSession.builder \
-    .appName("Filter Price Squash") \
+    .appName("Filter Nutrient Squash") \
     .config("spark.sql.shuffle.partitions", "50") \
     .getOrCreate()
 
@@ -171,3 +163,7 @@ def save_nutrient_db(item_name, capacity, kcal, protein, carbohydrate, fat, chol
     session.add(new_nutrient)
     session.commit()
     session.close()
+
+
+if __name__ == "__main__":
+    main()
