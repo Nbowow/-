@@ -30,7 +30,6 @@ import java.util.stream.Collectors;
 public class RecipeController {
 
     private final RecipeService recipeService;
-    private final Environment env;
     private final UserServiceClient userServiceClient;
     private final IngredientServiceClient ingredientServiceClient;
 
@@ -124,34 +123,6 @@ public class RecipeController {
 
         return ResponseEntity.status(HttpStatus.OK).build();
     }
-
-    // 레시피 스크랩 등록
-    @PostMapping("/scrap")
-    public ResponseEntity<?> scrapRecipe(
-            @RequestHeader("Authorization") String authorization,
-            @RequestParam("id") Long recipeId) {
-
-        Long userId = userServiceClient.getUserId(authorization);
-
-        recipeService.scrapRecipe(recipeId, userId);
-
-        return ResponseEntity.status(HttpStatus.OK).build();
-    }
-
-    // 레시피 스크랩 취소
-    @PatchMapping("/unscrap")
-    public ResponseEntity<?> unscrapRecipe(
-            @RequestHeader("Authorization") String authorization,
-            @RequestParam("id") Long recipeId) {
-
-        Long userId = userServiceClient.getUserId(authorization);
-
-        recipeService.unscrapRecipe(recipeId, userId);
-
-        return ResponseEntity.status(HttpStatus.OK).build();
-    }
-
-
 
     // 특정 사용자가 만든 레시피 조회
     @GetMapping("/user/{userId}")

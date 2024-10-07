@@ -414,6 +414,7 @@ public class RecipeService {
     }
 
 
+    @Transactional
     public void deleteRecipe(Long recipeId, Long userId) {
         Recipe recipe = recipeRepository.findById(recipeId)
                 .orElseThrow(() -> new EntityNotFoundException("해당 아이디를 가진 레시피가 존재하지 않습니다."));
@@ -446,6 +447,7 @@ public class RecipeService {
         recipeRepository.deleteById(recipeId);
     }
 
+    @Transactional
     public void deleteComment(Long commentId, Long userId) {
 
         RecipeComments comments = recipeCommentsRepository.findById(commentId)
