@@ -63,7 +63,12 @@ const UserProfile = ({
                     />
                 </S.UserStat>
             )}
-            <FollowingModal isOpen={isModalOpen} onClose={closeModal} />
+            <FollowingModal
+                isOpen={isModalOpen}
+                onClose={closeModal}
+                followers={member.followers}
+                followings={member.followings}
+            />
         </S.UserProfile>
     );
 };
