@@ -34,6 +34,14 @@ public class AllergyService {
 
     // 알러지 추가 후 추가된 알러지 정보 반환
     public AllergyResponseDto addAllergy(Long userId, AllergyRequestDto requestDto) {
+        // 이미 해당 회원이 같은 알러지를 가지고 있는지 확인
+        boolean exists = allergyRepository.existsByCommonCodeNumAndUserId(requestDto.getCommonCodeNum(), userId);
+
+        if (exists) {
+            throw new IllegalArgumentException("이미 해당 회원이 해당 알러지를 가지고 있습니다.");
+        }
+
+        // 새로운 알러지 추가
         Allergys newAllergy = Allergys.builder()
                 .userId(userId)
                 .commonCodeNum(requestDto.getCommonCodeNum())

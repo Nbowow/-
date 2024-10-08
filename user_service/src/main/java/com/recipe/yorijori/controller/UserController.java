@@ -242,7 +242,7 @@
 
 
                 userService.updateUserProfileImage(userId, fileUrl);
-                return ResponseEntity.ok().body("파일 업로드 성공: " + fileUrl);
+                return ResponseEntity.ok().body(fileUrl);
             } catch (IOException e) {
                 return ResponseEntity.status(500).body("파일 업로드 실패: " + e.getMessage());
             }
