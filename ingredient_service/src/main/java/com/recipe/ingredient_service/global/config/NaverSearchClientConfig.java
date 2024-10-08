@@ -9,10 +9,10 @@ import org.springframework.context.annotation.Bean;
 public class NaverSearchClientConfig {
 
     @Bean
-    public RequestInterceptor requestInterceptor(@Value("${ocr.api.key}") String apiKey) {
+    public RequestInterceptor requestInterceptor(@Value("${ocr.api.key}") String apiKey, @Value("${ocr.api.secret}") String apiSecretKey) {
         return requestTemplate -> {
-            requestTemplate.header("X-Naver-Client-Id", "w8faWtah0sxEHtDEV7MI");
-            requestTemplate.header("X-Naver-Client-Secret", "ShhHCY1D9I");
+            requestTemplate.header("X-Naver-Client-Id", apiKey);
+            requestTemplate.header("X-Naver-Client-Secret", apiSecretKey);
         };
     }
 }
