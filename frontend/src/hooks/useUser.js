@@ -4,8 +4,10 @@ import {
     fetchUserRecipe,
     updateUser,
     uploadProfileImage,
+    fetchOtherUser,
 } from "../api/userApi";
 import { useUserStore } from "../store/userStore";
+import { useNavigate } from "react-router-dom";
 
 const useUser = () => {
     const setUser = useUserStore((state) => state.setUser);
@@ -53,6 +55,20 @@ export const useUpdateProfileImage = () => {
         mutationFn: uploadProfileImage,
         onSuccess: () => {
             queryClient.invalidateQueries(["user"]);
+        },
+    });
+};
+
+export const useOtherUserInfo = (id) => {
+    const navigate = useNavigate();
+
+    return useQuery({
+        queryKey: [`user${id}`],
+        queryFn: () => fetchOtherUser(id),
+        staleTime: 0,
+        refetchOnMount: true,
+        onError: () => {
+            navigate(-1);
         },
     });
 };

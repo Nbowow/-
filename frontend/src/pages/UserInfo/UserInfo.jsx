@@ -1,18 +1,15 @@
 import RecipeCardList from "../../components/CardList/RecipeCardList";
 import UserProfile from "../../components/UserProfile/UserProfile";
 import Tab from "../../components/Tab/Tab";
+import { useParams } from "react-router-dom";
+import { useOtherUserInfo } from "../../hooks/useUser";
 
 const UserInfo = () => {
-    // TODO: 테스트용 데이터
-    const member = {
-        ProfileImage: "",
-        nickname: "테스트",
-        name: "테스트입니다",
-        summary: "테스트",
-        email: "ㅇㅇㅇㅇ",
-        followers: [],
-        followings: [],
-    };
+    const { id } = useParams();
+
+    const { data: member, isLoading } = useOtherUserInfo(id);
+
+    if (isLoading) return <div></div>;
 
     const scraps = [
         {

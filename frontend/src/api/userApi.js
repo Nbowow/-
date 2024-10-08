@@ -55,3 +55,8 @@ export const getUserLike = async () => {
     const response = await axiosInstance.get("/users/like");
     return response.data;
 };
+
+export const fetchOtherUser = async (id) => {
+    const response = await axiosInstance.get(`/users/user/${id}`);
+    return response.data;
+};
