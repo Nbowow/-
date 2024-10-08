@@ -39,31 +39,27 @@ const RecipeDetail = () => {
 
     const rating = [100, 50, 30, 1, 5];
     return (
-        <>
+        recipe && (
             <S.Container>
-                {recipe && (
-                    <>
-                        <S.InfoSection>
-                            <RecipeHeader recipe={recipe} />
-                            <RecipeInfo recipe={recipe} allergies={allergies} />
-                        </S.InfoSection>
+                <S.InfoSection>
+                    <RecipeHeader recipe={recipe} />
+                    <RecipeInfo recipe={recipe} allergies={allergies} />
+                </S.InfoSection>
 
-                        <S.StepSection>
-                            <RecipeStep recipe={recipe.recipeOrders} />
-                        </S.StepSection>
+                <S.StepSection>
+                    <RecipeStep recipe={recipe.recipeOrders} />
+                </S.StepSection>
 
-                        <S.UserSection>
-                            <RecipeUser
-                                user={{
-                                    nickname: recipe.nickname,
-                                    profileImage: recipe.profileImage,
-                                    id: recipe.userId,
-                                    summary: recipe.summary,
-                                }}
-                            />
-                        </S.UserSection>
-                    </>
-                )}
+                <S.UserSection>
+                    <RecipeUser
+                        user={{
+                            nickname: recipe.nickname,
+                            profileImage: recipe.profileImage,
+                            id: recipe.userId,
+                            summary: recipe.summary,
+                        }}
+                    />
+                </S.UserSection>
 
                 {reviews && (
                     <Review reviews={reviews} rating={rating} recipe={recipe} />
@@ -77,7 +73,7 @@ const RecipeDetail = () => {
                     </S.CommentSection>
                 )}
             </S.Container>
-        </>
+        )
     );
 };
 
