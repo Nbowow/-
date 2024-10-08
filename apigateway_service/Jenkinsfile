@@ -1,7 +1,6 @@
 pipeline {
     agent any
 
-
     environment {
         BACKEND_DIR = './apigateway_service'
         DOCKER_IMAGE_BACKEND = 'parkgc0504/apigateway-service:latest'
