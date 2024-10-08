@@ -143,6 +143,7 @@ const MyPage = () => {
                     member={user}
                     buttonText={"정보 수정"}
                     buttonOnClick={() => navigate("/modify")}
+                    isFollowButtonEnabled={true}
                 />
                 <UserProfileLevel score={user.score} />
             </div>

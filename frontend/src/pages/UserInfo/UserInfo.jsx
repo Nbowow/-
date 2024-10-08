@@ -138,6 +138,7 @@ const UserInfo = () => {
                 member={member}
                 buttonText={buttonText}
                 buttonOnClick={handleButtonClick()}
+                isFollowButtonEnabled={false}
             />
             <Tab tabs={tabs} />
         </div>

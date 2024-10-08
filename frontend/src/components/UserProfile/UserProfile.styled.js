@@ -50,11 +50,14 @@ export const TextWrapper = styled.div`
 export const StatWrapper = styled.div`
     display: flex;
     gap: 12px;
+    user-select: none;
+    cursor: ${({ isClickable }) => (isClickable ? "pointer" : "default")};
 `;
 
 export const Stat = styled.div`
     display: flex;
     gap: 6px;
+    cursor: inherit;
 
     .stat {
         font-family: "SUITSemiBold";
