@@ -1,18 +1,19 @@
 package com.recipe.ingredient_service.service;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.recipe.ingredient_service.client.NaverSearchClient;
 import com.recipe.ingredient_service.data.domain.DayPrice;
 import com.recipe.ingredient_service.data.domain.Ingredient;
 import com.recipe.ingredient_service.data.domain.Recipematerials;
 import com.recipe.ingredient_service.data.domain.UserLikeMaterials;
 import com.recipe.ingredient_service.data.dto.ingredient.DayDto;
 import com.recipe.ingredient_service.data.dto.ingredient.response.*;
-import com.recipe.ingredient_service.data.dto.recipe.response.RecipeResponseDto;
 import com.recipe.ingredient_service.repository.DayPriceRepository;
 import com.recipe.ingredient_service.repository.IngredientRepository;
 import com.recipe.ingredient_service.repository.RecipematerialsRepository;
 import com.recipe.ingredient_service.repository.UserLikeMaterialsRepository;
 import info.debatty.java.stringsimilarity.JaroWinkler;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -36,6 +37,8 @@ public class IngredientService {
     private final IngredientRepository ingredientRepository;
     private final DayPriceRepository dayPriceRepository;
     private final RecipematerialsRepository recipematerialsRepository;
+
+    private final NaverSearchClient naverSearchClient;
 
     private JaroWinkler jaroWinkler = new JaroWinkler();
     // 알러지 매핑 데이터
@@ -430,6 +433,18 @@ public class IngredientService {
     public Ingredient findById(Long materialId) {
         return ingredientRepository.findById(materialId)
                 .orElseThrow(() -> new NoSuchElementException("해당 재료가 존재하지 않습니다."));
+    }
+
+    public List<LowestPriceDto> getLowestPriceResult(String query, String display, String start, String sort) throws Exception {
+        Object data = naverSearchClient.getLowestPriceResult(query, display, start, sort);
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        Map<String, Object> mapData = objectMapper.readValue((String) data, new TypeReference<Map<String, Object>>() {
+        });
+        List<Map<String, Object>> items = (List<Map<String, Object>>) mapData.get("items");
+        return items.stream()
+                .map(LowestPriceDto::from)
+                .collect(Collectors.toList());
     }
 
 }
