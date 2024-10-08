@@ -5,6 +5,11 @@ export const fetchUser = async () => {
     return response.data;
 };
 
+export const getMyAllergies = async () => {
+    const response = await axiosInstance.get("/users/allergys");
+    return response.data;
+};
+
 export const followUser = async (id) => {
     const response = await axiosInstance.post(`/social/follow/${id}`);
     return response.data;
