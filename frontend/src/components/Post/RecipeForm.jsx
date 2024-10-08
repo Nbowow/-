@@ -19,6 +19,7 @@ import {
     CloseButton,
     ButtonContainer,
     Text,
+    ImageContainer,
 } from "./RecipeForm.styled";
 
 const CATEGORY_TYPES = {
@@ -26,6 +27,14 @@ const CATEGORY_TYPES = {
     SITUATION: "상황",
     INGREDIENT: "재료",
     METHOD: "방법",
+};
+
+// eslint-disable-next-line no-unused-vars
+const TYPE_TO_CODE = {
+    TYPE: "B",
+    SITUATION: "C",
+    INGREDIENT: "D",
+    METHOD: "E",
 };
 
 const RecipeForm = ({ recipeData, setRecipeData, categories }) => {
@@ -36,7 +45,6 @@ const RecipeForm = ({ recipeData, setRecipeData, categories }) => {
             [name]: value,
         }));
     };
-
     const handleImageChange = (e) => {
         const file = e.target.files[0];
         if (file) {
@@ -48,7 +56,7 @@ const RecipeForm = ({ recipeData, setRecipeData, categories }) => {
     };
 
     const handleImageRemove = (e) => {
-        e.stopPropagation(); // 이벤트 전파 방지
+        e.stopPropagation();
         setRecipeData((prev) => ({
             ...prev,
             image: null,
@@ -56,8 +64,19 @@ const RecipeForm = ({ recipeData, setRecipeData, categories }) => {
     };
 
     const handleUploadClick = (e) => {
-        e.stopPropagation(); // 이벤트 전파 방지
-        document.getElementById("imageInput").click(); // 파일 선택 창 열기
+        e.stopPropagation();
+        document.getElementById("imageInput").click();
+    };
+
+    // 카테고리 데이터 변환 함수
+    const transformCategories = (categoryType) => {
+        const categoryList = categories[CATEGORY_TYPES[categoryType]] || [];
+        return categoryList
+            .filter((category) => category.name !== "전체")
+            .map((category) => ({
+                num: category.num,
+                name: category.name,
+            }));
     };
 
     return (
@@ -69,39 +88,37 @@ const RecipeForm = ({ recipeData, setRecipeData, categories }) => {
                     <Label>레시피명</Label>
                     <Input
                         type="text"
-                        name="name"
-                        value={recipeData.name}
+                        name="title"
+                        value={recipeData.title}
                         onChange={handleChange}
                     />
                 </InputGroup>
 
                 <InputGroup3>
-                    <ImageUploadButton onClick={handleUploadClick}>
-                        {recipeData.image ? (
-                            <>
-                                <ImagePreview
-                                    src={URL.createObjectURL(recipeData.image)}
-                                    alt="preview"
-                                />
-                                <CloseButton onClick={handleImageRemove}>
-                                    X
-                                </CloseButton>
-                            </>
-                        ) : (
-                            <>
-                                <input
-                                    type="file"
-                                    id="imageInput"
-                                    onChange={handleImageChange}
-                                    style={{ display: "none" }}
-                                />
-                                <ButtonContainer>
-                                    <img src="/src/img/Vector.png" alt="" />
-                                    <Text>대표사진 등록</Text>
-                                </ButtonContainer>
-                            </>
-                        )}
-                    </ImageUploadButton>
+                    {recipeData.image ? (
+                        <ImageContainer>
+                            <ImagePreview
+                                src={URL.createObjectURL(recipeData.image)}
+                                alt="preview"
+                            />
+                            <CloseButton onClick={handleImageRemove}>
+                                X
+                            </CloseButton>
+                        </ImageContainer>
+                    ) : (
+                        <ImageUploadButton onClick={handleUploadClick}>
+                            <input
+                                type="file"
+                                id="imageInput"
+                                onChange={handleImageChange}
+                                style={{ display: "none" }}
+                            />
+                            <ButtonContainer>
+                                <img src="/src/img/Vector.png" alt="" />
+                                <Text>대표사진 등록</Text>
+                            </ButtonContainer>
+                        </ImageUploadButton>
+                    )}
                 </InputGroup3>
 
                 <InputGroup2>
@@ -122,12 +139,9 @@ const RecipeForm = ({ recipeData, setRecipeData, categories }) => {
                             onChange={handleChange}
                         >
                             <option value="">{CATEGORY_TYPES.TYPE}</option>
-                            {categories[CATEGORY_TYPES.TYPE].map((category) => (
-                                <option
-                                    key={category.commonCodeNum}
-                                    value={category.commonCodeNum}
-                                >
-                                    {category}
+                            {transformCategories("TYPE").map((category) => (
+                                <option key={category.num} value={category.num}>
+                                    {category.name}
                                 </option>
                             ))}
                         </Select>
@@ -139,10 +153,13 @@ const RecipeForm = ({ recipeData, setRecipeData, categories }) => {
                             <option value="">
                                 {CATEGORY_TYPES.INGREDIENT}
                             </option>
-                            {categories[CATEGORY_TYPES.INGREDIENT].map(
+                            {transformCategories("INGREDIENT").map(
                                 (category) => (
-                                    <option key={category} value={category}>
-                                        {category}
+                                    <option
+                                        key={category.num}
+                                        value={category.num}
+                                    >
+                                        {category.name}
                                     </option>
                                 ),
                             )}
@@ -153,10 +170,13 @@ const RecipeForm = ({ recipeData, setRecipeData, categories }) => {
                             onChange={handleChange}
                         >
                             <option value="">{CATEGORY_TYPES.SITUATION}</option>
-                            {categories[CATEGORY_TYPES.SITUATION].map(
+                            {transformCategories("SITUATION").map(
                                 (category) => (
-                                    <option key={category} value={category}>
-                                        {category}
+                                    <option
+                                        key={category.num}
+                                        value={category.num}
+                                    >
+                                        {category.name}
                                     </option>
                                 ),
                             )}
@@ -167,13 +187,11 @@ const RecipeForm = ({ recipeData, setRecipeData, categories }) => {
                             onChange={handleChange}
                         >
                             <option value="">{CATEGORY_TYPES.METHOD}</option>
-                            {categories[CATEGORY_TYPES.METHOD].map(
-                                (category) => (
-                                    <option key={category} value={category}>
-                                        {category}
-                                    </option>
-                                ),
-                            )}
+                            {transformCategories("METHOD").map((category) => (
+                                <option key={category.num} value={category.num}>
+                                    {category.name}
+                                </option>
+                            ))}
                         </Select>
                     </CategoryGroup>
                 </InputGroup4>
@@ -193,6 +211,7 @@ const RecipeForm = ({ recipeData, setRecipeData, categories }) => {
                             <option value="4">4인분</option>
                             <option value="5">5인분</option>
                             <option value="6">6인분</option>
+                            <option value="7">6인분 이상</option>
                         </Select>
                     </InputGroup5>
 
@@ -204,9 +223,10 @@ const RecipeForm = ({ recipeData, setRecipeData, categories }) => {
                             onChange={handleChange}
                         >
                             <option value="">난이도</option>
-                            <option value="쉬움">쉬움</option>
-                            <option value="보통">보통</option>
-                            <option value="어려움">어려움</option>
+                            <option value="초급">쉬움</option>
+                            <option value="중급">보통</option>
+                            <option value="고급">어려움</option>
+                            <option value="신의 경지">매우 어려움</option>
                         </Select>
                     </InputGroup5>
 
@@ -224,6 +244,7 @@ const RecipeForm = ({ recipeData, setRecipeData, categories }) => {
                             <option value="60">1시간</option>
                             <option value="90">1시간 30분</option>
                             <option value="120">2시간</option>
+                            <option value="121">2시간 이상</option>
                         </Select>
                     </InputGroup5>
                 </BottomRow>
@@ -234,7 +255,7 @@ const RecipeForm = ({ recipeData, setRecipeData, categories }) => {
 
 RecipeForm.propTypes = {
     recipeData: PropTypes.shape({
-        name: PropTypes.string,
+        title: PropTypes.string,
         image: PropTypes.oneOfType([
             PropTypes.string,
             PropTypes.instanceOf(File),

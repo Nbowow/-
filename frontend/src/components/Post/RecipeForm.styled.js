@@ -94,7 +94,7 @@ export const CategoryGroup = styled.div`
 
 export const ImageUploadButton = styled.div`
     display: flex;
-    flex-direction: column; /* 세로로 정렬 */
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     border: 1px dashed #ccc;
@@ -106,14 +106,25 @@ export const ImageUploadButton = styled.div`
     cursor: pointer;
     position: relative;
     margin: 20px 0;
-    align-self: center; /* 가로 중앙 정렬 */
+    align-self: center;
     font-size: 16px;
 `;
 
+export const ImageContainer = styled.div`
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 20px;
+    width: 300px;
+    height: 300px;
+    padding: 20px;
+    border: 1px solid;
+    position: relative;
+    border-radius: 4px;
+`;
 export const ImagePreview = styled.img`
     width: 100%;
-    height: auto;
-    border-radius: 4px;
+    height: 100%;
 `;
 
 export const BottomRow = styled.div`
@@ -127,9 +138,9 @@ export const CloseButton = styled.button`
     position: absolute;
     top: 10px;
     right: 10px;
-    background: none;
+    background: #aaaaaa;
     border: none;
-    color: #ff0000;
+    color: white;
     cursor: pointer;
     font-size: 16px;
 `;

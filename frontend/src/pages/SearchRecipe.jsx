@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import Category from "../components/Category/Category";
@@ -17,6 +16,18 @@ const PopularRecipe = styled.h2`
 
 const Emoji = styled.span`
     font-family: "tossface";
+`;
+
+const NoResultContainer = styled.div`
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100vh;
+`;
+
+const NoResult = styled.h2`
+    font-family: "SUITEXTRABOLD";
+    padding: 20px;
 `;
 
 const SearchRecipe = () => {
@@ -40,14 +51,15 @@ const SearchRecipe = () => {
     } = useSearchResultStore();
 
     const recipesPerPage = 20;
-    const [recipes, setRecipes] = useState([]);
+    const [recipes, setRecipes] = useState([]); // 초기값은 배열로 설정
+    const [errorMessage, setErrorMessage] = useState(null); // 에러 메시지 상태 추가
 
-    // URL 파라미터로부터 상태 초기화
+    // URL 파라미터로부터 상태 초기화 및 레시피 로드
     useEffect(() => {
-        const type = query.get("type") || "전체";
-        const situation = query.get("situation") || "전체";
-        const ingredients = query.get("ingredients") || "전체";
-        const method = query.get("method") || "전체";
+        const type = query.get("type") || "B_0001";
+        const situation = query.get("situation") || "C_0001";
+        const ingredients = query.get("ingredients") || "D_0001";
+        const method = query.get("method") || "E_0001";
         const sort = query.get("sort") || "최신순";
         const page = parseInt(query.get("page")) || 0;
         const keyword = query.get("keyword") || "";
@@ -61,100 +73,57 @@ const SearchRecipe = () => {
 
         // 레시피 데이터 로드
         const loadRecipes = async () => {
-            if (keyword) {
-                const data = await searchRecipes(keyword);
-                setRecipes(data);
-            } else {
-                const data = await fetchRecipes(page, recipesPerPage);
-                setRecipes(data);
+            try {
+                let data;
+                if (keyword) {
+                    data = await searchRecipes(keyword);
+                } else {
+                    data = await fetchRecipes(page, recipesPerPage);
+                }
+
+                // 응답이 배열인지 확인
+                if (Array.isArray(data)) {
+                    setRecipes(data);
+                    setErrorMessage(null); // 에러 메시지 초기화
+                } else {
+                    const message = data;
+                    setRecipes([]); // 배열이 아닐 경우 빈 배열로 설정
+                    setErrorMessage(message); // 에러 메시지 설정
+                }
+                // eslint-disable-next-line no-unused-vars
+            } catch (error) {
+                setRecipes([]); // 오류 발생 시 빈 배열로 설정
+                setErrorMessage("레시피 로드 중 오류 발생"); // 에러 메시지 설정
             }
         };
 
         loadRecipes();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [location.search]); // URL이 변경될 때마다 실행
 
-    // 상태가 변경될 때마다 URL 업데이트
-    useEffect(() => {
-        const params = new URLSearchParams(location.search);
-
-        // 현재 상태가 기본값이 아닐 때만 URL에 포함
-        if (selectedType !== "전체") params.set("type", selectedType);
-        if (selectedSituation !== "전체")
-            params.set("situation", selectedSituation);
-        if (selectedIngredients !== "전체")
-            params.set("ingredients", selectedIngredients);
-        if (selectedMethod !== "전체") params.set("method", selectedMethod);
-        if (sortOrder !== "최신순") params.set("sort", sortOrder);
-        if (currentPage !== 0) params.set("page", currentPage);
-
-        // 키워드가 있다면 유지
-        const keyword = query.get("keyword");
-        if (keyword) {
-            params.set("keyword", keyword);
-        }
-
-        navigate(`?${params.toString()}`, { replace: true });
-    }, [
-        selectedType,
-        selectedSituation,
-        selectedIngredients,
-        selectedMethod,
-        sortOrder,
-        currentPage,
-    ]);
-
     // 레시피 필터링 로직
-    const filteredRecipes = recipes.filter((recipe) => {
-        const typeMatch =
-            !selectedType ||
-            selectedType === "전체" ||
-            recipe.type === selectedType;
-        const situationMatch =
-            !selectedSituation ||
-            selectedSituation === "전체" ||
-            recipe.situation === selectedSituation;
-        const ingredientsMatch =
-            !selectedIngredients ||
-            selectedIngredients === "전체" ||
-            recipe.ingredients.includes(selectedIngredients);
-        const methodMatch =
-            !selectedMethod ||
-            selectedMethod === "전체" ||
-            recipe.method === selectedMethod;
+    const filteredRecipes = Array.isArray(recipes)
+        ? recipes.filter((recipe) => {
+              return (
+                  (!selectedType ||
+                      selectedType === "B_0001" ||
+                      recipe.type === selectedType) &&
+                  (!selectedSituation ||
+                      selectedSituation === "C_0001" ||
+                      recipe.situation === selectedSituation) &&
+                  (!selectedIngredients ||
+                      selectedIngredients === "D_0001" ||
+                      recipe.ingredients.includes(selectedIngredients)) &&
+                  (!selectedMethod ||
+                      selectedMethod === "E_0001" ||
+                      recipe.method === selectedMethod)
+              );
+          })
+        : []; // recipes가 배열이 아닐 경우 빈 배열로 설정
 
-        return typeMatch && situationMatch && ingredientsMatch && methodMatch;
-    });
-
-    // 레시피 정렬 로직
-    const sortedRecipes = [...filteredRecipes].sort((a, b) => {
-        switch (sortOrder) {
-            case "최신순":
-                return new Date(b.modifiedDate) - new Date(a.modifiedDate);
-            case "추천순":
-                return b.likeCount - a.likeCount;
-            case "댓글순":
-                return b.viewCount - a.viewCount;
-            default:
-                return 0;
-        }
-    });
-
-    // 인기 레시피 선택 (상위 4개)
     const popularRecipes = [...recipes]
         .sort((a, b) => b.likeCount - a.likeCount)
         .slice(0, 4);
-
-    // 페이지네이션 로직
-    const startIndex = currentPage * recipesPerPage;
-    const endIndex = startIndex + recipesPerPage;
-    const currentRecipes = sortedRecipes.slice(startIndex, endIndex);
-    const pageCount = Math.ceil(sortedRecipes.length / recipesPerPage);
-
-    // 페이지 변경 핸들러
-    const handlePageChange = (selectedPage) => {
-        setCurrentPage(selectedPage.selected);
-        window.scrollTo(0, 0); // 페이지 변경 시 맨 위로 스크롤
-    };
 
     return (
         <div>
@@ -164,57 +133,73 @@ const SearchRecipe = () => {
                 boldPlacehold="레시피 검색"
                 grayPlacehold="키워드를 입력하세요"
                 onSubmit={(term) => {
-                    // 검색 시 다른 필터 초기화
-                    setSelectedType("전체");
-                    setSelectedSituation("전체");
-                    setSelectedIngredients("전체");
-                    setSelectedMethod("전체");
+                    setSelectedType("B_0001");
+                    setSelectedSituation("C_0001");
+                    setSelectedIngredients("D_0001");
+                    setSelectedMethod("E_0001");
                     setSortOrder("최신순");
                     setCurrentPage(0);
                     navigate(`/search?keyword=${term}`);
                 }}
             />
 
-            <PopularRecipe>
-                <Emoji>🔥</Emoji> 인기 레시피
-            </PopularRecipe>
-            <RecipeCardList recipes={popularRecipes} />
+            {filteredRecipes.length === 0 ? (
+                <NoResultContainer>
+                    <NoResult>
+                        <Emoji>😥</Emoji>
+                        검색 결과가 없습니다.
+                        {errorMessage && <div>{errorMessage}</div>}{" "}
+                        {/* 에러 메시지 출력 */}
+                    </NoResult>
+                </NoResultContainer>
+            ) : (
+                <div>
+                    <PopularRecipe>
+                        <Emoji>🔥</Emoji> 인기 레시피
+                    </PopularRecipe>
+                    <RecipeCardList recipes={popularRecipes} />
 
-            <Category
-                onTypeSelect={(type) => {
-                    setSelectedType(type);
-                    setCurrentPage(0); // 필터 변경 시 첫 페이지로
-                }}
-                onSituationSelect={(situation) => {
-                    setSelectedSituation(situation);
-                    setCurrentPage(0);
-                }}
-                onIngredientsSelect={(ingredients) => {
-                    setSelectedIngredients(ingredients);
-                    setCurrentPage(0);
-                }}
-                onMethodSelect={(method) => {
-                    setSelectedMethod(method);
-                    setCurrentPage(0);
-                }}
-            />
+                    <Category
+                        onTypeSelect={(type) => {
+                            setSelectedType(type);
+                            setCurrentPage(0); // 필터 변경 시 첫 페이지로
+                        }}
+                        onSituationSelect={(situation) => {
+                            setSelectedSituation(situation);
+                            setCurrentPage(0);
+                        }}
+                        onIngredientsSelect={(ingredients) => {
+                            setSelectedIngredients(ingredients);
+                            setCurrentPage(0);
+                        }}
+                        onMethodSelect={(method) => {
+                            setSelectedMethod(method);
+                            setCurrentPage(0);
+                        }}
+                    />
 
-            <SortSelector
-                sortOrder={sortOrder}
-                onSortChange={(order) => {
-                    setSortOrder(order);
-                    setCurrentPage(0);
-                }}
-            />
+                    <SortSelector
+                        sortOrder={sortOrder}
+                        onSortChange={(order) => {
+                            setSortOrder(order);
+                            setCurrentPage(0);
+                        }}
+                    />
 
-            <RecipeCardList recipes={currentRecipes} />
+                    <RecipeCardList recipes={filteredRecipes} />
 
-            {pageCount > 1 && (
-                <Pagination
-                    pageCount={pageCount}
-                    onPageChange={handlePageChange}
-                    currentPage={currentPage}
-                />
+                    {Math.ceil(filteredRecipes.length / recipesPerPage) > 1 && (
+                        <Pagination
+                            pageCount={Math.ceil(
+                                filteredRecipes.length / recipesPerPage,
+                            )}
+                            onPageChange={({ selected }) =>
+                                setCurrentPage(selected)
+                            } // 페이지 변경 시 호출
+                            currentPage={currentPage}
+                        />
+                    )}
+                </div>
             )}
         </div>
     );

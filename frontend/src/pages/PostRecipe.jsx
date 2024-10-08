@@ -1,7 +1,6 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-console */
 /* eslint-disable no-alert */
-/* eslint-disable prefer-const */
 import RecipeForm from "./../components/Post/RecipeForm";
 import MaterialForm from "../components/Post/MaterialForm";
 import OrderForm from "../components/Post/OrderForm";
@@ -9,6 +8,7 @@ import styled from "styled-components";
 import { useState, useEffect } from "react";
 import { postRecipe } from "../api/recipe";
 import { fetchCategories } from "../api/category";
+import { useNavigate } from "react-router-dom";
 
 const CATEGORY_TYPES = {
     TYPE: "종류",
@@ -49,8 +49,9 @@ const Hr = styled.hr`
 `;
 
 const PostRecipe = () => {
+    const navigate = useNavigate();
     const [recipeFormData, setRecipeFormData] = useState({
-        title: "새 레시피", // 기본값 설정
+        title: "",
         name: "",
         intro: "",
         image: null,
@@ -94,27 +95,26 @@ const PostRecipe = () => {
                 materialName: material.name,
                 materialAmount: material.amount,
                 materialUnit: material.unit,
-                materialSubtitle: group.name || "재료", // 기본값 설정
+                materialSubtitle: group.name || "양념", // 기본값 설정
             })),
         );
 
         // 요리 순서 정보 변환
         const recipeOrders = orderSteps.map((step, index) => ({
             orderNum: index + 1,
-            orderImg: step.image, // 이미지 처리는 백엔드와 협의 필요
+            orderImg: step.image ? step.image.name : "", // 이미지가 없을 경우 빈 문자열로 설정
             orderContent: step.content,
         }));
 
         // 요청 데이터 구성
         const requestData = {
-            title: recipeFormData.title || "새 레시피",
-            name: recipeFormData.name,
+            title: recipeFormData.title,
+            name: recipeFormData.title, // title을 name으로 사용
             intro: recipeFormData.intro,
-            image: recipeFormData.image, // 이미지 처리는 백엔드와 협의 필요
+            image: recipeFormData.image ? recipeFormData.image.name : "", // 파일 이름으로 설정
             servings: parseInt(recipeFormData.servings),
             time: parseInt(recipeFormData.time),
             level: recipeFormData.level,
-            cookingTools: recipeFormData.cookingTools || "", // 쉼표로 구분된 문자열
             type: recipeFormData.type,
             situation: recipeFormData.situation,
             ingredients: recipeFormData.ingredients,
@@ -122,47 +122,19 @@ const PostRecipe = () => {
             recipeMaterials,
             recipeOrders,
         };
+
         console.log(requestData);
-        // 유효성 검사
-        if (!validateRecipeData(requestData)) {
-            alert("필수 정보를 모두 입력해주세요.");
-            return;
-        }
 
         try {
             const response = await postRecipe(requestData);
             if (response) {
                 alert("레시피가 성공적으로 등록되었습니다.");
-                // 성공 후 처리 (예: 페이지 이동)
+                navigate("/recipe");
             }
         } catch (error) {
             alert("레시피 등록에 실패했습니다.");
             console.error("Error posting recipe:", error);
         }
-    };
-
-    // 유효성 검사 함수
-    const validateRecipeData = (data) => {
-        // 필수 필드 검사
-        const requiredFields = ["name", "intro", "servings", "time", "level"];
-        for (let field of requiredFields) {
-            if (!data[field]) return false;
-        }
-
-        // 재료 정보 검사
-        if (!data.recipeMaterials.length) return false;
-        for (let material of data.recipeMaterials) {
-            if (!material.materialName || !material.materialAmount)
-                return false;
-        }
-
-        // 요리 순서 검사
-        if (!data.recipeOrders.length) return false;
-        for (let order of data.recipeOrders) {
-            if (!order.orderContent) return false;
-        }
-
-        return true;
     };
 
     return (

@@ -10,15 +10,15 @@ import {
     ContentArea,
     ImageUpload,
     TextArea,
-    Input,
     TitleContainer,
     ButtonContainer,
     Text,
     Label,
-    InputContainer,
     ImageContainer,
     TextContainer,
     RemoveButton,
+    ImagePreview,
+    ImageContainer2,
 } from "./OrderForm.styled";
 
 const OrderForm = ({ orderSteps, setOrderSteps }) => {
@@ -28,7 +28,6 @@ const OrderForm = ({ orderSteps, setOrderSteps }) => {
         const newStep = {
             image: null,
             content: "",
-            tools: "",
             orderNum: orderSteps.length + 1,
         };
         setOrderSteps([...orderSteps, newStep]);
@@ -39,30 +38,22 @@ const OrderForm = ({ orderSteps, setOrderSteps }) => {
         const file = event.target.files[0];
         if (file) {
             const newSteps = [...orderSteps];
-            newSteps[activeStep].image = URL.createObjectURL(file); // 이미지 URL 생성
+            newSteps[activeStep].image = file; // 파일 객체를 저장
             setOrderSteps(newSteps);
         }
     };
 
+    // 조리 설명 변경
     const handleContentChange = (event) => {
         const newSteps = [...orderSteps];
         newSteps[activeStep].content = event.target.value;
         setOrderSteps(newSteps);
     };
 
-    const handleToolsChange = (event) => {
-        const newSteps = [...orderSteps];
-        newSteps[activeStep].tools = event.target.value;
-        setOrderSteps(newSteps);
-    };
-
     const handleImageRemove = (e) => {
         e.stopPropagation(); // 이벤트 전파 방지
         const newSteps = [...orderSteps];
-        if (newSteps[activeStep].image) {
-            URL.revokeObjectURL(newSteps[activeStep].image); // URL 해제
-        }
-        newSteps[activeStep].image = null;
+        newSteps[activeStep].image = null; // 이미지 객체를 null로 설정
         setOrderSteps(newSteps);
     };
 
@@ -90,33 +81,33 @@ const OrderForm = ({ orderSteps, setOrderSteps }) => {
                 <ContentArea>
                     <ImageContainer>
                         <Label>조리사진</Label>
-                        <ImageUpload
-                            onClick={() =>
-                                document.getElementById("imageUpload").click()
-                            }
-                        >
-                            <input
-                                type="file"
-                                accept="image/*"
-                                onChange={handleImageUpload}
-                                style={{ display: "none" }}
-                                id="imageUpload"
-                            />
-                            {orderSteps[activeStep]?.image ? (
-                                <div style={{ position: "relative" }}>
-                                    <img
-                                        src={orderSteps[activeStep].image}
-                                        alt="조리 과정"
-                                        style={{
-                                            maxWidth: "100%",
-                                            maxHeight: "100%",
-                                        }}
-                                    />
-                                    <RemoveButton onClick={handleImageRemove}>
-                                        X
-                                    </RemoveButton>
-                                </div>
-                            ) : (
+                        {orderSteps[activeStep]?.image ? (
+                            <ImageContainer2>
+                                <ImagePreview
+                                    src={URL.createObjectURL(
+                                        orderSteps[activeStep].image,
+                                    )} // 임시 URL 생성
+                                    alt="조리 과정"
+                                />
+                                <RemoveButton onClick={handleImageRemove}>
+                                    X
+                                </RemoveButton>
+                            </ImageContainer2>
+                        ) : (
+                            <ImageUpload
+                                onClick={() =>
+                                    document
+                                        .getElementById("imageUpload")
+                                        .click()
+                                }
+                            >
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={handleImageUpload}
+                                    style={{ display: "none" }}
+                                    id="imageUpload"
+                                />
                                 <ButtonContainer>
                                     <img
                                         src="/src/img/Vector.png"
@@ -124,9 +115,10 @@ const OrderForm = ({ orderSteps, setOrderSteps }) => {
                                     />
                                     <Text>조리사진 등록</Text>
                                 </ButtonContainer>
-                            )}
-                        </ImageUpload>
+                            </ImageUpload>
+                        )}
                     </ImageContainer>
+
                     <TextContainer>
                         <Label>조리설명</Label>
                         <TextArea
@@ -135,15 +127,6 @@ const OrderForm = ({ orderSteps, setOrderSteps }) => {
                             onChange={handleContentChange}
                         />
                     </TextContainer>
-                    <InputContainer>
-                        <Label>필요한 도구</Label>
-                        <Input
-                            type="text"
-                            placeholder="ex) 비커, 젓가락"
-                            value={orderSteps[activeStep]?.tools || ""}
-                            onChange={handleToolsChange}
-                        />
-                    </InputContainer>
                 </ContentArea>
             </FormLayout>
         </Container>
