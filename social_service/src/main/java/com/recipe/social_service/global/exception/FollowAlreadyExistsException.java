@@ -1,7 +1,8 @@
 package com.recipe.social_service.global.exception;
 
 public class FollowAlreadyExistsException extends YorijoriException {
-    private static final String MESSAGE = "User is already being followed.";
+    private static final String MESSAGE = "이미 팔로우 함";
+
     public FollowAlreadyExistsException() {
         super(MESSAGE);
     }

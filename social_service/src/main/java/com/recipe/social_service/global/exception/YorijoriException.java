@@ -7,9 +7,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Getter
-public abstract class YorijoriException extends RuntimeException{
+public abstract class YorijoriException extends RuntimeException {
 
-    private final Map<String,String> validation = new HashMap<String, String>();
+    private final Map<String, String> validation = new HashMap<String, String>();
 
     public YorijoriException(String message) {
         super(message);
