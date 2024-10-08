@@ -2,6 +2,8 @@ package com.recipe.social_service.service;
 
 import com.recipe.social_service.client.UserServiceClient;
 import com.recipe.social_service.data.domain.Follow;
+import com.recipe.social_service.global.exception.FollowAlreadyExistsException;
+import com.recipe.social_service.global.exception.FollowNotFoundException;
 import com.recipe.social_service.repository.SocialRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -31,7 +33,7 @@ public class SocialService {
         // Check if the follow relationship already exists
         Follow existingFollow = socialRepository.findByFollowerIdAndFollowingId(followerId, followingId);
         if (existingFollow != null) {
-            throw new IllegalStateException("User is already being followed.");
+            throw new FollowAlreadyExistsException();
         }
 
         // Create a new follow relationship
@@ -49,7 +51,7 @@ public class SocialService {
         // Check if the follow relationship exists
         Follow follow = socialRepository.findByFollowerIdAndFollowingId(followerId, followingId);
         if (follow == null) {
-            throw new IllegalStateException("Follow relationship does not exist.");
+            throw new FollowNotFoundException();
         }
 
         // Delete the follow relationship
