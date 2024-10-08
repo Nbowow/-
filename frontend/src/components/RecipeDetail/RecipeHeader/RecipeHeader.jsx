@@ -2,19 +2,36 @@ import PropTypes from "prop-types";
 import Tag from "../../Tag/Tag";
 import * as S from "./RecipeHeader.styled";
 import ActionToggleGroup from "../../Toggle/ActionToggleGroup/ActionToggleGroup";
+import { useTagStore } from "../../../store/TagStore";
+import { useEffect } from "react";
+import { getCommonCode } from "../../../api/userApi";
 
 function RecipeHeader({ recipe }) {
+    const tags = useTagStore((state) => state.tags);
+    const setTags = useTagStore((state) => state.setTags);
+
+    useEffect(() => {
+        const fetchCommonCode = async () => {
+            const data = await getCommonCode();
+            setTags(data);
+        };
+        if (!tags) fetchCommonCode();
+    }, [setTags, tags]);
+
     return (
         <S.RecipeHeaderContainer>
             <S.TopSection>
-                <S.Title>{recipe.name}</S.Title>
+                <S.Title>{recipe.title}</S.Title>
                 <S.TagWrapper>
-                    <Tag tag={recipe.type} />
-                    <Tag tag={recipe.situation} />
-                    <Tag tag={recipe.ingredients} />
-                    <Tag tag={recipe.method} />
+                    {tags && (
+                        <>
+                            <Tag tag={tags[recipe.type]} />
+                            <Tag tag={tags[recipe.situation]} />
+                            <Tag tag={tags[recipe.ingredients]} />
+                            <Tag tag={tags[recipe.method]} />
+                        </>
+                    )}
                 </S.TagWrapper>
-
                 <S.RecipeStats>
                     <ActionToggleGroup />
                 </S.RecipeStats>
@@ -26,7 +43,7 @@ function RecipeHeader({ recipe }) {
 
 RecipeHeader.propTypes = {
     recipe: PropTypes.shape({
-        name: PropTypes.string.isRequired,
+        title: PropTypes.string.isRequired,
         type: PropTypes.string.isRequired,
         situation: PropTypes.string.isRequired,
         ingredients: PropTypes.array.isRequired,
