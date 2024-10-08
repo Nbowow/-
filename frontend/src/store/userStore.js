@@ -25,5 +25,7 @@ export const useAuthStore = create(
 
 export const useUserStore = create((set) => ({
     user: null,
+    recipes: [],
     setUser: (user) => set({ user }),
+    setRecipes: (recipes) => set({ recipes }),
 }));

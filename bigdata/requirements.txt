@@ -17,3 +17,5 @@ urllib3
 python-multipart
 cryptography
 pytz
+scikit-learn
+numpy
