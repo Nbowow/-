@@ -24,4 +24,5 @@ public interface RecipeServiceClient {
 
     @GetMapping("/api/v1/recipe/user/scrap/{userId}")
     List<UserRecipeScrapResponseDto> getUserScrapRecipes(@PathVariable("userId") Long userId);
+
 }
