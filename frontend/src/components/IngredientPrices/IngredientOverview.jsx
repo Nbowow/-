@@ -1,29 +1,27 @@
 import PropType from "prop-types";
 import { useEffect, useState } from "react";
 import * as S from "./IngredientOverview.styled";
-import IntroCard from "../Card/IntroCard/IntroCard";
 import YearlyPriceChart from "./YearlyPriceChart/YearlyPriceChart";
 import Title from "../Title/Title";
 import LikeIngredient from "./LikeIngredient/LikeIngredient";
 import Tab from "../Tab/Tab";
-import LowestPrice from "./LowestPrice/LowestPrice";
 import { getIngredientPrices } from "../../api/ingredientApi";
+import LowestPrices from "./LowestPrice/LowestPrices";
+import RelatedRecipe from "./RelatedRecipe";
 
-const item = {
-    title: "김치찌개",
-    text: "잘 익은 김치와 돼지고기를 넣어 끓인 매콤한 찌개로, 추운 겨울에 몸을 데워줍니다.",
-    imgUrl: "https://img.bizthenaum.co.kr/data/img/1000000869/ori/1000000869_11.jpg",
-};
 const IngredientOverview = ({ like, onLike }) => {
     const [rowIdx, setRowIdx] = useState(0);
     const [priceHistory, setPriceHistory] = useState(null);
+    const [name, setName] = useState(null);
+
     useEffect(() => {
         const fetchIngredientPrices = async () => {
-            const result = await getIngredientPrices(rowIdx);
+            const result = await getIngredientPrices(like[rowIdx].id);
             setPriceHistory(result);
+            setName(like[rowIdx].name);
         };
         fetchIngredientPrices();
-    }, [rowIdx]);
+    }, [rowIdx, like]);
 
     const clickHandler = (idx) => {
         setRowIdx(idx);
@@ -43,9 +41,7 @@ const IngredientOverview = ({ like, onLike }) => {
             label: "최저가",
             content: (
                 <>
-                    <LowestPrice />
-                    <LowestPrice />
-                    <LowestPrice />
+                    <LowestPrices name={name} />
                 </>
             ),
         },
@@ -69,21 +65,7 @@ const IngredientOverview = ({ like, onLike }) => {
             <S.RelatedRecipeWrapper>
                 <Title title={"관련 레시피"} />
                 <S.RelatedRecipe>
-                    <IntroCard
-                        title={item.title}
-                        text={item.text}
-                        imgUrl={item.imgUrl}
-                    />
-                    <IntroCard
-                        title={item.title}
-                        text={item.text}
-                        imgUrl={item.imgUrl}
-                    />
-                    <IntroCard
-                        title={item.title}
-                        text={item.text}
-                        imgUrl={item.imgUrl}
-                    />
+                    <RelatedRecipe like={like} />
                 </S.RelatedRecipe>
             </S.RelatedRecipeWrapper>
         </>

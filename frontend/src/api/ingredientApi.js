@@ -1,6 +1,8 @@
 import axiosInstance from "./axios";
 export const getSearchIngredient = async (term) => {
-    const response = await axiosInstance.get(`/ingredient/${term}`);
+    const response = await axiosInstance.get("/ingredient/search", {
+        params: { keyword: term },
+    });
     return response.data;
 };
 
@@ -41,6 +43,14 @@ export const getIngredientPrices = async (id) => {
     });
     return response.data;
 };
+
+export const getIngredientLowPrices = async (word) => {
+    const response = await axiosInstance.get("/ingredient/low", {
+        params: { query: word, start: 1, display: 2, sort: "sim" },
+    });
+    return response.data;
+};
+
 export const getRelatedRecipe = async (ingredient) => {
     const response = await axiosInstance.post("/ingredient/recipe", ingredient);
     return response.data;
