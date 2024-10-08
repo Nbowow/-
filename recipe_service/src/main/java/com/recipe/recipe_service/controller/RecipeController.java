@@ -6,6 +6,7 @@ import com.recipe.recipe_service.data.domain.Recipe;
 import com.recipe.recipe_service.data.dto.ingredient.response.IngredientLikeResponseDto;
 import com.recipe.recipe_service.data.dto.recipe.request.RecipeRegisterRequestDto;
 import com.recipe.recipe_service.data.dto.recipe.response.*;
+import com.recipe.recipe_service.global.config.LevenshteinDistance;
 import com.recipe.recipe_service.repository.RecipeRepository;
 import com.recipe.recipe_service.data.dto.user.response.UserAllergyResponseDto;
 import com.recipe.recipe_service.service.RecipeService;
@@ -85,10 +86,16 @@ public class RecipeController {
 
     // 레시피 검색
     @GetMapping("/search")
-    public ResponseEntity<List<RecipeDetailsResponseDto>> searchRecipe(
+    public ResponseEntity<?> searchRecipe(
             @RequestParam("keyword") String keyword) {
 
         List<RecipeDetailsResponseDto> recipeList = recipeService.searchRecipe(keyword);
+
+        // 검색 결과가 없을 경우, 오타 수정 로직 호출
+        if (recipeList.isEmpty()) {
+            String correctedWord = searchTypo(keyword); // 오타 수정 API 호출
+            return ResponseEntity.status(HttpStatus.OK).body("혹시 이걸 찾으시나요? " + correctedWord);
+        }
 
         return ResponseEntity.status(HttpStatus.OK).body(recipeList);
     }
@@ -196,5 +203,28 @@ public class RecipeController {
                         .build())
                 .collect(Collectors.toList());
     }
+
+
+
+    private String searchTypo(String query) {
+        List<String> recipeNames = recipeRepository.findAllRecipeNames(); // DB에서 모든 레시피 이름 가져오기
+        return getMostSimilarWord(query, recipeNames);
+    }
+
+    private String getMostSimilarWord(String query, List<String> wordDictionary) {
+        String closestWord = query;
+        int minDistance = Integer.MAX_VALUE;
+
+        for (String word : wordDictionary) {
+            int distance = LevenshteinDistance.computeLevenshteinDistance(query, word);
+            if (distance < minDistance) {
+                minDistance = distance;
+                closestWord = word;
+            }
+        }
+        return closestWord;
+    }
+
+    // 날씨 기반 레시피 추천
 
 }
