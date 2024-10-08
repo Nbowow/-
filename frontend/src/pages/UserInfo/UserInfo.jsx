@@ -1,15 +1,19 @@
 import RecipeCardList from "../../components/CardList/RecipeCardList";
 import UserProfile from "../../components/UserProfile/UserProfile";
 import Tab from "../../components/Tab/Tab";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useOtherUserInfo } from "../../hooks/useUser";
 
 const UserInfo = () => {
     const { id } = useParams();
+    const navigate = useNavigate();
 
-    const { data: member, isLoading } = useOtherUserInfo(id);
+    const { data: member, isLoading, error } = useOtherUserInfo(id);
 
     if (isLoading) return <div></div>;
+    if (!member || error) {
+        navigate("/user-not-found");
+    }
 
     const scraps = [
         {
