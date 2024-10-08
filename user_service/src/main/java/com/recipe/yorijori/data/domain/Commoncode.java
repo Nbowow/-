@@ -20,7 +20,7 @@ public class Commoncode {
     @Column(name = "common_code_type")
     private String commonCodeType;
 
-    @Column(name ="common_code_num")
+    @Column(name = "common_code_num")
     private String commonCodeNum;
 
     @Column(name = "common_code_name")

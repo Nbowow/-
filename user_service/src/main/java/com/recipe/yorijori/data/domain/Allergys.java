@@ -10,7 +10,7 @@ import lombok.*;
 @Table(name = "allergys")
 @ToString
 @Builder
-public class Allergys extends BaseTimeEntity{
+public class Allergys extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

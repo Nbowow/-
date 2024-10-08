@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class FollowerResponseDto {
-    private Long id; // 사용자 ID
+    private Long id;
     private String nickname;
     private String profileImage;
 }

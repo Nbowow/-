@@ -15,7 +15,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @Table(name = "Users")
 @ToString
 @Builder
-public class User extends BaseTimeEntity{
+public class User extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,7 +33,7 @@ public class User extends BaseTimeEntity{
 
     @Builder.Default
     @Column(name = "user_summary")
-    private String summary="";
+    private String summary = "";
 
     @Column(name = "user_name")
     private String name;
@@ -63,7 +63,6 @@ public class User extends BaseTimeEntity{
     @Column(name = "user_refresh_token")
     private String refreshToken;
 
-    // 비밀번호 암호화 메소드
     public void passwordEncode(PasswordEncoder passwordEncoder) {
         this.password = passwordEncoder.encode(this.password);
     }

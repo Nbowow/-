@@ -11,7 +11,7 @@ import com.recipe.yorijori.data.dto.user.response.FollowerResponseDto;
 import com.recipe.yorijori.data.dto.user.response.FollowingResponseDto;
 import com.recipe.yorijori.data.dto.user.response.UserResponseDto;
 import com.recipe.yorijori.data.enums.Role;
-import com.recipe.yorijori.global.exception.UserNotFoundException;
+import com.recipe.yorijori.global.exception.*;
 import com.recipe.yorijori.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +24,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -40,11 +39,11 @@ public class UserService {
     public void signUp(UserSignUpDto userSignUpDto) throws Exception {
 
         if (userRepository.findByEmail(userSignUpDto.getEmail()).isPresent()) {
-            throw new Exception("이미 존재하는 이메일입니다.");
+            throw new AlreadyEmailException();
         }
 
         if (userRepository.findByNickname(userSignUpDto.getNickname()).isPresent()) {
-            throw new Exception("이미 존재하는 닉네임입니다.");
+            throw new AlreadyNicknameException();
         }
 
         User user = User.builder()
@@ -59,13 +58,11 @@ public class UserService {
     }
 
 
-    // 이메일을 기반으로 User 정보를 조회하고 DTO로 변환
     public UserResponseDto getUserByEmail(String email) {
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+                .orElseThrow(UserNotFoundEmailException::new);
 
 
-        // User 객체를 UserDto로 변환하여 반환
         return new UserResponseDto(
                 user.getUserId(),
                 user.getEmail(),
@@ -73,15 +70,15 @@ public class UserService {
                 user.getProfileImage(),
                 user.getName(),
                 user.getScore(),
-                user.getSummary(), // 추가된 회원 한줄 소개
-                mapFollowersToDto(user.getUserId()), // 추상 followers 정보
-                mapFollowingsToDto(user.getUserId()) // 추상 followings 정보
+                user.getSummary(),
+                mapFollowersToDto(user.getUserId()),
+                mapFollowingsToDto(user.getUserId())
         );
     }
 
     public UserRecipeResponseDto getUserById(Long userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+                .orElseThrow(UserNotFoundException::new);
 
         List<RecipeResponseDto> recipeList = recipeServiceClient.getRecipes(userId);
 
@@ -93,12 +90,11 @@ public class UserService {
     }
 
 
-
     public List<FollowerResponseDto> mapFollowersToDto(Long userId) {
         List<Long> followerIds = socialServiceClient.getFollowers(userId);
         return followerIds.stream().map(followerId -> {
             User follower = userRepository.findById(followerId)
-                    .orElseThrow(() -> new IllegalArgumentException("팔로워를 찾을 수 없습니다."));
+                    .orElseThrow(UserNotFoundException::new);
             return new FollowerResponseDto(
                     follower.getUserId(),
                     follower.getNickname(),
@@ -111,7 +107,7 @@ public class UserService {
         List<Long> followingIds = socialServiceClient.getFollowings(userId);
         return followingIds.stream().map(followingId -> {
             User following = userRepository.findById(followingId)
-                    .orElseThrow(() -> new IllegalArgumentException("팔로잉 사용자를 찾을 수 없습니다."));
+                    .orElseThrow(UserNotFoundException::new);
             return new FollowingResponseDto(
                     following.getUserId(),
                     following.getNickname(),
@@ -122,20 +118,21 @@ public class UserService {
 
     public Long getUserIdByEmail(String email) {
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+                .orElseThrow(UserNotFoundEmailException::new);
         return user.getUserId();
     }
 
     public String getEmailByNickname(String nickname) {
         User user = userRepository.findByNickname(nickname)
-                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+                .orElseThrow(UserNotFoundNicknameException::new);
+
         return user.getEmail();
     }
 
     public UserSimpleResponseDto getSimpleUserById(Long userId) {
 
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+                .orElseThrow(UserNotFoundException::new);
 
         return UserSimpleResponseDto.builder()
                 .userId(user.getUserId())
@@ -146,11 +143,10 @@ public class UserService {
     }
 
     public void updateUser(String email, UserModifyRequestDto userModifyRequestDto) {
-        // Retrieve the user by their email
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("해당 사용자를 찾을 수 없습니다."));
 
-        // Update user fields with the information from UserModifyRequestDto
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(UserNotFoundEmailException::new);
+
         if (userModifyRequestDto.getNickname() != null) {
             user.setNickname(userModifyRequestDto.getNickname());
         }
@@ -158,18 +154,14 @@ public class UserService {
             user.setSummary(userModifyRequestDto.getSummary());
         }
 
-        // Save the updated user back to the repository
         userRepository.save(user);
     }
 
     public List<RankResponseDto> getUserRank(int pageSize, int pageNumber) {
 
         Pageable pageable = PageRequest.of(pageNumber - 1, pageSize, Sort.by(Sort.Direction.DESC, "score"));
-
-        // 유저 데이터를 점수 순으로 페이징 처리하여 가져오기
         Page<User> usersPage = userRepository.findAll(pageable);
 
-        // 유저 엔티티를 RankResponseDto로 변환
         return usersPage.getContent().stream()
                 .map(user -> {
                     RankResponseDto rankResponseDto = new RankResponseDto();
@@ -177,11 +169,9 @@ public class UserService {
                     rankResponseDto.setImage(user.getProfileImage());
                     rankResponseDto.setScore(user.getScore());
 
-                    // 해당 유저의 등록된 레시피 개수
                     List<UserRecipeRegistResponseDto> userRecipes = recipeServiceClient.getUserRecipes(user.getUserId());
                     rankResponseDto.setRecipeCount((long) userRecipes.size());
 
-                    // 해당 유저의 등록된 레시피에 좋아요 누른 갯수
                     List<UserRecipeLikeResponseDto> userRecipeLikes = recipeServiceClient.getUserLikeRecipes(user.getUserId());
                     rankResponseDto.setLikeCount((long) userRecipeLikes.size());
 
@@ -192,16 +182,16 @@ public class UserService {
 
     public void updateUserProfileImage(Long userId, String profileImageUrl) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 사용자를 찾을 수 없습니다."));
+                .orElseThrow(UserNotFoundException::new);
 
-        user.setProfileImage(profileImageUrl);  // 프로필 이미지 URL 업데이트
-        userRepository.save(user);  // 변경사항 저장
+        user.setProfileImage(profileImageUrl);
+        userRepository.save(user);
     }
 
     public String getEmailById(Long id) {
-        // id를 통해 User 엔티티를 조회하고, 해당 User의 이메일을 반환하는 로직
+
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new UserNotFoundException());
-        return user.getEmail();  // 사용자 객체에서 이메일 추출
+                .orElseThrow(UserNotFoundException::new);
+        return user.getEmail();
     }
 }

@@ -27,7 +27,7 @@ public class S3Uploader {
         metadata.setContentLength(multipartFile.getSize());
         metadata.setContentType(multipartFile.getContentType());
 
-        amazonS3.putObject(bucket, originalFilename+".png", multipartFile.getInputStream(), metadata);
-        return amazonS3.getUrl(bucket, originalFilename+".png").toString();
+        amazonS3.putObject(bucket, originalFilename + ".png", multipartFile.getInputStream(), metadata);
+        return amazonS3.getUrl(bucket, originalFilename + ".png").toString();
     }
 }
