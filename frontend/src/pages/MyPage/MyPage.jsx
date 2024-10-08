@@ -142,7 +142,7 @@ const MyPage = () => {
                     showInfo={true}
                     member={user}
                     buttonText={"정보 수정"}
-                    buttonOnClick={navigate("/modify")}
+                    buttonOnClick={() => navigate("/modify")}
                 />
                 <UserProfileLevel score={user.score} />
             </div>
