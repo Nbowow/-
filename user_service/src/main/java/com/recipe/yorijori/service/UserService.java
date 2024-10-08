@@ -11,6 +11,7 @@ import com.recipe.yorijori.data.dto.user.response.FollowerResponseDto;
 import com.recipe.yorijori.data.dto.user.response.FollowingResponseDto;
 import com.recipe.yorijori.data.dto.user.response.UserResponseDto;
 import com.recipe.yorijori.data.enums.Role;
+import com.recipe.yorijori.global.exception.UserNotFoundException;
 import com.recipe.yorijori.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -195,5 +196,12 @@ public class UserService {
 
         user.setProfileImage(profileImageUrl);  // 프로필 이미지 URL 업데이트
         userRepository.save(user);  // 변경사항 저장
+    }
+
+    public String getEmailById(Long id) {
+        // id를 통해 User 엔티티를 조회하고, 해당 User의 이메일을 반환하는 로직
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException());
+        return user.getEmail();  // 사용자 객체에서 이메일 추출
     }
 }

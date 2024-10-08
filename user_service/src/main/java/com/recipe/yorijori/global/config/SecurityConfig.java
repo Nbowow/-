@@ -94,7 +94,7 @@ public class SecurityConfig {
                                 response.getWriter().write("AccessToken is invalid or expired.");
                             } else {
                                 response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                                response.getWriter().write("서버에러");
+                                response.getWriter().write("server error");
                             }
                         })
                 );
