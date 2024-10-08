@@ -11,14 +11,14 @@ import * as S from "./RecipeDetail.styled";
 import { getRecipe, getReviews } from "../../api/recipe";
 
 const RecipeDetail = () => {
-    const [recipe, setRecipes] = useState(null);
+    const [recipe, setRecipe] = useState(null);
     const [reviews, setReviews] = useState(null);
     const { id } = useParams();
 
     useEffect(() => {
         const fetchRecipe = async () => {
             const data = await getRecipe(id);
-            setRecipes(data);
+            setRecipe(data);
         };
         const fetchReview = async () => {
             const data = await getReviews(id);

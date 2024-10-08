@@ -3,13 +3,12 @@ import Button from "../../Button/Button";
 import UserProfileImage from "../../UserProfile/UserProfileImage/UserProfileImage";
 import * as S from "./RecipeUser.styled";
 import { useUserStore } from "../../../store/userStore";
-import useUser from "../../../hooks/useUser";
 import { followUser, unFollowUser } from "../../../api/userApi";
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 function RecipeUser({ user }) {
-    const { isLoading } = useUser();
+    const { isLoading } = useUserStore();
     const [flag, setFlag] = useState(false);
     const me = useUserStore((state) => state.user);
     const navigate = useNavigate();
