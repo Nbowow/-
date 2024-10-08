@@ -12,8 +12,9 @@ import SearchBar from "../components/SearchBar/SearchBar";
 const PopularRecipe = styled.h2`
     font-family: "SUITEXTRABOLD";
     padding: 20px;
+    margin-left: 50px;
+    font-size: ${({ theme }) => theme.fontSize.h3};
 `;
-
 const Emoji = styled.span`
     font-family: "tossface";
 `;
