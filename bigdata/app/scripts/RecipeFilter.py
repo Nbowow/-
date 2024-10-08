@@ -1,5 +1,6 @@
 import json
 import re
+import sys
 from collections.abc import Sequence
 from datetime import datetime
 
@@ -300,9 +301,16 @@ class RecipeNutrient(Base):
 
 
 def main():
+    print(f"Received arguments: {sys.argv}")
+    # 커맨드 라인 인자 확인
+    if len(sys.argv) > 2:
+        startnum = sys.argv[1]
+
+    print(f"startnum: {startnum}")
+
     # 파일 경로를 이용해 데이터를 정제 및 저장
     print("1. hdfs 파일 정제시작")
-    process_recipe_data()
+    process_recipe_data(startnum)
 
     print(f"Uploaded data to MySQL")
 
@@ -311,10 +319,10 @@ def main():
 
 
 # HDFS 파일을 읽고 Spark DataFrame으로 처리하여 정제하는 함수
-def process_recipe_data():
+def process_recipe_data(startnum):
     print("2. hdfs 에서 파일 읽기")
     df = spark.read.csv(
-        "hdfs://master:9000/user/root/recipe/*.csv",
+        f"hdfs://master:9000/user/root/recipe/recipe_back_{startnum}*.csv",
         header=True,
         inferSchema=True,
         encoding='utf-8'
@@ -365,6 +373,15 @@ def process_recipe_data():
     # 인분 데이터를 숫자만 추출하고 None 또는 비어 있으면 1로 설정
     df = df.withColumn("인분", when(col("인분").isNull() | (col("인분") == ""), 1)
                        .otherwise(regexp_extract(col("인분"), r'(\d+)', 1).cast("int")))
+
+    # 난이도 값이 '아무나', '초급', '중급', '상급' 중 하나가 아닌 경우 '사용하지 않음'으로 처리
+    df = df.withColumn(
+        "난이도",
+        when(col("난이도").isin("아무나", "초급", "중급", "상급"), col("난이도"))  # 값이 올바른 경우 유지
+        .otherwise("사용하지 않음")
+    )
+
+    df = df.filter((col("레시피이미지").isNotNull()) & (col("레시피이미지").startswith("https")))
 
     print("4. 유저클래스 먼저 넣기 아이디는 모두의 레시피")
     save_user_to_db()
@@ -474,6 +491,17 @@ def save_recipe_to_db(row):
         recipe_intro = ''  # None인 경우 빈 문자열로 설정
     elif len(recipe_intro) > 490:  # 500자로 제한
         recipe_intro = recipe_intro[:490] + '...'
+
+    # 조회수, 조리시간 등 숫자 필드가 제대로 들어왔는지 확인
+    try:
+        recipe_view_count = int(row_dict['조회수'].replace(",", ""))  # 조회수의 쉼표 제거 후 변환
+    except ValueError:
+        recipe_view_count = 0  # 조회수 변환 실패 시 0으로 설정
+
+    try:
+        recipe_time = int(row_dict['조리시간'].replace("분 이내", "").replace("분", "").strip())  # 조리시간 숫자로 변환
+    except ValueError:
+        recipe_time = 30  # 조리시간 변환 실패 시 기본값 30 설정
 
     new_recipe = Recipes(
         recipe_id=recipe_id_value,

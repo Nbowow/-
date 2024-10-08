@@ -10,11 +10,10 @@ from app.globals import set_hdfs_upload_status
 hdfs_client = InsecureClient('http://master:9870', user='root')
 
 
-async def upload_file_to_mysql(what_do):
+async def upload_file_to_mysql(what_do, startnum):
     spark_url = "http://master:6066/v1/submissions/create"
     filter_name = "recipe_filter.py"
     filter_url = '/opt/spark-scripts/filter.py'
-    member_id = '1'
 
     # spark 정제코드 요청
 
@@ -35,7 +34,7 @@ async def upload_file_to_mysql(what_do):
 
     data = {
         "action": "CreateSubmissionRequest",
-        "appArgs": [filter_url, "", member_id],
+        "appArgs": [filter_url, "", startnum],
         "appResource": filter_url,
         "clientSparkVersion": "3.5.2",
         "mainClass": "org.apache.spark.deploy.PythonRunner",
