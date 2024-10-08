@@ -242,7 +242,7 @@
 
 
                 userService.updateUserProfileImage(userId, fileUrl);
-                return new ResponseEntity<>(HttpStatus.OK);
+                return ResponseEntity.ok().body("파일 업로드 성공: " + fileUrl);
             } catch (IOException e) {
                 return ResponseEntity.status(500).body("파일 업로드 실패: " + e.getMessage());
             }
@@ -285,15 +285,15 @@
         }
 
         // 알러지 삭제 API
-        @DeleteMapping("/allergys/{id}")
-        public ResponseEntity<?> deleteAllergy(HttpServletRequest request, @PathVariable Long id) {
+        @DeleteMapping("/allergys/{commonCodeNum}")
+        public ResponseEntity<?> deleteAllergy(HttpServletRequest request, @PathVariable String commonCodeNum) {
             String accessToken = jwtService.extractAccessToken(request)
                     .orElseThrow(() -> new IllegalArgumentException("AccessToken이 존재하지 않습니다."));
             String userEmail = jwtService.extractEmail(accessToken)
                     .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 AccessToken입니다."));
 
             Long userId = userService.getUserIdByEmail(userEmail);
-            allergyService.deleteAllergy(id, userId);
+            allergyService.deleteAllergyByCommonCodeNum(commonCodeNum, userId);
 
             return ResponseEntity.ok("알러지가 삭제되었습니다.");
         }
