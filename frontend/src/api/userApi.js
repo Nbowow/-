@@ -26,17 +26,13 @@ export const fetchUserAllergyList = async () => {
 };
 
 export const addAllergy = async (commonCodeNum) => {
-    const response = await axiosInstance.post("/users/allergys", {
+    return await axiosInstance.post("/users/allergys", {
         commonCodeNum,
     });
-    return response.data;
 };
 
 export const deleteAllergy = async (commonCodeNum) => {
-    const response = await axiosInstance.delete(
-        `/users/allergys/${commonCodeNum}`,
-    );
-    return response.data;
+    return await axiosInstance.delete(`/users/allergys/${commonCodeNum}`);
 };
 
 export const uploadProfileImage = async (file) => {
