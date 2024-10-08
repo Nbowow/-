@@ -93,7 +93,7 @@ public class IngredientService {
         log.info("ingredientName : {}", ingredientName);
 
 
-        Optional<Ingredient> foundIngredient = ingredientRepository.findByNameIgnoreCase(ingredientName);
+        Optional<Ingredient> foundIngredient = ingredientRepository.findByName(ingredientName);
 
         log.info("foundIngredient 1: {}", foundIngredient);
         if (foundIngredient.isPresent()) {
