@@ -257,6 +257,9 @@ class Recipes(Base):
     recipe_situation = Column(String(20))
     recipe_ingredients = Column(String(20))
     recipe_method = Column(String(20))
+    recipe_scrap_count = Column(BigInteger, default=0, nullable=False)
+    recipe_comment_count = Column(BigInteger, default=0, nullable=False)
+    recipe_kcal = Column(BigInteger, default=0, nullable=False)
     created_date = Column(DateTime, default=datetime.now(kst), nullable=False)
     modified_date = Column(DateTime, default=datetime.now(kst), onupdate=datetime.now(kst), nullable=False)
     user_status = Column(Boolean, default=True, nullable=False)
@@ -267,8 +270,6 @@ class Recipes(Base):
     recipe_orders = relationship("RecipeOrders", back_populates="recipe")
 
     recipe_materials = relationship("RecipeMaterials", back_populates="recipe")
-
-    recipe_nutrient = relationship("RecipeNutrient", back_populates="recipe")
 
 
 class RecipeOrders(Base):
@@ -287,24 +288,23 @@ class RecipeNutrient(Base):
     __tablename__ = "recipenutrient"
 
     recipe_nutrient_id = Column(BigInteger, nullable=False, primary_key=True, index=True, autoincrement=True)
+    name = Column(String(50), nullable=False)
     capacity = Column(String(20), nullable=False)
     kcal = Column(BigInteger, nullable=False)
     protein = Column(Double)
     carbohydrate = Column(Double)
     fat = Column(Double)
     cholesterol = Column(Double)
-    potassium = Column(Double)
     salt = Column(Double)
-
-    recipe_id = Column(BigInteger, ForeignKey("recipes.recipe_id"), nullable=False)
-    recipe = relationship("Recipes", back_populates="recipe_nutrient")
 
 
 def main():
     print(f"Received arguments: {sys.argv}")
     # 커맨드 라인 인자 확인
-    if len(sys.argv) > 2:
+    if len(sys.argv) > 1:  # 인자가 1개 이상 있는지 확인
         startnum = sys.argv[1]
+    else:
+        startnum = 0  # 인자가 없을 경우 기본값 설정
 
     print(f"startnum: {startnum}")
 
@@ -383,6 +383,10 @@ def process_recipe_data(startnum):
 
     df = df.filter((col("레시피이미지").isNotNull()) & (col("레시피이미지").startswith("https")))
 
+    df = df.withColumn("레시피이름", regexp_replace(col("레시피이름"), " ", ""))
+    df = df.withColumn("글 제목", regexp_replace(col("글 제목"), r"\s{3,}", " "))
+    df = df.withColumn("소개글", regexp_replace(col("소개글"), r"\s{3,}", " "))
+
     print("4. 유저클래스 먼저 넣기 아이디는 모두의 레시피")
     save_user_to_db()
 
@@ -459,6 +463,47 @@ def save_user_to_db():
     session.close()
 
 
+def get_recipe_kcal(recipe_name):
+    # DB 세션 생성
+    engine = engineconnection()
+    session = engine.sessionmaker()
+    try:
+        print(f"입력된 레시피 이름: {recipe_name}")
+        # RecipeNutrient에서 영양 정보를 가져오기 위한 쿼리
+        nutrients = session.query(RecipeNutrient.name, RecipeNutrient.kcal).all()
+
+        # 영양 정보가 비어있다면 기본값 0 반환
+        if not nutrients:
+            print("영양 정보가 비어있습니다. 기본값 0을 반환합니다.")
+            return 0
+
+        # 모든 식품명을 리스트로 변환
+        nutrient_names = [n.name for n in nutrients]
+        print(f"영양 정보 목록: {nutrient_names}")
+
+        # 유사한 식품명을 찾기 위한 TF-IDF 및 코사인 유사도 계산
+        best_match = get_best_match(recipe_name, nutrient_names, 0.55)
+        print(f"가장 유사한 매칭 결과: {best_match}")
+
+        # 가장 유사한 이름이 존재한다면 해당 kcal 값을 반환, 없으면 0 반환
+        matched_nutrient = session.query(RecipeNutrient).filter(RecipeNutrient.name == best_match).first()
+
+        if matched_nutrient:
+            print(f"매칭된 영양 성분: {matched_nutrient.name}, 칼로리: {matched_nutrient.kcal}")
+            return matched_nutrient.kcal
+        else:
+            return 0
+
+    except Exception as e:
+        # 에러 발생 시 예외 메시지를 출력하고 기본값 0 반환
+        print(f"get_recipe_kcal 함수 처리 중 에러 발생: {str(e)}")
+        return 0
+
+    finally:
+        # 세션이 존재하면 반드시 닫아줌
+        session.close() if 'session' in locals() else None
+
+
 def save_recipe_to_db(row):
     engine = engineconnection()
     session = engine.sessionmaker()
@@ -492,16 +537,21 @@ def save_recipe_to_db(row):
     elif len(recipe_intro) > 490:  # 500자로 제한
         recipe_intro = recipe_intro[:490] + '...'
 
-    # 조회수, 조리시간 등 숫자 필드가 제대로 들어왔는지 확인
-    try:
-        recipe_view_count = int(row_dict['조회수'].replace(",", ""))  # 조회수의 쉼표 제거 후 변환
-    except ValueError:
-        recipe_view_count = 0  # 조회수 변환 실패 시 0으로 설정
+    # 조회수의 쉼표 제거 및 변환
+    if isinstance(row_dict['조회수'], str):
+        recipe_view_count = int(row_dict['조회수'].replace(",", ""))
+    else:
+        recipe_view_count = row_dict['조회수']
 
     try:
-        recipe_time = int(row_dict['조리시간'].replace("분 이내", "").replace("분", "").strip())  # 조리시간 숫자로 변환
+        if isinstance(row_dict['조리시간'], str):
+            recipe_time = int(row_dict['조리시간'].replace("분 이내", "").replace("분", "").strip())  # 조리시간 숫자로 변환
+        else:
+            recipe_time = row_dict['조리시간']  # 이미 숫자인 경우 그대로 사용
     except ValueError:
-        recipe_time = 30  # 조리시간 변환 실패 시 기본값 30 설정
+        recipe_time = 30
+
+    recipe_kcal_val = get_recipe_kcal(row_dict['레시피이름'])
 
     new_recipe = Recipes(
         recipe_id=recipe_id_value,
@@ -509,14 +559,15 @@ def save_recipe_to_db(row):
         recipe_name=row_dict['레시피이름'],
         recipe_image=row_dict['레시피이미지'],
         recipe_intro=recipe_intro,
-        recipe_view_count=row_dict['조회수'],
-        recipe_time=row_dict['조리시간'],
+        recipe_view_count=recipe_view_count,
+        recipe_time=recipe_time,
         recipe_level=row_dict['난이도'],
         recipe_servings=row_dict['인분'],
         recipe_type=row_dict['종류별'],
         recipe_situation=row_dict['상황별'],
         recipe_ingredients=row_dict['재료별'],
         recipe_method=row_dict['방법별'],
+        recipe_kcal=recipe_kcal_val,
 
         # row에 없는 값들에 기본값 설정
         user_status=row_dict.get('user_status', True),  # 사용자 상태 기본값 True
@@ -697,7 +748,7 @@ def add_recipe_material(recipe_id, material_id, amount, unit):
         session.close()
 
 
-# 유사도 계산 함수
+# TF-IDF 기반 유사도 계산
 def get_best_match(item_name, reference_names, match_value):
     # 입력값 유효성 검사
     if not item_name or not reference_names:

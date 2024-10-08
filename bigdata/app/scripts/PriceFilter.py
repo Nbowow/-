@@ -16,7 +16,7 @@ Base = declarative_base()
 
 kst = pytz.timezone('Asia/Seoul')
 
-DATABASE_URL = "mysql+pymysql://eejuuung:eejuuung@mysql:3306/yorijori?charset=utf8mb4"
+DATABASE_URL = "mysql+pymysql://root:gichang@j11c206.p.ssafy.io:3306/yorijori?charset=utf8mb4"
 
 # 공통코드 (알러지 목록) 매핑 사전
 allergy_code_mapping = {
@@ -261,6 +261,8 @@ def convert_price_udf(unit, price):
     elif 'g' in unit:
         return int(price / (unit_value / 100))
     elif any(x in unit for x in ['포기', '개', '장', '마리', '구', '손']):
+        if unit_value > 1:
+            return int(price / unit_value)
         return int(price)
     elif 'L' in unit:
         return int(price)
