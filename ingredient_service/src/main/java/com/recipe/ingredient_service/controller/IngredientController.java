@@ -4,10 +4,7 @@ import com.recipe.ingredient_service.client.RecipeServiceClient;
 import com.recipe.ingredient_service.client.UserServiceClient;
 import com.recipe.ingredient_service.data.domain.Ingredient;
 import com.recipe.ingredient_service.data.dto.ingredient.request.IngredientRequestDto;
-import com.recipe.ingredient_service.data.dto.ingredient.response.IngredientPopularResponseDto;
-import com.recipe.ingredient_service.data.dto.ingredient.response.IngredientPriceChangeResponseDto;
-import com.recipe.ingredient_service.data.dto.ingredient.response.IngredientPriceDetailsResponseDto;
-import com.recipe.ingredient_service.data.dto.ingredient.response.IngredientsSearchResponseDto;
+import com.recipe.ingredient_service.data.dto.ingredient.response.*;
 import com.recipe.ingredient_service.data.dto.recipe.response.RecipeResponseDto;
 import com.recipe.ingredient_service.service.IngredientService;
 import lombok.AllArgsConstructor;
@@ -116,4 +113,11 @@ public class IngredientController {
     public ResponseEntity<Ingredient> addTestIngredient(@RequestParam String name) {
         return ResponseEntity.status(HttpStatus.OK).body(ingredientService.addIngredient(name));
     }
+
+    @GetMapping("/low")
+    public ResponseEntity<List<LowestPriceDto>> getLowestPriceResult(@RequestParam String query, @RequestParam String display, @RequestParam String start, @RequestParam String sort) throws Exception {
+        return new ResponseEntity<>(ingredientService.getLowestPriceResult(query, display, start, sort), HttpStatus.OK);
+    }
+
+
 }
