@@ -1,4 +1,4 @@
-package com.recipe.recipe_service.repository;
+package com.recipe.recipe_service.elasticsearch_repository;
 
 import com.recipe.recipe_service.data.domain.Recipe;
 import org.springframework.data.elasticsearch.annotations.Query;
