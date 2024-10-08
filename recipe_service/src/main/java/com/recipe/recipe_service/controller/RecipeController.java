@@ -28,8 +28,6 @@ public class RecipeController {
     private final UserServiceClient userServiceClient;
     private final IngredientServiceClient ingredientServiceClient;
     private final RecipeRepository recipeRepository;
-    private final RecipeIndexingService recipeIndexingService;
-
     // 레시피 생성
     @PostMapping("")
     public ResponseEntity<Recipe> createRecipe(
