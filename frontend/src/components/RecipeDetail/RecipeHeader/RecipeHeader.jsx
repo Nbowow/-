@@ -16,7 +16,7 @@ function RecipeHeader({ recipe }) {
                 </S.TagWrapper>
 
                 <S.RecipeStats>
-                    <ActionToggleGroup post={recipe} />
+                    <ActionToggleGroup />
                 </S.RecipeStats>
             </S.TopSection>
             <S.RecipeDescription>{recipe.intro}</S.RecipeDescription>
