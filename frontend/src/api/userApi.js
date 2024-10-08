@@ -48,6 +48,8 @@ export const uploadProfileImage = async (file) => {
             },
         },
     );
+    return response.data;
+};
 
 export const getUserLike = async () => {
     const response = await axiosInstance.get("/users/like");
