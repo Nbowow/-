@@ -474,12 +474,10 @@ def get_recipe_kcal(recipe_name):
 
         # 영양 정보가 비어있다면 기본값 0 반환
         if not nutrients:
-            print("영양 정보가 비어있습니다. 기본값 0을 반환합니다.")
             return 0
 
         # 모든 식품명을 리스트로 변환
         nutrient_names = [n.name for n in nutrients]
-        print(f"영양 정보 목록: {nutrient_names}")
 
         # 유사한 식품명을 찾기 위한 TF-IDF 및 코사인 유사도 계산
         best_match = get_best_match(recipe_name, nutrient_names, 0.55)
@@ -508,77 +506,84 @@ def save_recipe_to_db(row):
     engine = engineconnection()
     session = engine.sessionmaker()
 
-    # 중복 확인을 위해 기존 레시피 확인 (예: 레시피 이름과 제목을 기준으로 중복 확인)
-    existing_recipe = session.query(Recipes).filter(
-        Recipes.recipe_id == row['index'],
-        Recipes.recipe_name == row['레시피이름'],
-        Recipes.recipe_title == row['글 제목']
-    ).first()
-
-    if existing_recipe:
-        print(f"이미 존재하는 레시피입니다: {existing_recipe.recipe_id}")
-        return existing_recipe.recipe_id  # 중복된 레시피의 ID 반환
-
-    # 'row'를 딕셔너리로 변환
-    row_dict = row.asDict()
-    print(f"레시피 이름: {row_dict['레시피이름']}")
-
-    # recipe_id가 올바른 값인지 확인
     try:
-        recipe_id_value = int(row_dict['index'])  # recipe_id는 정수형이어야 함
-    except ValueError as e:
-        print(f"recipe_id 변환 오류: {e} - 원래 값: {row_dict['index']}")
-        return None  # 오류 시 None 반환
+        # 중복 확인을 위해 기존 레시피 확인
+        existing_recipe = session.query(Recipes).filter(
+            Recipes.recipe_id == row['index'],
+            Recipes.recipe_name == row['레시피이름'],
+            Recipes.recipe_title == row['글 제목']
+        ).first()
 
-    # recipe_intro 길이 제한 (예: 500자로 제한)
-    recipe_intro = row_dict['소개글']
-    if recipe_intro is None:  # None 체크
-        recipe_intro = ''  # None인 경우 빈 문자열로 설정
-    elif len(recipe_intro) > 490:  # 500자로 제한
-        recipe_intro = recipe_intro[:490] + '...'
+        if existing_recipe:
+            print(f"이미 존재하는 레시피입니다: {existing_recipe.recipe_id}")
+            return existing_recipe.recipe_id  # 중복된 레시피의 ID 반환
 
-    # 조회수의 쉼표 제거 및 변환
-    if isinstance(row_dict['조회수'], str):
-        recipe_view_count = int(row_dict['조회수'].replace(",", ""))
-    else:
-        recipe_view_count = row_dict['조회수']
+        # 'row'를 딕셔너리로 변환
+        row_dict = row.asDict()
+        print(f"레시피 이름: {row_dict['레시피이름']}")
 
-    try:
-        if isinstance(row_dict['조리시간'], str):
-            recipe_time = int(row_dict['조리시간'].replace("분 이내", "").replace("분", "").strip())  # 조리시간 숫자로 변환
+        # recipe_id가 올바른 값인지 확인
+        try:
+            recipe_id_value = int(row_dict['index'])  # recipe_id는 정수형이어야 함
+        except ValueError as e:
+            print(f"recipe_id 변환 오류: {e} - 원래 값: {row_dict['index']}")
+            return None  # 오류 시 None 반환
+
+        # recipe_intro 길이 제한
+        recipe_intro = row_dict['소개글']
+        if recipe_intro is None:
+            recipe_intro = ''
+        elif len(recipe_intro) > 490:
+            recipe_intro = recipe_intro[:490] + '...'
+
+        # 조회수 쉼표 제거 및 변환
+        if isinstance(row_dict['조회수'], str):
+            recipe_view_count = int(row_dict['조회수'].replace(",", ""))
         else:
-            recipe_time = row_dict['조리시간']  # 이미 숫자인 경우 그대로 사용
-    except ValueError:
-        recipe_time = 30
+            recipe_view_count = row_dict['조회수']
 
-    recipe_kcal_val = get_recipe_kcal(row_dict['레시피이름'])
+        try:
+            if isinstance(row_dict['조리시간'], str):
+                recipe_time = int(row_dict['조리시간'].replace("분 이내", "").replace("분", "").strip())
+            else:
+                recipe_time = row_dict['조리시간']
+        except ValueError:
+            recipe_time = 30
 
-    new_recipe = Recipes(
-        recipe_id=recipe_id_value,
-        recipe_title=row_dict['글 제목'],
-        recipe_name=row_dict['레시피이름'],
-        recipe_image=row_dict['레시피이미지'],
-        recipe_intro=recipe_intro,
-        recipe_view_count=recipe_view_count,
-        recipe_time=recipe_time,
-        recipe_level=row_dict['난이도'],
-        recipe_servings=row_dict['인분'],
-        recipe_type=row_dict['종류별'],
-        recipe_situation=row_dict['상황별'],
-        recipe_ingredients=row_dict['재료별'],
-        recipe_method=row_dict['방법별'],
-        recipe_kcal=recipe_kcal_val,
+        recipe_kcal_val = get_recipe_kcal(row_dict['레시피이름'])
 
-        # row에 없는 값들에 기본값 설정
-        user_status=row_dict.get('user_status', True),  # 사용자 상태 기본값 True
-        user_id=row_dict.get('user_id', 1)  # 기본 사용자 ID 설정 (예: 1번 사용자)
-    )
+        new_recipe = Recipes(
+            recipe_id=recipe_id_value,
+            recipe_title=row_dict['글 제목'],
+            recipe_name=row_dict['레시피이름'],
+            recipe_image=row_dict['레시피이미지'],
+            recipe_intro=recipe_intro,
+            recipe_view_count=recipe_view_count,
+            recipe_time=recipe_time,
+            recipe_level=row_dict['난이도'],
+            recipe_servings=row_dict['인분'],
+            recipe_type=row_dict['종류별'],
+            recipe_situation=row_dict['상황별'],
+            recipe_ingredients=row_dict['재료별'],
+            recipe_method=row_dict['방법별'],
+            recipe_kcal=recipe_kcal_val,
+            user_status=row_dict.get('user_status', True),
+            user_id=row_dict.get('user_id', 1)
+        )
 
-    session.add(new_recipe)
-    session.commit()
+        session.add(new_recipe)
+        session.commit()
 
-    print(f"레시피 저장 완료: {new_recipe.recipe_id}")
-    return new_recipe.recipe_id  # 저장된 레시피의 ID 반환
+        print(f"레시피 저장 완료: {new_recipe.recipe_id}")
+        return new_recipe.recipe_id  # 저장된 레시피의 ID 반환
+
+    except Exception as e:
+        session.rollback()  # 오류 발생 시 롤백
+        print(f"에러 발생: {e}")
+        return None
+
+    finally:
+        session.close()  # 세션을 안전하게 닫기
 
 
 # 레시피 단계를 처리하고 RecipeOrders 테이블에 저장하는 함수
@@ -597,6 +602,9 @@ def process_recipe_orders(recipe_orders, recipe_id):
                 if step_number is None or description is None:
                     print(f"잘못된 레시피 단계 정보: {order}")
                     continue
+
+                if image_url is None:
+                    image_url = ""
 
                 # RecipeOrders 테이블에 단계 정보 저장
                 add_recipe_order(recipe_id, step_number, description, image_url)

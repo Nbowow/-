@@ -16,7 +16,7 @@ Base = declarative_base()
 
 kst = pytz.timezone('Asia/Seoul')
 
-DATABASE_URL = "mysql+pymysql://root:gichang@j11c206.p.ssafy.io:3306/yorijori?charset=utf8mb4"
+DATABASE_URL = "mysql+pymysql://eejuuung:eejuuung@mysql:3306/yorijori?charset=utf8mb4"
 
 # 공통코드 (알러지 목록) 매핑 사전
 allergy_code_mapping = {
