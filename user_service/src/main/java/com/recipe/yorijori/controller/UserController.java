@@ -172,10 +172,10 @@
 
         }
 
-        @GetMapping("/user/{nickname}")
-        public ResponseEntity<UserResponseDto> getOtherUserInfo(@PathVariable("nickname")String nickname) {
+        @GetMapping("/user/{id}")
+        public ResponseEntity<UserResponseDto> getOtherUserInfo(@PathVariable("id")Long id) {
 
-            String userEmail = userService.getEmailByNickname(nickname);
+            String userEmail = userService.getEmailById(id);
             UserResponseDto userDto = userService.getUserByEmail(userEmail);
 
             return ResponseEntity.ok(userDto);
