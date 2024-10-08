@@ -197,7 +197,4 @@ public class RecipeController {
                 .collect(Collectors.toList());
     }
 
-
-    // 날씨 기반 레시피 추천
-
 }

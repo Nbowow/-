@@ -1,12 +1,8 @@
 package com.recipe.recipe_service.data.domain;
 
 import jakarta.persistence.*;
-import jakarta.ws.rs.DefaultValue;
 import lombok.*;
-
 import java.time.LocalDateTime;
-import org.springframework.data.elasticsearch.annotations.CompletionField;
-import org.springframework.data.elasticsearch.annotations.Document;
 
 @Entity
 @Getter
