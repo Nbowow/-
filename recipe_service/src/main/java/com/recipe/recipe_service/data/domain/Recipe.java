@@ -24,7 +24,7 @@ public class Recipe {
 
     @Column(name = "recipe_title")
     private String title;
-    
+
     @Column(name = "recipe_name")
     private String name;
 

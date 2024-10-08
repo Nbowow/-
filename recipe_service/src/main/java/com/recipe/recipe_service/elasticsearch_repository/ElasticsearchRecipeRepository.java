@@ -1,12 +1,13 @@
 package com.recipe.recipe_service.elasticsearch_repository;
 
 import com.recipe.recipe_service.data.domain.Recipe;
+import com.recipe.recipe_service.data.domain.RecipeDocument;
 import org.springframework.data.elasticsearch.annotations.Query;
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
 
 import java.util.List;
 
-public interface ElasticsearchRecipeRepository extends ElasticsearchRepository<Recipe, Long> {
+public interface ElasticsearchRecipeRepository extends ElasticsearchRepository<RecipeDocument, Long> {
 
     List<Recipe> findByTitleContaining(String keyword);
 
