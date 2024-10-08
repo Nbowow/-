@@ -71,9 +71,6 @@ public class SecurityConfig {
                             if (authException.getMessage().contains("AccessToken")) {
                                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                                 response.getWriter().write("AccessToken is invalid or expired.");
-                            } else {
-                                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                                response.getWriter().write("server error");
                             }
                         })
                 );
