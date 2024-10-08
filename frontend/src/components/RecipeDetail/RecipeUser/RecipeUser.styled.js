@@ -27,6 +27,7 @@ export const UserName = styled.div`
 export const UserHome = styled.div`
     font-size: ${({ theme }) => theme.fontSize.h4};
     font-family: "TossFace";
+    cursor: pointer;
     margin-right: ${({ theme }) => theme.spacing.medium};
 `;
 export const UserTalk = styled.div`
