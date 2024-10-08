@@ -1,6 +1,7 @@
 pipeline {
     agent any
 
+
     environment {
         BACKEND_DIR = './discovery_service'
         DOCKER_IMAGE_BACKEND = 'parkgc0504/discovery-service:latest'

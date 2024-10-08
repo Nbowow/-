@@ -1,6 +1,7 @@
 pipeline {
     agent any
 
+
     environment {
         BACKEND_DIR = './social_service'
         DOCKER_IMAGE_BACKEND = 'parkgc0504/social-service:latest'

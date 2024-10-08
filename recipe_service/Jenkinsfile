@@ -1,6 +1,7 @@
 pipeline {
     agent any
 
+
     environment {
         BACKEND_DIR = './recipe_service'
         DOCKER_IMAGE_BACKEND = 'parkgc0504/recipe-service:latest'

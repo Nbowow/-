@@ -1,6 +1,7 @@
 pipeline {
     agent any
 
+
     environment {
         BACKEND_DIR = './config_service'
         DOCKER_IMAGE_BACKEND = 'parkgc0504/config-service:latest'
