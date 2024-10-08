@@ -6,10 +6,12 @@ import UserProfileImage from "../../components/UserProfile/UserProfileImage/User
 import { useUserStore } from "../../store/userStore";
 import { useRef } from "react";
 import useUser from "../../hooks/useUser";
+import { useUpdateProfileImage } from "../../hooks/useUser";
 
 const ModifyProfile = () => {
     const { isLoading } = useUser();
     const user = useUserStore((state) => state.user);
+    const { mutate: uploadProfileImage } = useUpdateProfileImage();
     const fileInputRef = useRef(null);
 
     if (isLoading) return <div></div>;
@@ -29,8 +31,11 @@ const ModifyProfile = () => {
         fileInputRef.current.click();
     };
 
-    const handleFileChange = (event) => {
-        // TODO: 백엔드에 사진 업로드
+    const handleFileChange = async (event) => {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        uploadProfileImage(file);
     };
 
     return (

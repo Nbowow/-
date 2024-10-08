@@ -1,5 +1,10 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { fetchUser, fetchUserRecipe, updateUser } from "../api/userApi";
+import {
+    fetchUser,
+    fetchUserRecipe,
+    updateUser,
+    uploadProfileImage,
+} from "../api/userApi";
 import { useUserStore } from "../store/userStore";
 
 const useUser = () => {
@@ -37,6 +42,17 @@ export const useUpdateUser = () => {
         onSuccess: (variables) => {
             setUser({ ...user, ...variables });
             queryClient.invalidateQueries("user");
+        },
+    });
+};
+
+export const useUpdateProfileImage = () => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: uploadProfileImage,
+        onSuccess: () => {
+            queryClient.invalidateQueries(["user"]);
         },
     });
 };
