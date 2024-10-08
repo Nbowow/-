@@ -8,12 +8,11 @@ import RecipeInfo from "../../components/RecipeDetail/RecipeInfo";
 import Comments from "../../components/Comment/Comments";
 import Review from "../../components/Review/Review";
 import * as S from "./RecipeDetail.styled";
-import { getRecipe, getReviews, getComments } from "../../api/recipe";
+import { getRecipe, getReviews } from "../../api/recipe";
 
 const RecipeDetail = () => {
     const [recipe, setRecipes] = useState(null);
     const [reviews, setReviews] = useState(null);
-    const [comments, setComments] = useState([]);
     const { id } = useParams();
 
     useEffect(() => {
@@ -25,14 +24,9 @@ const RecipeDetail = () => {
             const data = await getReviews(id);
             setReviews(data);
         };
-        const fetchComment = async () => {
-            const data = await getComments(id);
-            setComments(data);
-        };
 
         fetchRecipe(id);
         fetchReview(id);
-        fetchComment(id);
     }, [id]);
 
     const allergies = ["토마토", "우유"];
@@ -64,14 +58,10 @@ const RecipeDetail = () => {
                 {reviews && (
                     <Review reviews={reviews} rating={rating} recipe={recipe} />
                 )}
-                {comments && (
-                    <S.CommentSection>
-                        <S.CommentTitle>
-                            댓글 {comments.length}개
-                        </S.CommentTitle>
-                        <Comments initComments={comments} id={id} />
-                    </S.CommentSection>
-                )}
+
+                <S.CommentSection>
+                    <Comments id={id} />
+                </S.CommentSection>
             </S.Container>
         )
     );

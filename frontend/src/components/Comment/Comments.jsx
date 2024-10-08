@@ -3,8 +3,8 @@ import PropTypes from "prop-types";
 import Comment from "./Comment";
 import CommentInput from "./CommentInput";
 import * as S from "./Comment.styled";
-import { postComment } from "../../api/recipe";
-function Comments({ initComments, id }) {
+import { getComments, postComment } from "../../api/recipe";
+function Comments({ id }) {
     const [comments, setComments] = useState([]);
 
     const addComment = async (newComment) => {
@@ -13,11 +13,16 @@ function Comments({ initComments, id }) {
     };
 
     useEffect(() => {
-        setComments(initComments);
-    }, [initComments]);
+        const fetchComment = async () => {
+            const data = await getComments(id);
+            setComments(data);
+        };
+        fetchComment(id);
+    }, [id]);
 
     return (
         <>
+            <S.CommentTitle>댓글 {comments.length}개</S.CommentTitle>
             <S.CommentInputWrapper>
                 <CommentInput addFunc={addComment} />
             </S.CommentInputWrapper>
@@ -31,7 +36,6 @@ function Comments({ initComments, id }) {
 }
 
 Comments.propTypes = {
-    initComments: PropTypes.array.isRequired,
     id: PropTypes.number.isRequired,
 };
 
