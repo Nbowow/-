@@ -225,6 +225,17 @@ public class RecipeController {
         return closestWord;
     }
 
+    @GetMapping("/autocomplete")
+    public ResponseEntity<List<String>> autocompleteRecipe(
+            @RequestParam("keyword") String keyword) {
+
+        // 레시피 제목에서 검색어와 일치하는 목록 중 최대 5개만 찾기
+        List<String> recipeSuggestions = recipeRepository.findTop5RecipeTitlesByKeyword(keyword);
+
+        // 검색 결과 반환
+        return ResponseEntity.status(HttpStatus.OK).body(recipeSuggestions);
+    }
+
     // 날씨 기반 레시피 추천
 
 }
