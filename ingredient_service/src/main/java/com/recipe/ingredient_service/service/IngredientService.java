@@ -90,12 +90,17 @@ public class IngredientService {
 
     public Ingredient findMatchingIngredient(String ingredientName) {
 
+        log.info("ingredientName : {}", ingredientName);
+
+
         Optional<Ingredient> foundIngredient = ingredientRepository.findByNameIgnoreCase(ingredientName);
 
+        log.info("foundIngredient 1: {}", foundIngredient);
         if (foundIngredient.isPresent()) {
+
             return foundIngredient.get();
         }
-
+        log.info("foundIngredient 2: {}", foundIngredient);
         List<Ingredient> ingredients = ingredientRepository.findAll();
         Ingredient bestMatch = null;
         double highestSimilarity = 0.0;
