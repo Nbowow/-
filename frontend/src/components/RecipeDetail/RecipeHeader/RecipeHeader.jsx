@@ -2,7 +2,7 @@ import PropTypes from "prop-types";
 import Tag from "../../Tag/Tag";
 import * as S from "./RecipeHeader.styled";
 import ActionToggleGroup from "../../Toggle/ActionToggleGroup/ActionToggleGroup";
-import { useTagStore } from "../../../store/TagStore";
+import { useTagStore } from "../../../store/tagStore";
 import { useEffect } from "react";
 import { getCommonCode } from "../../../api/userApi";
 
