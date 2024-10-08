@@ -299,4 +299,17 @@
         }
 
 
+        @GetMapping("/recipe/other/{id}")
+        public ResponseEntity<?> getOtherRecipe(@PathVariable Long id) {
+
+
+            List<UserRecipeRegistResponseDto> userRecipeRegistResponseDto = recipeServiceClient.getUserRecipes(id);
+            if (!userRecipeRegistResponseDto.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.OK).body(userRecipeRegistResponseDto);
+            } else {
+                // 레시피가 없을 경우 Not Found 응답
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No recipes found for this user.");
+            }
+        }
+
     }
