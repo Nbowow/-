@@ -41,3 +41,7 @@ export const getIngredientPrices = async (id) => {
     });
     return response.data;
 };
+export const getRelatedRecipe = async (ingredient) => {
+    const response = await axiosInstance.post("/ingredient/recipe", ingredient);
+    return response.data;
+};
