@@ -37,10 +37,10 @@ public class IngredientController {
         return ingredientService.findById(materialId).getName();
     }
 
-    @GetMapping("/{search}")
+    @GetMapping("/search")
     public ResponseEntity<IngredientsSearchResponseDto> getIngredientData(
-            @PathVariable("search") String name) {
-        return ResponseEntity.status(HttpStatus.OK).body(ingredientService.findIngredientData(name));
+            @RequestParam("keyword") String keyword) {
+        return ResponseEntity.status(HttpStatus.OK).body(ingredientService.findIngredientData(keyword));
     }
 
     @GetMapping("/change")
