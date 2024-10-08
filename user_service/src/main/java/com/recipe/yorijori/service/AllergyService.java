@@ -4,6 +4,7 @@ package com.recipe.yorijori.service;
 import com.recipe.yorijori.data.domain.Allergys;
 import com.recipe.yorijori.data.dto.allergy.request.AllergyRequestDto;
 import com.recipe.yorijori.data.dto.allergy.response.AllergyResponseDto;
+import com.recipe.yorijori.global.exception.AllergyAlreadyExistsException;
 import com.recipe.yorijori.repository.AllergyRespository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,7 +39,7 @@ public class AllergyService {
         boolean exists = allergyRepository.existsByCommonCodeNumAndUserId(requestDto.getCommonCodeNum(), userId);
 
         if (exists) {
-            throw new IllegalArgumentException("이미 해당 회원이 해당 알러지를 가지고 있습니다.");
+            throw new AllergyAlreadyExistsException();
         }
 
         // 새로운 알러지 추가
