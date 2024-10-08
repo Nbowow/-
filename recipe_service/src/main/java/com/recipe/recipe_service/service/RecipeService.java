@@ -41,6 +41,7 @@ public class RecipeService {
 
     private final UserServiceClient userServiceClient;
     private final IngredientServiceClient ingredientServiceClient;
+    private final ElasticsearchRecipeRepository elasticsearchRecipeRepository;
 
     public Recipe createRecipe(RecipeRegisterRequestDto createRecipeDto, Long userId) {
 
@@ -523,16 +524,16 @@ public class RecipeService {
     }
 
     public List<Recipe> searchByTitle(String title) {
-        return recipeRepository.findByTitleContaining(title);
+        return elasticsearchRecipeRepository.findByTitleContaining(title);
     }
 
     // 접두어로 검색하는 메서드
     public List<Recipe> searchByPrefix(String prefix) {
-        return recipeRepository.findByNameStartingWith(prefix);
+        return elasticsearchRecipeRepository.findByNameStartingWith(prefix);
     }
 
     public List<Recipe> searchByTitleWithTypoCorrection(String title) {
-        return recipeRepository.findByTitleWithTypoCorrection(title);
+        return elasticsearchRecipeRepository.findByTitleWithTypoCorrection(title);
     }
 
 

@@ -11,8 +11,7 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.List;
 import java.util.Optional;
 
-public interface RecipeRepository extends JpaRepository<Recipe, Long>,
-    ElasticsearchRepository<Recipe, Long> {
+public interface RecipeRepository extends JpaRepository<Recipe, Long> {
 
     List<Recipe> findByUserId(Long userId);
 
@@ -29,15 +28,4 @@ public interface RecipeRepository extends JpaRepository<Recipe, Long>,
     void deleteById(Long recipeId);
 
     List<Recipe> findByIdIn(List<Long> ids);
-
-    // Elasticsearch 메서드
-    List<Recipe> findByTitleContaining(String keyword);
-
-    List<Recipe> findByIntroContaining(String keyword);
-
-    List<Recipe> findByNameStartingWith(String prefix);
-
-    @Query("{ \"match\": { \"recipe_title\": { \"query\": \"?0\", \"fuzziness\": \"AUTO\" } } }")
-    List<Recipe> findByTitleWithTypoCorrection(String title);
-
 }
