@@ -19,7 +19,7 @@
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`user_id`, `user_email`, `user_nickname`, `user_image`, `user_summary`, `user_name`, `user_score`, `user_social_id`, `user_social_type`, `user_password`, `user_refresh_token`, `user_role`, `user_status`, `created_date`, `last_modified_date`) 
+INSERT INTO `users` (`user_id`, `user_email`, `user_nickname`, `user_image`, `user_summary`, `user_name`, `user_score`, `user_social_id`, `user_social_type`, `user_password`, `user_refresh_token`, `user_role`, `user_status`, `created_date`, `modified_date`) 
 VALUES 
 (2, 'jane.smith@example.com', 'janey', 'profile2.jpg', 'Loves baking', 'Jane Smith', 150, NULL, NULL, 'password456', NULL, 'USER', TRUE, NOW(), NOW()),
 (3, 'alice.jones@example.com', 'alice', 'profile3.jpg', 'Recipe creator', 'Alice Jones', 200, NULL, NULL, 'password789', NULL, 'USER', TRUE, NOW(), NOW()),
