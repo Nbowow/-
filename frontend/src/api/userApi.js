@@ -65,3 +65,8 @@ export const getUserLike = async () => {
     const response = await axiosInstance.get("/users/like");
     return response.data;
 };
+
+export const getCommonCode = async () => {
+    const response = await axiosInstance.get("/users/common");
+    return response.data;
+};
