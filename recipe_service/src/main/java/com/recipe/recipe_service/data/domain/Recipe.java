@@ -14,7 +14,6 @@ import org.springframework.data.elasticsearch.annotations.Document;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "recipes")
-@Document(indexName = "recipes")
 public class Recipe {
 
     @Id
@@ -25,8 +24,7 @@ public class Recipe {
 
     @Column(name = "recipe_title")
     private String title;
-
-    @CompletionField(maxInputLength = 100)
+    
     @Column(name = "recipe_name")
     private String name;
 
