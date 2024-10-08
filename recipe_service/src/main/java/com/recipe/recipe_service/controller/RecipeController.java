@@ -8,8 +8,6 @@ import com.recipe.recipe_service.data.dto.recipe.request.RecipeRegisterRequestDt
 import com.recipe.recipe_service.data.dto.recipe.response.*;
 import com.recipe.recipe_service.repository.RecipeRepository;
 import com.recipe.recipe_service.data.dto.user.response.UserAllergyResponseDto;
-import com.recipe.recipe_service.data.dto.user.response.UserSimpleResponseDto;
-import com.recipe.recipe_service.service.RecipeIndexingService;
 import com.recipe.recipe_service.service.RecipeService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -201,32 +199,6 @@ public class RecipeController {
                 .collect(Collectors.toList());
     }
 
-    @GetMapping("/searchRecipe")
-    public List<Recipe> searchRecipes(@RequestParam String title) {
-        return recipeService.searchByTitle(title);
-    }
-
-    // Prefix 검색 API
-    @GetMapping("/search/prefix")
-    public List<Recipe> searchByPrefix(@RequestParam String prefix) {
-        return recipeService.searchByPrefix(prefix);
-    }
-
-    @PostMapping("/index-all")
-    public ResponseEntity<String> indexAllRecipes() {
-        try {
-            recipeIndexingService.indexAllRecipes();
-            return ResponseEntity.status(HttpStatus.OK).body("Recipe indexing completed successfully.");
-        } catch (Exception e) {
-            log.error("Error during recipe indexing", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Recipe indexing failed.");
-        }
-    }
-
-    @GetMapping("/search/typo")
-    public List<Recipe> searchWithTypoCorrection(@RequestParam String title) {
-        return recipeService.searchByTitleWithTypoCorrection(title);
-    }
 
     // 날씨 기반 레시피 추천
 

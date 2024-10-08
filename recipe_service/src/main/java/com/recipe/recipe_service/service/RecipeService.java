@@ -7,7 +7,6 @@ import com.recipe.recipe_service.data.dto.ingredient.response.RecipeMaterialsRes
 import com.recipe.recipe_service.data.dto.recipe.request.RecipeRegisterRequestDto;
 import com.recipe.recipe_service.data.dto.recipe.response.*;
 import com.recipe.recipe_service.data.dto.user.response.UserSimpleResponseDto;
-import com.recipe.recipe_service.elasticsearch_repository.ElasticsearchRecipeRepository;
 import com.recipe.recipe_service.repository.*;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
@@ -37,7 +36,6 @@ public class RecipeService {
 
     private final UserServiceClient userServiceClient;
     private final IngredientServiceClient ingredientServiceClient;
-    private final ElasticsearchRecipeRepository elasticsearchRecipeRepository;
 
     public Recipe createRecipe(RecipeRegisterRequestDto createRecipeDto, Long userId) {
 
@@ -517,19 +515,6 @@ public class RecipeService {
                         .intro(recipe.getIntro())
                         .build())
                 .toList();
-    }
-
-    public List<Recipe> searchByTitle(String title) {
-        return elasticsearchRecipeRepository.findByTitleContaining(title);
-    }
-
-    // 접두어로 검색하는 메서드
-    public List<Recipe> searchByPrefix(String prefix) {
-        return elasticsearchRecipeRepository.findByNameStartingWith(prefix);
-    }
-
-    public List<Recipe> searchByTitleWithTypoCorrection(String title) {
-        return elasticsearchRecipeRepository.findByTitleWithTypoCorrection(title);
     }
 
 
