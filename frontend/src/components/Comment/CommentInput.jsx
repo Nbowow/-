@@ -1,17 +1,22 @@
 import PropTypes from "prop-types";
 import * as S from "./Comment.styled";
+import { useUserStore } from "../../store/userStore";
 import { useRef } from "react";
-function CommentInput({ addFunc, isReply }) {
+function CommentInput({ addFunc }) {
+    const { isLoading } = useUserStore();
+    const user = useUserStore((state) => state.user);
     const inputRef = useRef(null);
+
+    if (isLoading) return <div></div>;
+
     const submitComment = () => {
         const input = inputRef.current.value.trim();
-        if (!input) return;
+        if (!input || !user) return;
         const comment = {
-            text: input,
-            user: null,
-            imgUrl: null,
-            date: new Date().toISOString(),
-            reply: [],
+            nickname: user.nickname,
+            content: input,
+            profileImage: user.profileImage,
+            createdDate: new Date().toISOString(),
         };
         addFunc(comment);
         inputRef.current.value = "";
@@ -39,7 +44,6 @@ function CommentInput({ addFunc, isReply }) {
 
 CommentInput.propTypes = {
     addFunc: PropTypes.func.isRequired,
-    isReply: PropTypes.bool,
 };
 
 export default CommentInput;

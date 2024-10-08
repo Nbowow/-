@@ -1,6 +1,6 @@
-import difflib
 import json
 import re
+import sys
 from collections.abc import Sequence
 from datetime import datetime
 
@@ -9,7 +9,9 @@ from hdfs import InsecureClient
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import regexp_replace, col, when, regexp_extract, udf, length
 from pyspark.sql.types import StringType
-from sqlalchemy import Column, BigInteger, String, Boolean, select, Integer, DateTime, ForeignKey
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
+from sqlalchemy import Column, BigInteger, String, Boolean, select, Integer, DateTime, ForeignKey, Double
 from sqlalchemy import create_engine
 from sqlalchemy.orm import relationship
 from sqlalchemy.orm import sessionmaker, declarative_base
@@ -50,7 +52,7 @@ allergy_code_mapping = {
     '우유': 'A_0002',
     '메밀': 'A_0003',
     '땅콩': 'A_0004',
-    '대두 (콩)': 'A_0005',
+    '콩': 'A_0005',
     '밀': 'A_0006',
     '잣': 'A_0007',
     '호두': 'A_0008',
@@ -58,13 +60,48 @@ allergy_code_mapping = {
     '새우': 'A_0010',
     '오징어': 'A_0011',
     '고등어': 'A_0012',
-    '조개류': 'A_0013',
+    '조개': 'A_0013',
     '복숭아': 'A_0014',
     '토마토': 'A_0015',
     '닭고기': 'A_0016',
     '돼지고기': 'A_0017',
     '쇠고기': 'A_0018',
-    '아황산류 (황산화물)': 'A_0019'
+    '아황산류': 'A_0019'
+}
+
+# 사전 정의된 매칭 규칙
+material_mapping = {
+    '소고기': '소고기 안심',
+    '소 고기': '소고기 안심',
+    '쇠고기': '소고기 안심',
+    '쇠 고기': '소고기 안심',
+    '돼지고기': '돼지고기 삼겹살',
+    '돼지 고기': '돼지고기 삼겹살',
+    # 필요시 더 많은 규칙 추가
+}
+
+# 알러지 항목에 따른 세부 품목 리스트
+allergy_mapping = {
+    '알류': ['달걀', '계란', '메추리알', '오리알', '거위알', '난백', '흰자', '난황', '노른자', '계란 파우더', '난백 파우더', '마요네즈', '타르타르 소스', '홀랜다이즈 소스',
+           '에그누들', '팬케이크 믹스', '머랭', '크레페', '에그'],
+    '우유': ['우유', '연유', '크림', '치즈', '버터', '요거트', '사워 크림', '카제인', '유청 단백질', '우유 분말'],
+    '메밀': ['메밀가루', '메밀면', '소바', '메밀빵', '메밀 크래커', '메밀 팬케이크', '메밀'],
+    '땅콩': ['땅콩', '땅콩버터', '땅콩 오일', '땅콩 가루', '땅콩 소스', '땅콩 스낵'],
+    '콩': ['대두', '콩', '두부', '된장', '간장', '콩기름', '콩 단백질', '템페', '낫토', '두유', '에다마메'],
+    '밀': ['밀가루', '통밀', '빵', '파스타', '크래커', '시리얼', '쿠키', '케이크', '밀가루 베이스 믹스', '밀글루텐'],
+    '잣': ['잣', '잣 오일', '잣 가루', '잣 페스토'],
+    '호두': ['호두', '호두 오일', '호두 가루', '호두 스낵'],
+    '게': ['게', '게살', '크랩 스틱', '게 소스'],
+    '새우': ['새우', '건새우', '새우 페이스트', '새우칩'],
+    '오징어': ['오징어', '마른 오징어', '오징어볼', '오징어젓갈'],
+    '고등어': ['고등어', '고등어 통조림', '훈제 고등어'],
+    '조개': ['조개', '바지락', '홍합', '가리비', '굴', '전복', '모시조개', '대합'],
+    '복숭아': ['복숭아', '복숭아 잼', '복숭아 통조림', '복숭아 주스'],
+    '토마토': ['토마토', '토마토 페이스트', '토마토 소스', '토마토 퓨레', '케첩'],
+    '닭고기': ['닭고기', '닭가슴살', '닭날개', '닭다리', '치킨 스톡', '닭고기 소시지', '닭'],
+    '돼지고기': ['돼지고기', '삼겹살', '베이컨', '햄', '소시지', '돼지갈비', "돼지앞다리살", "앞다리살", "돼지삼겹살", "돼지목심", "목살", "목심"],
+    '쇠고기': ['쇠고기', '소고기', '스테이크', '쇠고기 소시지', '쇠고기 스톡', '쇠고기 다짐육', '소갈비', '설도', '안심', '등심', '양지', '소안심', '소등심', '소양지'],
+    '아황산류': ['건조 과일', '와인']
 }
 
 # 종류별 카테고리 매핑 사전
@@ -148,41 +185,6 @@ method_mapping = {
     '기타': 'E_0015'
 }
 
-# 사전 정의된 매칭 규칙
-material_mapping = {
-    '소고기': '소고기 안심',
-    '소 고기': '소고기 안심',
-    '쇠고기': '소고기 안심',
-    '쇠 고기': '소고기 안심',
-    '돼지고기': '돼지고기 삼겹살',
-    '돼지 고기': '돼지고기 삼겹살',
-    # 필요시 더 많은 규칙 추가
-}
-
-# 알러지 항목에 따른 세부 품목 리스트
-allergy_mapping = {
-    '알류': ['달걀', '계란', '메추리알', '오리알', '거위알', '난백', '흰자', '난황', '노른자', '계란 파우더', '난백 파우더', '마요네즈', '타르타르 소스', '홀랜다이즈 소스',
-           '에그누들', '팬케이크 믹스', '머랭', '크레페', '에그'],
-    '우유': ['우유', '연유', '크림', '치즈', '버터', '요거트', '사워 크림', '카제인', '유청 단백질', '우유 분말'],
-    '메밀': ['메밀가루', '메밀면 (소바)', '메밀빵', '메밀 크래커', '메밀 팬케이크', '메밀'],
-    '땅콩': ['땅콩', '땅콩버터', '땅콩 오일', '땅콩 가루', '땅콩 소스', '땅콩 스낵'],
-    '대두 (콩)': ['대두', '콩', '두부', '된장', '간장', '콩기름', '콩 단백질', '템페', '낫토', '두유', '에다마메'],
-    '밀': ['밀가루', '통밀', '빵', '파스타', '크래커', '시리얼', '쿠키', '케이크', '밀가루 베이스 믹스', '밀글루텐'],
-    '잣': ['잣', '잣 오일', '잣 가루', '잣 페스토'],
-    '호두': ['호두', '호두 오일', '호두 가루', '호두 스낵'],
-    '게': ['게', '게살', '크랩 스틱 (가공 게 제품)', '게 소스'],
-    '새우': ['새우', '건새우', '새우 페이스트', '새우칩'],
-    '오징어': ['오징어', '마른 오징어', '오징어볼', '오징어젓갈'],
-    '고등어': ['고등어', '고등어 통조림', '훈제 고등어'],
-    '조개류': ['조개', '바지락', '홍합', '가리비', '굴', '전복', '모시조개', '대합'],
-    '복숭아': ['복숭아', '복숭아 잼', '복숭아 통조림', '복숭아 주스'],
-    '토마토': ['토마토', '토마토 페이스트', '토마토 소스', '토마토 퓨레', '케첩'],
-    '닭고기': ['닭고기', '닭가슴살', '닭날개', '닭다리', '치킨 스톡', '닭고기 소시지'],
-    '돼지고기': ['돼지고기', '삼겹살', '베이컨', '햄', '소시지', '돼지갈비'],
-    '쇠고기': ['쇠고기', '소고기', '스테이크', '쇠고기 소시지', '쇠고기 스톡', '쇠고기 다짐육'],
-    '아황산류 (황산화물)': ['건조 과일', '와인']
-}
-
 # Spark 세션 생성
 spark = SparkSession.builder \
     .appName("Filter Recipe Squash") \
@@ -255,6 +257,9 @@ class Recipes(Base):
     recipe_situation = Column(String(20))
     recipe_ingredients = Column(String(20))
     recipe_method = Column(String(20))
+    recipe_scrap_count = Column(BigInteger, default=0, nullable=False)
+    recipe_comment_count = Column(BigInteger, default=0, nullable=False)
+    recipe_kcal = Column(BigInteger, default=0, nullable=False)
     created_date = Column(DateTime, default=datetime.now(kst), nullable=False)
     modified_date = Column(DateTime, default=datetime.now(kst), onupdate=datetime.now(kst), nullable=False)
     user_status = Column(Boolean, default=True, nullable=False)
@@ -265,8 +270,6 @@ class Recipes(Base):
     recipe_orders = relationship("RecipeOrders", back_populates="recipe")
 
     recipe_materials = relationship("RecipeMaterials", back_populates="recipe")
-
-    # recipe_nutrient = relationship("RecipeNutrient", back_populates="recipe")
 
 
 class RecipeOrders(Base):
@@ -281,10 +284,33 @@ class RecipeOrders(Base):
     recipe = relationship("Recipes", back_populates="recipe_orders")
 
 
+class RecipeNutrient(Base):
+    __tablename__ = "recipenutrient"
+
+    recipe_nutrient_id = Column(BigInteger, nullable=False, primary_key=True, index=True, autoincrement=True)
+    name = Column(String(50), nullable=False)
+    capacity = Column(String(20), nullable=False)
+    kcal = Column(BigInteger, nullable=False)
+    protein = Column(Double)
+    carbohydrate = Column(Double)
+    fat = Column(Double)
+    cholesterol = Column(Double)
+    salt = Column(Double)
+
+
 def main():
+    print(f"Received arguments: {sys.argv}")
+    # 커맨드 라인 인자 확인
+    if len(sys.argv) > 1:  # 인자가 1개 이상 있는지 확인
+        startnum = sys.argv[1]
+    else:
+        startnum = 0  # 인자가 없을 경우 기본값 설정
+
+    print(f"startnum: {startnum}")
+
     # 파일 경로를 이용해 데이터를 정제 및 저장
     print("1. hdfs 파일 정제시작")
-    process_recipe_data()
+    process_recipe_data(startnum)
 
     print(f"Uploaded data to MySQL")
 
@@ -293,10 +319,10 @@ def main():
 
 
 # HDFS 파일을 읽고 Spark DataFrame으로 처리하여 정제하는 함수
-def process_recipe_data():
+def process_recipe_data(startnum):
     print("2. hdfs 에서 파일 읽기")
     df = spark.read.csv(
-        "hdfs://master:9000/user/root/recipe/*.csv",
+        f"hdfs://master:9000/user/root/recipe/recipe_back_{startnum}*.csv",
         header=True,
         inferSchema=True,
         encoding='utf-8'
@@ -347,6 +373,19 @@ def process_recipe_data():
     # 인분 데이터를 숫자만 추출하고 None 또는 비어 있으면 1로 설정
     df = df.withColumn("인분", when(col("인분").isNull() | (col("인분") == ""), 1)
                        .otherwise(regexp_extract(col("인분"), r'(\d+)', 1).cast("int")))
+
+    # 난이도 값이 '아무나', '초급', '중급', '상급' 중 하나가 아닌 경우 '사용하지 않음'으로 처리
+    df = df.withColumn(
+        "난이도",
+        when(col("난이도").isin("아무나", "초급", "중급", "상급"), col("난이도"))  # 값이 올바른 경우 유지
+        .otherwise("사용하지 않음")
+    )
+
+    df = df.filter((col("레시피이미지").isNotNull()) & (col("레시피이미지").startswith("https")))
+
+    df = df.withColumn("레시피이름", regexp_replace(col("레시피이름"), " ", ""))
+    df = df.withColumn("글 제목", regexp_replace(col("글 제목"), r"\s{3,}", " "))
+    df = df.withColumn("소개글", regexp_replace(col("소개글"), r"\s{3,}", " "))
 
     print("4. 유저클래스 먼저 넣기 아이디는 모두의 레시피")
     save_user_to_db()
@@ -424,64 +463,127 @@ def save_user_to_db():
     session.close()
 
 
+def get_recipe_kcal(recipe_name):
+    # DB 세션 생성
+    engine = engineconnection()
+    session = engine.sessionmaker()
+    try:
+        print(f"입력된 레시피 이름: {recipe_name}")
+        # RecipeNutrient에서 영양 정보를 가져오기 위한 쿼리
+        nutrients = session.query(RecipeNutrient.name, RecipeNutrient.kcal).all()
+
+        # 영양 정보가 비어있다면 기본값 0 반환
+        if not nutrients:
+            return 0
+
+        # 모든 식품명을 리스트로 변환
+        nutrient_names = [n.name for n in nutrients]
+
+        # 유사한 식품명을 찾기 위한 TF-IDF 및 코사인 유사도 계산
+        best_match = get_best_match(recipe_name, nutrient_names, 0.55)
+        print(f"가장 유사한 매칭 결과: {best_match}")
+
+        # 가장 유사한 이름이 존재한다면 해당 kcal 값을 반환, 없으면 0 반환
+        matched_nutrient = session.query(RecipeNutrient).filter(RecipeNutrient.name == best_match).first()
+
+        if matched_nutrient:
+            print(f"매칭된 영양 성분: {matched_nutrient.name}, 칼로리: {matched_nutrient.kcal}")
+            return matched_nutrient.kcal
+        else:
+            return 0
+
+    except Exception as e:
+        # 에러 발생 시 예외 메시지를 출력하고 기본값 0 반환
+        print(f"get_recipe_kcal 함수 처리 중 에러 발생: {str(e)}")
+        return 0
+
+    finally:
+        # 세션이 존재하면 반드시 닫아줌
+        session.close() if 'session' in locals() else None
+
+
 def save_recipe_to_db(row):
     engine = engineconnection()
     session = engine.sessionmaker()
 
-    # 중복 확인을 위해 기존 레시피 확인 (예: 레시피 이름과 제목을 기준으로 중복 확인)
-    existing_recipe = session.query(Recipes).filter(
-        Recipes.recipe_id == row['index'],
-        Recipes.recipe_name == row['레시피이름'],
-        Recipes.recipe_title == row['글 제목']
-    ).first()
-
-    if existing_recipe:
-        print(f"이미 존재하는 레시피입니다: {existing_recipe.recipe_id}")
-        return existing_recipe.recipe_id  # 중복된 레시피의 ID 반환
-
-    # 'row'를 딕셔너리로 변환
-    row_dict = row.asDict()
-    print(f"레시피 이름: {row_dict['레시피이름']}")
-
-    # recipe_id가 올바른 값인지 확인
     try:
-        recipe_id_value = int(row_dict['index'])  # recipe_id는 정수형이어야 함
-    except ValueError as e:
-        print(f"recipe_id 변환 오류: {e} - 원래 값: {row_dict['index']}")
-        return None  # 오류 시 None 반환
+        # 중복 확인을 위해 기존 레시피 확인
+        existing_recipe = session.query(Recipes).filter(
+            Recipes.recipe_id == row['index'],
+            Recipes.recipe_name == row['레시피이름'],
+            Recipes.recipe_title == row['글 제목']
+        ).first()
 
-    # recipe_intro 길이 제한 (예: 500자로 제한)
-    recipe_intro = row_dict['소개글']
-    if recipe_intro is None:  # None 체크
-        recipe_intro = ''  # None인 경우 빈 문자열로 설정
-    elif len(recipe_intro) > 490:  # 500자로 제한
-        recipe_intro = recipe_intro[:490] + '...'
+        if existing_recipe:
+            print(f"이미 존재하는 레시피입니다: {existing_recipe.recipe_id}")
+            return existing_recipe.recipe_id  # 중복된 레시피의 ID 반환
 
-    new_recipe = Recipes(
-        recipe_id=recipe_id_value,
-        recipe_title=row_dict['글 제목'],
-        recipe_name=row_dict['레시피이름'],
-        recipe_image=row_dict['레시피이미지'],
-        recipe_intro=recipe_intro,
-        recipe_view_count=row_dict['조회수'],
-        recipe_time=row_dict['조리시간'],
-        recipe_level=row_dict['난이도'],
-        recipe_servings=row_dict['인분'],
-        recipe_type=row_dict['종류별'],
-        recipe_situation=row_dict['상황별'],
-        recipe_ingredients=row_dict['재료별'],
-        recipe_method=row_dict['방법별'],
+        # 'row'를 딕셔너리로 변환
+        row_dict = row.asDict()
+        print(f"레시피 이름: {row_dict['레시피이름']}")
 
-        # row에 없는 값들에 기본값 설정
-        user_status=row_dict.get('user_status', True),  # 사용자 상태 기본값 True
-        user_id=row_dict.get('user_id', 1)  # 기본 사용자 ID 설정 (예: 1번 사용자)
-    )
+        # recipe_id가 올바른 값인지 확인
+        try:
+            recipe_id_value = int(row_dict['index'])  # recipe_id는 정수형이어야 함
+        except ValueError as e:
+            print(f"recipe_id 변환 오류: {e} - 원래 값: {row_dict['index']}")
+            return None  # 오류 시 None 반환
 
-    session.add(new_recipe)
-    session.commit()
+        # recipe_intro 길이 제한
+        recipe_intro = row_dict['소개글']
+        if recipe_intro is None:
+            recipe_intro = ''
+        elif len(recipe_intro) > 490:
+            recipe_intro = recipe_intro[:490] + '...'
 
-    print(f"레시피 저장 완료: {new_recipe.recipe_id}")
-    return new_recipe.recipe_id  # 저장된 레시피의 ID 반환
+        # 조회수 쉼표 제거 및 변환
+        if isinstance(row_dict['조회수'], str):
+            recipe_view_count = int(row_dict['조회수'].replace(",", ""))
+        else:
+            recipe_view_count = row_dict['조회수']
+
+        try:
+            if isinstance(row_dict['조리시간'], str):
+                recipe_time = int(row_dict['조리시간'].replace("분 이내", "").replace("분", "").strip())
+            else:
+                recipe_time = row_dict['조리시간']
+        except ValueError:
+            recipe_time = 30
+
+        recipe_kcal_val = get_recipe_kcal(row_dict['레시피이름'])
+
+        new_recipe = Recipes(
+            recipe_id=recipe_id_value,
+            recipe_title=row_dict['글 제목'],
+            recipe_name=row_dict['레시피이름'],
+            recipe_image=row_dict['레시피이미지'],
+            recipe_intro=recipe_intro,
+            recipe_view_count=recipe_view_count,
+            recipe_time=recipe_time,
+            recipe_level=row_dict['난이도'],
+            recipe_servings=row_dict['인분'],
+            recipe_type=row_dict['종류별'],
+            recipe_situation=row_dict['상황별'],
+            recipe_ingredients=row_dict['재료별'],
+            recipe_method=row_dict['방법별'],
+            recipe_kcal=recipe_kcal_val,
+            user_status=row_dict.get('user_status', True),
+            user_id=row_dict.get('user_id', 1)
+        )
+
+        session.add(new_recipe)
+        session.commit()
+
+        print(f"레시피 저장 완료: {new_recipe.recipe_id}")
+        return new_recipe.recipe_id  # 저장된 레시피의 ID 반환
+
+    except Exception as e:
+        session.rollback()  # 오류 발생 시 롤백
+        print(f"에러 발생: {e}")
+        return None
+
+    finally:
+        session.close()  # 세션을 안전하게 닫기
 
 
 # 레시피 단계를 처리하고 RecipeOrders 테이블에 저장하는 함수
@@ -500,6 +602,9 @@ def process_recipe_orders(recipe_orders, recipe_id):
                 if step_number is None or description is None:
                     print(f"잘못된 레시피 단계 정보: {order}")
                     continue
+
+                if image_url is None:
+                    image_url = ""
 
                 # RecipeOrders 테이블에 단계 정보 저장
                 add_recipe_order(recipe_id, step_number, description, image_url)
@@ -568,8 +673,12 @@ def process_recipe_ingredients(ingredients_str, recipe_id):
                     amount, unit = "", ""  # 양과 단위를 None으로 설정
 
                 # 재료 ID 확인 또는 추가
-                material_info = get_material_id(material)
-                material_id = material_info['material_id']
+                material_id = get_material_id(material)
+                if isinstance(material_id, int):
+                    print(f"재료 ID: {material_id}")
+                else:
+                    print(f"material_id가 정수가 아닙니다: {material_id}")
+                    continue
 
                 # RecipeMaterials 테이블에 재료 저장
                 add_recipe_material(recipe_id, material_id, amount, unit)
@@ -647,49 +756,98 @@ def add_recipe_material(recipe_id, material_id, amount, unit):
         session.close()
 
 
-# 유사도 계산 함수
-def get_best_allergy_match(item_name, reference_names, match_value):
-    # '생략 가능' 문자열 제거
-    cleaned_item_name = item_name.replace('생략 가능', '').strip()
+# TF-IDF 기반 유사도 계산
+def get_best_match(item_name, reference_names, match_value):
+    # 입력값 유효성 검사
+    if not item_name or not reference_names:
+        print(f"item_name 또는 reference_names가 비어 있습니다.")
+        return item_name
 
-    match = difflib.get_close_matches(cleaned_item_name, reference_names, n=1,
-                                      cutoff=match_value)
-    if match:
-        return match[0]
+    # 빈 문자열 제거
+    reference_names = [name for name in reference_names if name.strip()]
+    if not reference_names:  # 만약 모든 reference_names가 비었다면
+        print(f"유효한 reference_names가 없습니다.")
+        return item_name
+
+    try:
+        vectorizer = TfidfVectorizer().fit_transform([item_name] + reference_names)
+        vectors = vectorizer.toarray()
+
+        item_vector = vectors[0]
+        reference_vectors = vectors[1:]
+
+        similarities = cosine_similarity([item_vector], reference_vectors)[0]
+
+        # 가장 높은 유사도 찾기
+        best_match_idx = similarities.argmax()
+        best_match_score = similarities[best_match_idx]
+        best_match_name = reference_names[best_match_idx]
+
+        # 유사도가 기준 값 이상이고, 단어 길이 차이가 2 이하인 경우만 매칭
+        if best_match_score >= match_value and abs(len(item_name) - len(best_match_name)) <= 2:
+            return best_match_name
+
+    except ValueError as ve:
+        # 벡터화 실패 시 처리
+        print(f"TfidfVectorizer 처리 중 에러 발생: {ve}")
+        return item_name
+
     return item_name
 
 
-def get_best_material_match(item_name, reference_names, match_value):
-    # '생략 가능' 문자열 제거
-    cleaned_item_name = item_name.replace('생략 가능', '').strip()
-
-    cleaned_reference_names = [name.replace('생략 가능', '').strip() for name in reference_names]
-
-    match = difflib.get_close_matches(cleaned_item_name, cleaned_reference_names, n=1,
-                                      cutoff=match_value)
-    if match:
-        return match[0]
-    return item_name
-
-
-# 재료가 알레르기 항목에 해당하는지 확인하는 함수
 def get_allergy_num(material_name):
+    specific_keywords = {
+        '우유': 'A_0002',
+        '메밀': 'A_0003',
+        '땅콩': 'A_0004',
+        '콩': 'A_0005',
+        '밀': 'A_0006',
+        '잣': 'A_0007',
+        '호두': 'A_0008',
+        '게': 'A_0009',
+        '새우': 'A_0010',
+        '오징어': 'A_0011',
+        '고등어': 'A_0012',
+        '조개': 'A_0013',
+        '복숭아': 'A_0014',
+        '토마토': 'A_0015',
+        '닭고기': 'A_0016',
+        '돼지고기': 'A_0017',
+        '쇠고기': 'A_0018',
+        '아황산류': 'A_0019'
+    }
+
+    for keyword, allergy_code in specific_keywords.items():
+        if keyword in material_name:
+            print(f"'{material_name}'이(가) '{keyword}'와 관련된 재료로 자동 매핑되었습니다.")
+            return allergy_code
+
+        # 유사도 기반 매칭
     for allergy_category, items in allergy_mapping.items():
-        best_match = get_best_allergy_match(material_name, items, 0.8)
+        for item in items:
 
-        if best_match != material_name:
-            print(f"'{material_name}'이(가) '{best_match}' 항목으로 매칭되었습니다. 알레르기 카테고리: {allergy_category}")
-            allergy_code = allergy_code_mapping.get(allergy_category)
+            if material_name == item:
+                print(f"'{material_name}'이(가) 직접 매칭되었습니다. 알레르기 카테고리: {allergy_category}")
+                allergy_code = allergy_code_mapping.get(allergy_category)
 
-            if allergy_code:
-                return allergy_code  # 알레르기 공통 코드 반환
-            else:
-                print(f"'{allergy_category}'에 대한 알레르기 코드가 존재하지 않습니다.")
+                if allergy_code:
+                    return allergy_code
 
-    return ""  # 알레르기 코드가 없는 경우 None 반환
+            best_match = get_best_match(material_name, [item], 0.85)
+
+            if best_match != material_name:
+                print(f"'{material_name}'이(가) '{best_match}' 항목으로 매칭되었습니다. 알레르기 카테고리: {allergy_category}")
+                allergy_code = allergy_code_mapping.get(allergy_category)
+
+                if allergy_code:
+                    return allergy_code
+
+    return ""
 
 
 def get_material_id(material_name):
+    material_name = material_name.replace("_", "")
+    material_name = material_name.replace(" ", "")
     # 재료 존재여부 확인하고 테이블 추가
     engine = engineconnection()
     session = engine.sessionmaker()
@@ -701,50 +859,70 @@ def get_material_id(material_name):
         stmt_reference = select(Materials.material_name)
         reference_materials: Sequence[str] = session.execute(stmt_reference).scalars().all()  # Sequence로 변경
 
+        # 재료가 존재하는지 먼저 확인하는 쿼리
+        stmt = select(Materials).where(Materials.material_name == material_name)
+        material = session.execute(stmt).scalars().first()
+
+        if material:
+            print(f"'{material_name}'이(가) 이미 존재합니다. ID: {material.material_id}")
+            return material.material_id  # material_id만 반환
+
         # 참조 재료 리스트가 비어 있는 경우 바로 새로운 재료 추가
         if not reference_materials:
             allergy_num = get_allergy_num(material_name)
             print(f"참조 재료 리스트가 비어 있습니다. 새 재료 추가: '{material_name}', 알레르기 번호: {allergy_num}")  # 추가될 재료 정보 확인
             new_material = Materials(
                 material_name=material_name,
-                material_allergy_num=allergy_num  # 알레르기 번호 추가
+                material_price_status=True,
+                material_allergy_num=allergy_num,  # 알레르기 번호 추가
             )
             session.add(new_material)
             session.commit()  # 새로운 재료를 데이터베이스에 추가
             print(f"'{material_name}' 재료가 추가되었습니다. 새로운 ID: {new_material.material_id}")  # 추가 확인
-            return {"material_id": new_material.material_id, "material_name": new_material.material_name}
+            return new_material.material_id  # material_id만 반환
 
         # 재료명 유사도 계산하여 가장 유사한 이름 반환
-        best_match = get_best_material_match(material_name, reference_materials, 0.85)
+        try:
+            best_match = get_best_match(material_name, reference_materials, 0.85)
+            print(f"최고 매칭 재료명: '{best_match}'")
 
-        print(f"최고 매칭 재료명: '{best_match}'")  # 매칭된 재료명 확인
-
-        # 유사도가 높은 재료가 있는지 확인
-        if best_match != material_name:
-            print(f"'{material_name}'이(가) '{best_match}'으로 매칭되었습니다.")
-            material_name = best_match  # 유사한 값으로 재료명 변경
-
-        # 재료가 존재하는지 확인하는 쿼리
-        stmt = select(Materials).where(Materials.material_name == material_name)
-
-        # 쿼리 실행
-        material = session.execute(stmt).scalars().first()
-
-        if material:
-            print(f"'{material_name}'이(가) 이미 존재합니다. ID: {material.material_id}")
-            return {"material_id": material.material_id, "material_name": material.material_name}
-        else:
-            # 재료가 없다면 새로운 재료 추가 (material_id는 auto increment로 자동 처리)
+        except ValueError as ve:
+            # 벡터화 실패 시 처리
+            print(f"재료명 유사도 계산 중 에러 발생: {ve}")
+            # 벡터화 실패 시 새로운 재료로 추가
             allergy_num = get_allergy_num(material_name)
-            print(f"새 재료 추가: '{material_name}', 알레르기 번호: {allergy_num}")  # 추가될 재료 정보 확인
+            print(f"벡터화 실패로 새 재료 추가: '{material_name}', 알레르기 번호: {allergy_num}")
             new_material = Materials(
                 material_name=material_name,
-                material_allergy_num=allergy_num  # 알레르기 번호 추가
+                material_allergy_num=allergy_num,  # 알레르기 번호 추가
+                material_price_status=True
             )
             session.add(new_material)
             session.commit()  # 새로운 재료를 데이터베이스에 추가
-            print(f"'{material_name}' 재료가 추가되었습니다. 새로운 ID: {new_material.material_id}")  # 추가 확인
-            return {"material_id": new_material.material_id, "material_name": new_material.material_name}
+            print(f"'{material_name}' 재료가 추가되었습니다. 새로운 ID: {new_material.material_id}")
+            return new_material.material_id
+
+        # 매칭된 재료가 이미 존재하는지 확인
+        stmt = select(Materials).where(Materials.material_name == best_match)
+        matched_material = session.execute(stmt).scalars().first()
+
+        if matched_material:
+            print(f"'{material_name}'이(가) '{best_match}'으로 매칭되었습니다. 기존 ID: {matched_material.material_id}")
+            return matched_material.material_id
+
+        # 유사도 검사 후에도 재료가 없다면 새로운 재료 추가
+        allergy_num = get_allergy_num(material_name)
+        print(f"새 재료 추가: '{material_name}', 알레르기 번호: {allergy_num}")  # 추가될 재료 정보 확인
+        new_material = Materials(
+            material_name=material_name,
+            material_allergy_num=allergy_num,  # 알레르기 번호 추가
+            material_price_status=True
+        )
+        session.add(new_material)
+        session.commit()  # 새로운 재료를 데이터베이스에 추가
+        print(f"'{material_name}' 재료가 추가되었습니다. 새로운 ID: {new_material.material_id}")  # 추가 확인
+        return new_material.material_id  # material_id만 반환
+
     except Exception as e:
         session.rollback()  # 오류 발생 시 트랜잭션 롤백
         print(f"재료 처리 중 오류 발생: {str(e)}")

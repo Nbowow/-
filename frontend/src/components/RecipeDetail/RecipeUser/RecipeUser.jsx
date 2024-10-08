@@ -2,35 +2,77 @@ import PropTypes from "prop-types";
 import Button from "../../Button/Button";
 import UserProfileImage from "../../UserProfile/UserProfileImage/UserProfileImage";
 import * as S from "./RecipeUser.styled";
-function RecipeUser({ data }) {
-    const handleFollow = () => {};
+import { useUserStore } from "../../../store/userStore";
+import { followUser, unFollowUser } from "../../../api/userApi";
+import { useCallback, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+
+function RecipeUser({ user }) {
+    const { isLoading } = useUserStore();
+    const [flag, setFlag] = useState(false);
+    const me = useUserStore((state) => state.user);
+    const navigate = useNavigate();
+
+    const handleFollow = async () => {
+        if (!flag) {
+            await followUser(user.id);
+            setFlag(true);
+        } else {
+            await unFollowUser(user.id);
+            setFlag(false);
+        }
+    };
+
+    const checkIfFollowing = useCallback(() => {
+        if (!me || !me.followings) return;
+
+        const isFollowing = me.followings.some(
+            (follower) => follower.id === user.id,
+        );
+
+        setFlag((prevFlag) => {
+            if (prevFlag !== isFollowing) {
+                return isFollowing;
+            }
+            return prevFlag;
+        });
+    }, [me, user]);
+
+    useEffect(() => {
+        if (!isLoading) {
+            checkIfFollowing();
+        }
+    }, [isLoading, checkIfFollowing]);
+
     return (
         <S.UserContainer>
-            <UserProfileImage imageUrl={data.imgUrl} size={"6rem"} />
+            <UserProfileImage imageUrl={user.profileImage} size={"6rem"} />
             <S.UserDetails>
                 <S.UserInfo>
-                    <S.UserName>{data.name}</S.UserName>
-                    <S.UserHome>{"🏠"}</S.UserHome>
+                    <S.UserName>{user.nickname}</S.UserName>
+                    <S.UserHome onClick={() => navigate(`/user/${user.id}`)}>
+                        {"🏠"}
+                    </S.UserHome>
                     <Button
-                        width={"3rem"}
+                        width={"4rem"}
                         height={"1.5rem"}
-                        text={"구독"}
+                        text={flag ? "팔로잉" : "팔로우"}
                         onClick={handleFollow}
                         type={"small"}
                     />
                 </S.UserInfo>
-                <S.UserTalk>{data.talk}</S.UserTalk>
+                <S.UserTalk>{user.summary}</S.UserTalk>
             </S.UserDetails>
         </S.UserContainer>
     );
 }
 
 RecipeUser.propTypes = {
-    data: PropTypes.shape({
-        name: PropTypes.string.isRequired,
-        imgUrl: PropTypes.string,
-        followCnt: PropTypes.number.isRequired,
-        talk: PropTypes.string.isRequired,
+    user: PropTypes.shape({
+        nickname: PropTypes.string.isRequired,
+        profileImage: PropTypes.string,
+        summary: PropTypes.string.isRequired,
+        id: PropTypes.number.isRequired,
     }).isRequired,
 };
 
