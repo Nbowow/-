@@ -94,7 +94,7 @@ public class RecipeController {
         // 검색 결과가 없을 경우, 오타 수정 로직 호출
         if (recipeList.isEmpty()) {
             String correctedWord = searchTypo(keyword); // 오타 수정 API 호출
-            return ResponseEntity.status(HttpStatus.OK).body("혹시 이걸 찾으시나요? " + correctedWord);
+            return ResponseEntity.status(HttpStatus.OK).body(correctedWord);
         }
 
         return ResponseEntity.status(HttpStatus.OK).body(recipeList);
