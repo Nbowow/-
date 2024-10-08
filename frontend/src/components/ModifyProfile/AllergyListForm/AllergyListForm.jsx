@@ -1,21 +1,12 @@
 import CardToggleList from "../../CardList/CardToggleList";
 import * as S from "./AllergyListForm.styled";
-import { fetchAllergyList } from "../../../api/userApi";
-import { useQuery } from "@tanstack/react-query";
-import { fetchUserAllergyList } from "../../../api/userApi";
+import { useAllergyList, useUserAllergyList } from "../../../hooks/useAllergy";
 
 const AllergyListForm = () => {
-    const { data: allergyList, isLoading } = useQuery({
-        queryKey: ["allergyList"],
-        queryFn: fetchAllergyList,
-        staleTime: 1000 * 60 * 60 * 3,
-    });
+    const { data: allergyList, isLoading } = useAllergyList();
 
-    const { data: userAllergyList, isLoading: userListIsLoading } = useQuery({
-        queryKey: ["userAllergyList"],
-        queryFn: fetchUserAllergyList,
-    });
-
+    const { data: userAllergyList, isLoading: userListIsLoading } =
+        useUserAllergyList();
     if (isLoading || userListIsLoading) return <div></div>;
 
     return (
