@@ -1,13 +1,15 @@
 import PropTypes from "prop-types";
 import * as S from "./Comment.styled";
 import { useUserStore } from "../../store/userStore";
+import useUser from "../../hooks/useUser";
 import { useRef } from "react";
 function CommentInput({ addFunc }) {
-    const { isLoading } = useUserStore();
-    const inputRef = useRef(null);
+    const { isLoading } = useUser();
     const user = useUserStore((state) => state.user);
+    const inputRef = useRef(null);
 
     if (isLoading) return <div></div>;
+
     const submitComment = () => {
         const input = inputRef.current.value.trim();
         if (!input) return;

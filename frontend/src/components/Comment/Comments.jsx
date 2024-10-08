@@ -26,11 +26,15 @@ function Comments({ id }) {
             <S.CommentInputWrapper>
                 <CommentInput addFunc={addComment} />
             </S.CommentInputWrapper>
-            {comments.map((comment, index) => (
-                <S.CommentsWrapper key={comment.id}>
-                    <Comment comment={comment} />
-                </S.CommentsWrapper>
-            ))}
+            {comments && (
+                <>
+                    {comments.map((comment) => (
+                        <S.CommentsWrapper key={comment.id}>
+                            <Comment comment={comment} />
+                        </S.CommentsWrapper>
+                    ))}
+                </>
+            )}
         </>
     );
 }
