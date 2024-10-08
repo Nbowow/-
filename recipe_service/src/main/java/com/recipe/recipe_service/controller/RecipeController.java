@@ -12,6 +12,8 @@ import com.recipe.recipe_service.data.dto.user.response.UserAllergyResponseDto;
 import com.recipe.recipe_service.service.RecipeService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -229,10 +231,9 @@ public class RecipeController {
     public ResponseEntity<List<String>> autocompleteRecipe(
             @RequestParam("keyword") String keyword) {
 
-        // 레시피 제목에서 검색어와 일치하는 목록 중 최대 5개만 찾기
-        List<String> recipeSuggestions = recipeRepository.findTop5RecipeTitlesByKeyword(keyword);
+        Pageable pageable = PageRequest.of(0, 5);  // 첫 페이지에서 최대 5개의 결과를 가져오도록 설정
+        List<String> recipeSuggestions = recipeRepository.findRecipeNamesByKeyword(keyword, pageable);
 
-        // 검색 결과 반환
         return ResponseEntity.status(HttpStatus.OK).body(recipeSuggestions);
     }
 

@@ -32,6 +32,6 @@ public interface RecipeRepository extends JpaRepository<Recipe, Long> {
     @Query("SELECT r.name FROM Recipe r")
     List<String> findAllRecipeNames();
 
-    @Query("SELECT r.title FROM Recipe r WHERE LOWER(r.title) LIKE LOWER(CONCAT('%', :keyword, '%'))")
-    List<String> findTop5RecipeTitlesByKeyword(@Param("keyword") String keyword);
+    @Query("SELECT r.name FROM Recipe r WHERE LOWER(r.name) LIKE LOWER(CONCAT('%', :keyword, '%'))")
+    List<String> findRecipeNamesByKeyword(@Param("keyword") String keyword, Pageable pageable);
 }
