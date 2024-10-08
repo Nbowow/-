@@ -53,3 +53,7 @@ export const Img = styled.img`
     height: 100%;
     border-radius: ${({ theme }) => theme.borderRadius.medium};
 `;
+
+export const Hot = styled.div`
+    margin-right: ${({ theme }) => theme.spacing.small};
+`;

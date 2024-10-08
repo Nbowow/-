@@ -26,15 +26,6 @@ export const Date = styled.p`
     color: ${({ theme }) => theme.color.gray.dark};
     font-size: ${({ theme }) => theme.fontSize.subText};
 `;
-export const ReplyButton = styled.button`
-    margin-left: 0.5rem;
-    border: none;
-    background-color: white;
-    font-family: ${({ theme }) => theme.fontWeight.medium};
-    font-size: ${({ theme }) => theme.fontSize.subText};
-    cursor: pointer;
-`;
-
 export const UserName = styled.p`
     font-family: ${({ theme }) => theme.fontWeight.semiBold};
     font-size: ${({ theme }) => theme.fontSize.text};
@@ -42,10 +33,6 @@ export const UserName = styled.p`
 `;
 export const User = styled.div`
     ${flexStartStyle}
-`;
-
-export const ReplyWrapper = styled.div`
-    margin-left: 2rem;
 `;
 
 export const SubmitButton = styled.button`

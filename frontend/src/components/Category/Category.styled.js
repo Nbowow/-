@@ -13,15 +13,17 @@ export const CategorySection = styled.div`
     display: flex;
     justify-content: flex-start;
     width: 100%;
-    margin: 10px 0;
 `;
 
 export const CategoryTitle = styled.h3`
-    font-size: 1.5em;
+    font-size: ${({ theme }) => theme.fontSize.h3};
     text-align: center;
     background-color: #4cac67;
     padding: 20px;
     color: white;
+    font-family: "SUITSemiBold";
+    margin-right: 10px;
+    margin-left: 30px;
 `;
 
 export const CategoryList = styled.div`
@@ -32,9 +34,12 @@ export const CategoryList = styled.div`
 
 export const CategoryItem = styled.div`
     border-radius: 10px;
-    padding: 20px;
     margin: 5px;
     text-align: center;
     cursor: pointer;
-    font-weight: ${(props) => (props.selected ? "bold" : "normal")};
+    font-family: ${(props) =>
+        props.selected ? "SUITExtraBold" : "SUITregular"};
+
+    color: ${(props) =>
+        props.selected ? "black" : props.theme.color.gray.dark};
 `;

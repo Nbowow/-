@@ -9,7 +9,7 @@ export const IngredientLikeSection = styled.div`
 `;
 
 export const Wrapper = styled.div`
-    ${flexStartStyle}
+    ${flexCenterStyle}
 `;
 
 export const TabWrapper = styled.div`

@@ -2,6 +2,17 @@ import RecipeForm from "./../components/Post/RecipeForm";
 import MaterialForm from "../components/Post/MaterialForm";
 import OrderForm from "../components/Post/OrderForm";
 import styled from "styled-components";
+import { useState, useEffect } from "react";
+import { postRecipe } from "../api/recipe";
+import { fetchCategories } from "../api/category";
+
+const CATEGORY_TYPES = {
+    TYPE: "종류",
+    SITUATION: "상황",
+    INGREDIENT: "재료",
+    METHOD: "방법",
+};
+
 const RegisterButton = styled.button`
     display: block;
     width: 20%;
@@ -34,17 +45,78 @@ const Hr = styled.hr`
 `;
 
 const PostRecipe = () => {
+    const [recipeFormData, setRecipeFormData] = useState({
+        title: "",
+        name: "",
+        intro: "",
+        image: null,
+        servings: 0,
+        time: 0,
+        level: "",
+        cookingTools: "",
+        type: "",
+        situation: "",
+        ingredients: "",
+        method: "",
+    });
+    const [materialGroups, setMaterialGroups] = useState([]);
+    const [orderSteps, setOrderSteps] = useState([]);
+    const [categories, setCategories] = useState({
+        [CATEGORY_TYPES.TYPE]: [],
+        [CATEGORY_TYPES.SITUATION]: [],
+        [CATEGORY_TYPES.INGREDIENT]: [],
+        [CATEGORY_TYPES.METHOD]: [],
+    });
+
+    useEffect(() => {
+        const getCategories = async () => {
+            const categorizedData = await fetchCategories();
+            setCategories(categorizedData);
+        };
+        getCategories();
+    }, []);
+    const handleSubmit = async () => {
+        const recipeMaterials = materialGroups.flatMap((group) =>
+            group.materials.map((material) => ({
+                materialName: material.name,
+                materialAmount: material.amount,
+                materialUnit: material.unit,
+                materialSubtitle: group.name,
+            })),
+        );
+
+        const recipeOrders = orderSteps.map((step, index) => ({
+            orderNum: index + 1,
+            orderImg: step.image,
+            orderContent: step.content,
+        }));
+
+        const requestData = {
+            ...recipeFormData,
+            recipeMaterials,
+            recipeOrders,
+        };
+        await postRecipe(requestData);
+    };
+
     return (
         <div>
-            <RecipeForm />
+            <RecipeForm
+                recipeData={recipeFormData}
+                setRecipeData={setRecipeFormData}
+                categories={categories}
+            />
             <Hr />
 
-            <MaterialForm />
+            <MaterialForm
+                materialGroups={materialGroups}
+                setMaterialGroups={setMaterialGroups}
+            />
             <Hr />
 
-            <OrderForm />
+            <OrderForm orderSteps={orderSteps} setOrderSteps={setOrderSteps} />
             <ButtonContainer>
-                <RegisterButton type="button">등록</RegisterButton>
+                <RegisterButton onClick={handleSubmit}>등록</RegisterButton>
             </ButtonContainer>
         </div>
     );

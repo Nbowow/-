@@ -7,7 +7,7 @@ from app.database.base import Base
 
 
 class Users(Base):
-    __tablename__ = "Users"
+    __tablename__ = "users"
 
     user_id = Column(BigInteger, primary_key=True, autoincrement=True, index=True, nullable=False)
     user_email = Column(String(255))

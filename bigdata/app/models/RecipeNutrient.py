@@ -5,7 +5,7 @@ from app.database.base import Base
 
 
 class RecipeNutrient(Base):
-    __tablename__ = "RecipeNutrient"
+    __tablename__ = "recipenutrient"
 
     recipe_nutrient_id = Column(BigInteger, nullable=False, primary_key=True, index=True, autoincrement=True)
     capacity = Column(String(20), nullable=False)
@@ -17,5 +17,5 @@ class RecipeNutrient(Base):
     potassium = Column(Double)
     salt = Column(Double)
 
-    recipe_id = Column(BigInteger, ForeignKey("Recipes.recipe_id"), nullable=False)
+    recipe_id = Column(BigInteger, ForeignKey("recipes.recipe_id"), nullable=False)
     recipe = relationship("Recipes", back_populates="recipe_nutrient")

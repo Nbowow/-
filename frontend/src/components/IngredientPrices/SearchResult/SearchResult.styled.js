@@ -47,14 +47,17 @@ export const ResultInfo = styled.div`
 export const Label = styled.div`
     ${flexStartStyle}
 `;
+
 export const ResultWrapper = styled.div`
     ${flexCenterStyle}
     width: 70%;
     margin-bottom: ${({ theme }) => theme.spacing.medium};
     padding: ${({ theme }) => theme.spacing.medium} 0;
 `;
+
 export const Wrapper = styled.div`
     ${flexAroundStyle}
+    width: 100%;
     flex-direction: column;
 `;
 export const Img = styled.img`
