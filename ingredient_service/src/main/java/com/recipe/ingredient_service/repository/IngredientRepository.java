@@ -16,6 +16,8 @@ public interface IngredientRepository extends JpaRepository<Ingredient, Long> {
 
     Optional<Ingredient> findByNameIgnoreCase(String name);
 
+    Optional<Ingredient> findByName(String name);
+
     Page<Ingredient> findAll(Pageable pageable);
 
     @Query("SELECT i.id FROM Ingredient i WHERE i.priceStatus = true")
