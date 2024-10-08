@@ -2,19 +2,14 @@ import * as S from "./UserProfile.styled";
 import UserProfileImage from "./UserProfileImage/UserProfileImage";
 import Button from "../Button/Button";
 import PropTypes from "prop-types";
-import { useNavigate } from "react-router-dom";
 import { formatNumber } from "../../util/format-number";
 
-const UserProfile = ({ showInfo, member }) => {
-    const buttonText = "정보 수정";
-
+const UserProfile = ({ showInfo, member, buttonText, buttonOnClick }) => {
     const follow = formatNumber(member.followers.length);
     const following = formatNumber(member.followings.length);
 
-    const navigate = useNavigate();
-
     const onClickModifyButton = () => {
-        navigate("/modify");
+        buttonOnClick();
     };
 
     return (
@@ -71,6 +66,8 @@ UserProfile.propTypes = {
         followers: PropTypes.arrayOf(FollowerFollowingShape),
         followings: PropTypes.arrayOf(FollowerFollowingShape),
     }).isRequired,
+    buttonText: PropTypes.string,
+    buttonOnClick: PropTypes.func,
 };
 
 export default UserProfile;
