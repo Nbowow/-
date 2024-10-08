@@ -89,7 +89,7 @@ public class IngredientService {
     }
 
     public Ingredient findMatchingIngredient(String ingredientName) {
-
+        ingredientName = ingredientName.trim();
         log.info("ingredientName : {}", ingredientName);
 
 
