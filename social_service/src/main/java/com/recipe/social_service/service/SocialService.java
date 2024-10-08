@@ -28,6 +28,13 @@ public class SocialService {
 
     // Follow a user
     public void followUser(Long followerId, Long followingId) {
+        // Check if the follow relationship already exists
+        Follow existingFollow = socialRepository.findByFollowerIdAndFollowingId(followerId, followingId);
+        if (existingFollow != null) {
+            throw new IllegalStateException("User is already being followed.");
+        }
+
+        // Create a new follow relationship
         Follow follow = Follow.builder()
                 .followerId(followerId)
                 .followingId(followingId)
@@ -39,9 +46,13 @@ public class SocialService {
 
     // Unfollow a user
     public void unfollowUser(Long followerId, Long followingId) {
+        // Check if the follow relationship exists
         Follow follow = socialRepository.findByFollowerIdAndFollowingId(followerId, followingId);
-        if (follow != null) {
-            socialRepository.delete(follow);
+        if (follow == null) {
+            throw new IllegalStateException("Follow relationship does not exist.");
         }
+
+        // Delete the follow relationship
+        socialRepository.delete(follow);
     }
 }
