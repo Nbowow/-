@@ -5,6 +5,16 @@ export const fetchUser = async () => {
     return response.data;
 };
 
+export const followUser = async (id) => {
+    const response = await axiosInstance.post(`/social/follow/${id}`);
+    return response.data;
+};
+
+export const unFollowUser = async (id) => {
+    const response = await axiosInstance.delete(`/social/follow/${id}`);
+    return response.data;
+};
+
 export const fetchUserRecipe = async () => {
     const response = await axiosInstance.get("/users/recipe");
     return response.data;
@@ -53,5 +63,14 @@ export const uploadProfileImage = async (file) => {
 
 export const getUserLike = async () => {
     const response = await axiosInstance.get("/users/like");
+    return response.data;
+};
+export const getUserScrap = async () => {
+    const response = await axiosInstance.get("/users/scrap");
+    return response.data;
+};
+
+export const getCommonCode = async () => {
+    const response = await axiosInstance.get("/users/common");
     return response.data;
 };
