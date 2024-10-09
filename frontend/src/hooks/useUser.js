@@ -7,6 +7,7 @@ import {
     fetchOtherUser,
     getUserLike,
     fetchUserScrap,
+    fetchOtherUserRecipe,
 } from "../api/userApi";
 import { useUserStore } from "../store/userStore";
 
@@ -84,5 +85,12 @@ export const useUserScraps = () => {
         queryFn: fetchUserScrap,
         staleTime: 0,
         refetchOnMount: true,
+    });
+};
+
+export const useOtherUserRecipe = (id) => {
+    return useQuery({
+        queryKey: [`otherUserRecipe`],
+        queryFn: () => fetchOtherUserRecipe(id),
     });
 };
