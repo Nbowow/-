@@ -9,6 +9,7 @@ import { useUserStore } from "../../../store/userStore";
 import {
     useUpdateLike,
     useUpdateScrap,
+    useUpdateUnLike,
     useUpdateUnScrap,
     useUserLikes,
     useUserScraps,
@@ -22,39 +23,30 @@ const ActionToggleGroup = ({ recipe }) => {
     const [scrapCount, setScrapCount] = useState(0);
     const [commentCount, setCommentCount] = useState(0);
 
-    const isLoggedIn = useUserStore((state) => state.isLoggedIn);
-
+    const user = useUserStore((state) => state.user);
     const { isLoading: isUserLoading, data: likes } = useUserLikes();
     const { isLoading: isRecipeLoading, data: scraps } = useUserScraps();
 
     useEffect(() => {
-        if (isLoggedIn) {
+        if (user && !isUserLoading && !isRecipeLoading) {
             setIsLike(likes.some((i) => i.id === recipe.id));
             setIsScrap(scraps.some((i) => i.id === recipe.id));
         }
-        if (!isUserLoading && !isRecipeLoading) {
-            setLikeCount(recipe.likeCount ?? 0);
-            setScrapCount(recipe.scrapCount ?? 0);
-            setCommentCount(recipe.commentCount ?? 0);
-        }
-    }, [
-        isLoggedIn,
-        likes,
-        scraps,
-        recipe,
-        isUserLoading,
-        isRecipeLoading,
-        isLike,
-        isScrap,
-    ]);
+    }, [user, isUserLoading, isRecipeLoading, likes, recipe.id, scraps]);
+
+    useEffect(() => {
+        setLikeCount(recipe.likeCount ?? 0);
+        setScrapCount(recipe.scrapCount ?? 0);
+        setCommentCount(recipe.commentCount ?? 0);
+    }, [recipe]);
 
     const { mutate: updateLike } = useUpdateLike();
-    const { mutate: updateUnLike } = useUpdateUnScrap();
+    const { mutate: updateUnLike } = useUpdateUnLike();
     const { mutate: updateScrap } = useUpdateScrap();
     const { mutate: updateUnScrap } = useUpdateUnScrap();
 
     const handleLike = async () => {
-        if (!isLoggedIn) return;
+        if (!user) return;
         if (isLike) {
             updateUnLike(recipe.id);
             setLikeCount((prevCount) => prevCount - 1);
@@ -66,7 +58,7 @@ const ActionToggleGroup = ({ recipe }) => {
     };
 
     const handleScrap = async () => {
-        if (!isLoggedIn) return;
+        if (!user) return;
         if (isScrap) {
             updateUnScrap(recipe.id);
             setScrapCount((prevCount) => prevCount - 1);

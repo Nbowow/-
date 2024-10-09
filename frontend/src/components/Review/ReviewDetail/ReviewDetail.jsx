@@ -6,7 +6,7 @@ const ReviewDetail = ({ review, recipe }) => {
     return (
         <S.Wrapper>
             <S.FlexLayout>
-                <UserProfileImage imageUrl={recipe.imgUrl} size={"2.5em"} />
+                <UserProfileImage imageUrl={recipe.image} size={"2.5em"} />
                 <S.FlexInside>
                     <S.RecipeName>{recipe.name}</S.RecipeName>
                     <S.FlexCenter>
@@ -17,28 +17,27 @@ const ReviewDetail = ({ review, recipe }) => {
                             size={25}
                         />
                         <S.RecipeTotalRating>
-                            {recipe.totalRating}
+                            {/* {recipe.totalRating} */}
                         </S.RecipeTotalRating>
                     </S.FlexCenter>
                 </S.FlexInside>
             </S.FlexLayout>
 
-            <S.ReviewImg src={review.imgUrl} alt="리뷰 이미지" />
+            <S.ReviewImg src={review.reviewImage} alt="리뷰 이미지" />
             <S.FlexLayout>
                 <UserProfileImage
-                    imageUrl={review.author.imgUrl}
+                    imageUrl={review.profileImage}
                     size={"2rem"}
                 />
                 <S.FlexInside>
-                    <S.UserName>{review.author.name}</S.UserName>
+                    <S.UserName>{review.nickname}</S.UserName>
                     <S.FlexBetween>
                         <Rating
-                            initialValue={4.3}
+                            initialValue={review.rating}
                             readonly
                             allowFraction
                             size={17}
                         />
-                        <S.ReviewDate>{review.createdAt}</S.ReviewDate>
                     </S.FlexBetween>
                 </S.FlexInside>
             </S.FlexLayout>
@@ -54,19 +53,16 @@ const ReviewDetail = ({ review, recipe }) => {
 ReviewDetail.propTypes = {
     review: PropTypes.shape({
         id: PropTypes.number.isRequired,
-        imgUrl: PropTypes.string,
+        profileImage: PropTypes.string,
+        reviewImage: PropTypes.string,
+        nickname: PropTypes.string.isRequired,
         rating: PropTypes.number.isRequired,
         title: PropTypes.string.isRequired,
         content: PropTypes.string.isRequired,
-        createdAt: PropTypes.string.isRequired,
-        author: PropTypes.shape({
-            name: PropTypes.string.isRequired,
-            imgUrl: PropTypes.string,
-        }).isRequired,
     }).isRequired,
     recipe: PropTypes.shape({
         id: PropTypes.number.isRequired,
-        imgUrl: PropTypes.string.isRequired,
+        image: PropTypes.string.isRequired,
         totalRating: PropTypes.number.isRequired,
         name: PropTypes.string.isRequired,
     }).isRequired,

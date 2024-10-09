@@ -8,11 +8,11 @@ import RecipeInfo from "../../components/RecipeDetail/RecipeInfo";
 import Comments from "../../components/Comment/Comments";
 import Review from "../../components/Review/Review";
 import * as S from "./RecipeDetail.styled";
-import { getRecipe, getReviews } from "../../api/recipe";
+import { getRecipe } from "../../api/recipe";
+import ReviewRegistButton from "../../components/Review/ReviewRegist/ReviewRegistButton";
 
 const RecipeDetail = () => {
     const [recipe, setRecipe] = useState(null);
-    const [reviews, setReviews] = useState(null);
     const { id } = useParams();
 
     useEffect(() => {
@@ -20,24 +20,16 @@ const RecipeDetail = () => {
             const data = await getRecipe(id);
             setRecipe(data);
         };
-        const fetchReview = async () => {
-            const data = await getReviews(id);
-            setReviews(data);
-        };
 
         fetchRecipe(id);
-        fetchReview(id);
     }, [id]);
 
-    const allergies = ["토마토", "우유"];
-
-    const rating = [100, 50, 30, 1, 5];
     return (
         recipe && (
             <S.Container>
                 <S.InfoSection>
                     <RecipeHeader recipe={recipe} />
-                    <RecipeInfo recipe={recipe} allergies={allergies} />
+                    <RecipeInfo recipe={recipe} />
                 </S.InfoSection>
 
                 <S.StepSection>
@@ -55,9 +47,8 @@ const RecipeDetail = () => {
                     />
                 </S.UserSection>
 
-                {reviews && (
-                    <Review reviews={reviews} rating={rating} recipe={recipe} />
-                )}
+                <Review recipe={recipe} />
+                <ReviewRegistButton id={id} />
 
                 <S.CommentSection>
                     <Comments id={id} />
