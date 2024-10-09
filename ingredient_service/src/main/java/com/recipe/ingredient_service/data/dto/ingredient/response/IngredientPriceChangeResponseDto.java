@@ -13,4 +13,5 @@ public class IngredientPriceChangeResponseDto {
     private String name;
     private String currentPrice;
     private String yesterdayPrice;
+    private String priceGap;
 }
