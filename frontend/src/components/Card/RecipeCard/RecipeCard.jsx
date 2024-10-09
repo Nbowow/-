@@ -15,7 +15,7 @@ const RecipeCard = ({ recipe, showProfile }) => {
                 }
             />
             <S.TextArea>
-                <ActionToggleGroup />
+                <ActionToggleGroup recipe={recipe} />
                 <S.Title>{recipe.title}</S.Title>
                 <S.Text>{recipe.info}</S.Text>
             </S.TextArea>
