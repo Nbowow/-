@@ -11,7 +11,7 @@ function RecipeIngredient({ ingredients }) {
             <S.IngredientColumn>
                 {leftItems.map((item, index) => (
                     <S.Ingredient key={index}>
-                        <S.IngredientName>{item.name}</S.IngredientName>
+                        <S.IngredientName>{item.materialName}</S.IngredientName>
                         <S.IngredientAmount>{item.amount}</S.IngredientAmount>
                     </S.Ingredient>
                 ))}
@@ -19,7 +19,7 @@ function RecipeIngredient({ ingredients }) {
             <S.IngredientColumn>
                 {rightItems.map((item, index) => (
                     <S.Ingredient key={index}>
-                        <S.IngredientName>{item.name}</S.IngredientName>
+                        <S.IngredientName>{item.materialName}</S.IngredientName>
                         <S.IngredientAmount>{item.amount}</S.IngredientAmount>
                     </S.Ingredient>
                 ))}

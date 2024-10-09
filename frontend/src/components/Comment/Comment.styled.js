@@ -67,3 +67,8 @@ export const TextAreaWrapper = styled.div`
 export const CommentInputWrapper = styled.div`
     width: 80%;
 `;
+export const CommentTitle = styled.div`
+    width: 80%;
+    margin-top: 2rem;
+    font-family: ${({ theme }) => theme.fontWeight.medium};
+`;

@@ -40,3 +40,70 @@ export const getComments = async (id) => {
     });
     return response.data;
 };
+
+export const getRecipe = async (id) => {
+    const response = await axiosInstance.get(`/recipe/${id}`);
+    return response.data;
+};
+
+export const getReviews = async (id) => {
+    // const response = await axiosInstance.get("/recipe/review", {
+    //     params: { id },
+    // });
+
+    const response = [
+        {
+            id: 1,
+            rating: 5,
+            title: "맛있어용",
+            content: "굿굿굿굿",
+            imgUrl: "https://cdn.pixabay.com/photo/2021/07/19/16/04/pizza-6478478_1280.jpg",
+        },
+    ];
+
+    return response;
+};
+
+export const postRecipeLike = async (id) => {
+    const response = await axiosInstance.post(
+        "/recipe/like",
+        {},
+        {
+            params: { id },
+        },
+    );
+    return response.data;
+};
+
+export const patchRecipeUnLike = async (id) => {
+    const response = await axiosInstance.patch(
+        "/recipe/unlike",
+        {},
+        {
+            params: { id },
+        },
+    );
+    return response.data;
+};
+
+export const postRecipeScrap = async (id) => {
+    const response = await axiosInstance.post(
+        "/recipe/scrap",
+        {},
+        {
+            params: { id },
+        },
+    );
+    return response.data;
+};
+
+export const patchRecipeUnScrap = async (id) => {
+    const response = await axiosInstance.patch(
+        "/recipe/unscrap",
+        {},
+        {
+            params: { id },
+        },
+    );
+    return response.data;
+};

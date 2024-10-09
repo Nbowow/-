@@ -14,7 +14,6 @@ class Materials(Base):
     material_allergy_num = Column(String(20))
 
     nutrient = relationship("Nutrients", back_populates="material")
-    year_price = relationship("YearPrice", back_populates="material")
     month_price = relationship("MonthPrice", back_populates="material")
     week_price = relationship("WeekPrice", back_populates="material")
     day_price = relationship("DayPrice", back_populates="material")
