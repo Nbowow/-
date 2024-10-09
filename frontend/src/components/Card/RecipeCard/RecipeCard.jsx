@@ -24,7 +24,7 @@ const RecipeCard = ({
                 }
             />
             <S.TextArea>
-                <ActionToggleGroup post={recipe} />
+                <ActionToggleGroup />
                 <S.Title>{title}</S.Title>
                 <S.Text>{text}</S.Text>
             </S.TextArea>

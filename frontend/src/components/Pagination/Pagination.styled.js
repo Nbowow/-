@@ -20,6 +20,7 @@ export const PageButton = styled.button`
     &:disabled {
         background-color: #4cac67; /* 비활성화 색상 */
         cursor: not-allowed;
+        color: white;
     }
 
     &:hover {
@@ -36,4 +37,7 @@ export const PageButton2 = styled.button`
     background-color: #eaf0ec;
     color: black;
     font-family: "SUITBOLD";
+    &:hover {
+        background-color: #d0d0d0;
+    }
 `;

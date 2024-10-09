@@ -6,5 +6,6 @@ export const fetchRanking = async (pageNumber, pageSize) => {
     const response = await axios.get(
         `${BASE_URL}/users/rank?pageSize=${pageSize}&pageNumber=${pageNumber}`,
     );
+
     return response.data;
 };
