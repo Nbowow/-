@@ -158,20 +158,50 @@ public class UserService {
         userRepository.save(user);
     }
 
-    public RankResponseWrapperDto getUserRank(int pageSize, int pageNumber) {
+//    public RankResponseWrapperDto getUserRank(int pageSize, int pageNumber) {
+//
+//        Pageable pageable = PageRequest.of(pageNumber - 1, pageSize, Sort.by(Sort.Direction.DESC, "score"));
+//        Page<User> usersPage = userRepository.findAll(pageable);
+//
+//        Long totalUserCount = userRepository.count();
+//
+//        List<RankResponseDto> rankResponseDtoList = usersPage.getContent().stream()
+//                .map(user -> {
+//                    RankResponseDto rankResponseDto = new RankResponseDto();
+//                    rankResponseDto.setNickname(user.getNickname());
+//                    rankResponseDto.setImage(user.getProfileImage());
+//                    rankResponseDto.setScore(user.getScore());
+//
+//                    List<UserRecipeRegistResponseDto> userRecipes = recipeServiceClient.getUserRecipes(user.getUserId());
+//                    rankResponseDto.setRecipeCount((long) userRecipes.size());
+//
+//                    List<UserRecipeLikeResponseDto> userRecipeLikes = recipeServiceClient.getUserLikeRecipes(user.getUserId());
+//                    rankResponseDto.setLikeCount((long) userRecipeLikes.size());
+//
+//                    return rankResponseDto;
+//                })
+//                .toList();
+//
+//        return RankResponseWrapperDto.builder()
+//                .totalUserCount(totalUserCount)
+//                .rankList(rankResponseDtoList)
+//                .build();
+//    }
 
-        Pageable pageable = PageRequest.of(pageNumber - 1, pageSize, Sort.by(Sort.Direction.DESC, "score"));
-        Page<User> usersPage = userRepository.findAll(pageable);
+    public List<RankResponseDto> getUserRank() {
 
-        Long totalUserCount = userRepository.count();
+        // Fetch all users
+        List<User> users = userRepository.findAll();
 
-        List<RankResponseDto> rankResponseDtoList = usersPage.getContent().stream()
+        // Convert each user to RankResponseDto and return the list
+        return users.stream()
                 .map(user -> {
                     RankResponseDto rankResponseDto = new RankResponseDto();
                     rankResponseDto.setNickname(user.getNickname());
                     rankResponseDto.setImage(user.getProfileImage());
                     rankResponseDto.setScore(user.getScore());
 
+                    // Fetch user's recipe count and likes count using external services
                     List<UserRecipeRegistResponseDto> userRecipes = recipeServiceClient.getUserRecipes(user.getUserId());
                     rankResponseDto.setRecipeCount((long) userRecipes.size());
 
@@ -181,11 +211,6 @@ public class UserService {
                     return rankResponseDto;
                 })
                 .toList();
-
-        return RankResponseWrapperDto.builder()
-                .totalUserCount(totalUserCount)
-                .rankList(rankResponseDtoList)
-                .build();
     }
 
     public void updateUserProfileImage(Long userId, String profileImageUrl) {
