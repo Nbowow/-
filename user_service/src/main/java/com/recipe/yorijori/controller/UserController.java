@@ -136,6 +136,8 @@ public class UserController {
     public ResponseEntity<UserResponseDto> getUserInfo(HttpServletRequest request) {
 
         String userEmail = getUserEmailFromRequest(request);
+
+        log.info("User email retrieved: {}", userEmail);
         UserResponseDto userDto = userService.getUserByEmail(userEmail);
 
         return ResponseEntity.ok(userDto);
