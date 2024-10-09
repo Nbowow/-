@@ -220,6 +220,7 @@ public class IngredientService {
 
             if (!ingredientName.equals("Unknown Ingredient")) {
                 IngredientPriceChangeResponseDto dto = IngredientPriceChangeResponseDto.builder()
+                        .id(ingredientId)
                         .name(ingredientName)
                         .currentPrice(currentPrice.toString())
                         .yesterdayPrice(yesterdayPrice.toString())
