@@ -400,33 +400,12 @@ public class RecipeService {
 
     public List<RecipeRecommendResponseDto> getRecipesByIngredients(List<Long> ingredientIds) {
 
-        // 1. 모든 레시피 조회
-        List<Recipe> recipes = recipeRepository.findAll();
+        long minMatchCount = ingredientIds.size() >= 3 ? 3 : 1;
 
-        // 2. 재료 개수에 따라 다른 조건으로 필터링
-        List<Recipe> filteredRecipes = recipes.stream()
-                .filter(recipe -> {
-                    // recipematerials 테이블에서 해당 레시피의 재료 목록 가져오기
-                    List<Long> recipeIngredientIds = recipeMaterialsRepository.findByRecipeId(recipe.getId()).stream()
-                            .map(RecipeMaterials::getMaterialId)
-                            .toList();
+        // 조건에 맞는 레시피 조회
+        List<Recipe> recipes = recipeRepository.findRecipesByIngredients(ingredientIds, minMatchCount);
 
-                    // 사용자의 선호 재료와 레시피 재료가 몇 개 일치하는지 계산
-                    long matchCount = ingredientIds.stream()
-                            .filter(recipeIngredientIds::contains)
-                            .count();
-
-                    // 만약 재료가 3개 이상이면 3개가 일치
-                    if (ingredientIds.size() >= 3) {
-                        return matchCount >= 3;
-                    } else {
-                        return matchCount >= 1; // 선호 재료가 1~2개인 경우 최소 1개라도 일치하면 추천
-                    }
-                })
-                .toList();
-
-        // 3. 필터링된 레시피를 DTO로 변환
-        return filteredRecipes.stream()
+        return recipes.stream()
                 .map(recipe -> RecipeRecommendResponseDto.builder()
                         .recipeId(recipe.getId())
                         .title(recipe.getTitle())
@@ -436,7 +415,43 @@ public class RecipeService {
                 .toList();
     }
 
-
-
+    // 성능 너~무 안좋음
+//    public List<RecipeRecommendResponseDto> getRecipesByIngredients(List<Long> ingredientIds) {
+//
+//        // 1. 모든 레시피 조회
+//        List<Recipe> recipes = recipeRepository.findAll();
+//
+//        // 2. 재료 개수에 따라 다른 조건으로 필터링
+//        List<Recipe> filteredRecipes = recipes.stream()
+//                .filter(recipe -> {
+//                    // recipematerials 테이블에서 해당 레시피의 재료 목록 가져오기
+//                    List<Long> recipeIngredientIds = recipeMaterialsRepository.findByRecipeId(recipe.getId()).stream()
+//                            .map(RecipeMaterials::getMaterialId)
+//                            .toList();
+//
+//                    // 사용자의 선호 재료와 레시피 재료가 몇 개 일치하는지 계산
+//                    long matchCount = ingredientIds.stream()
+//                            .filter(recipeIngredientIds::contains)
+//                            .count();
+//
+//                    // 만약 재료가 3개 이상이면 3개가 일치
+//                    if (ingredientIds.size() >= 3) {
+//                        return matchCount >= 3;
+//                    } else {
+//                        return matchCount >= 1; // 선호 재료가 1~2개인 경우 최소 1개라도 일치하면 추천
+//                    }
+//                })
+//                .toList();
+//
+//        // 3. 필터링된 레시피를 DTO로 변환
+//        return filteredRecipes.stream()
+//                .map(recipe -> RecipeRecommendResponseDto.builder()
+//                        .recipeId(recipe.getId())
+//                        .title(recipe.getTitle())
+//                        .image(recipe.getImage())
+//                        .intro(recipe.getIntro())
+//                        .build())
+//                .toList();
+//    }
 
 }

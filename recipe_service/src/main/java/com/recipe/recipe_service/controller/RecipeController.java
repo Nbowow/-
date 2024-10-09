@@ -236,6 +236,5 @@ public class RecipeController {
         return ResponseEntity.status(HttpStatus.OK).body(recipeSuggestions);
     }
 
-    // 날씨 기반 레시피 추천
 
 }
