@@ -8,6 +8,8 @@ import {
     getUserLike,
     fetchOtherUserRecipe,
     getUserScrap,
+    followUser,
+    unFollowUser,
 } from "../api/userApi";
 import { useUserStore } from "../store/userStore";
 
@@ -92,5 +94,29 @@ export const useOtherUserRecipe = (id) => {
     return useQuery({
         queryKey: [`otherUserRecipe`],
         queryFn: () => fetchOtherUserRecipe(id),
+    });
+};
+
+export const useFollowUser = (id) => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: () => followUser(id),
+        onSuccess: () => {
+            queryClient.invalidateQueries(["user"]);
+            queryClient.invalidateQueries([`user${id}`]);
+        },
+    });
+};
+
+export const useUnfollowUser = (id) => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: () => unFollowUser(id),
+        onSuccess: () => {
+            queryClient.invalidateQueries(["user"]);
+            queryClient.invalidateQueries([`user${id}`]);
+        },
     });
 };
