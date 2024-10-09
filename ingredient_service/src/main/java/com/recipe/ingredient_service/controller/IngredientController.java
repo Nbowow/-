@@ -6,9 +6,13 @@ import com.recipe.ingredient_service.data.domain.Ingredient;
 import com.recipe.ingredient_service.data.dto.ingredient.request.IngredientRequestDto;
 import com.recipe.ingredient_service.data.dto.ingredient.response.*;
 import com.recipe.ingredient_service.data.dto.recipe.response.RecipeResponseDto;
+import com.recipe.ingredient_service.global.config.LevenshteinDistance;
+import com.recipe.ingredient_service.repository.IngredientRepository;
 import com.recipe.ingredient_service.service.IngredientService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,6 +29,7 @@ public class IngredientController {
     private final UserServiceClient userServiceClient;
     private final IngredientService ingredientService;
     private final RecipeServiceClient recipeServiceClient;
+    private final IngredientRepository ingredientRepository;
 
 
     @GetMapping("/get-num/{name}")
@@ -43,9 +48,15 @@ public class IngredientController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<IngredientsSearchResponseDto> getIngredientData(
+    public ResponseEntity<?> getIngredientData(
             @RequestParam("keyword") String keyword) {
-        return ResponseEntity.status(HttpStatus.OK).body(ingredientService.findIngredientData(keyword));
+        IngredientsSearchResponseDto responseDto = ingredientService.findIngredientData(keyword);
+
+        if(responseDto.getId() == null) {
+            String correctedWord = searchTypo(keyword); // 오타 수정 API 호출
+            return ResponseEntity.status(HttpStatus.OK).body(correctedWord);
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(responseDto);
     }
 
     @GetMapping("/change")
@@ -129,5 +140,34 @@ public class IngredientController {
         return new ResponseEntity<>(ingredientService.getLowestPriceResult(query, display, start, sort), HttpStatus.OK);
     }
 
+    private String searchTypo(String query) {
+        List<String> recipeNames = ingredientRepository.findAllIngredientNames(); // DB에서 모든 레시피 이름 가져오기
+        return getMostSimilarWord(query, recipeNames);
+    }
+
+    private String getMostSimilarWord(String query, List<String> wordDictionary) {
+        String closestWord = query;
+        int minDistance = Integer.MAX_VALUE;
+
+        for (String word : wordDictionary) {
+            int distance = LevenshteinDistance.computeLevenshteinDistance(query, word);
+            if (distance < minDistance) {
+                minDistance = distance;
+                closestWord = word;
+            }
+        }
+        return closestWord;
+    }
+
+
+    @GetMapping("/autocomplete")
+    public ResponseEntity<List<String>> autocompleteRecipe(
+            @RequestParam("keyword") String keyword) {
+
+        Pageable pageable = PageRequest.of(0, 5);  // 첫 페이지에서 최대 5개의 결과를 가져오도록 설정
+        List<String> recipeSuggestions = ingredientRepository.findIngredientNamesByKeyword(keyword, pageable);
+
+        return ResponseEntity.status(HttpStatus.OK).body(recipeSuggestions);
+    }
 
 }

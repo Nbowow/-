@@ -13,4 +13,5 @@ public class IngredientsSearchResponseDto {
     private Long id;
     private String name;
     private String ingredientImage;
+    private int dayprice;
 }
