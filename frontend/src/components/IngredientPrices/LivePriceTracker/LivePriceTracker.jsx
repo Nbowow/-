@@ -1,6 +1,5 @@
 import PropTypes from "prop-types";
 import * as S from "./LivePriceTracker.styled";
-import InteractionToggle from "../../Toggle/InteractionToggle/InteractionToggle";
 import Chart from "../../Chart/Chart";
 import {
     smallLineConfig,
@@ -8,8 +7,6 @@ import {
 } from "../../../util/get-chart-config";
 
 const LivePriceTracker = ({ ingredient }) => {
-    const handleClick = (id) => {};
-
     const options = smallLineOptions();
 
     const config = smallLineConfig("#8EC96D");
@@ -28,15 +25,12 @@ const LivePriceTracker = ({ ingredient }) => {
             <S.IngredientInfo>
                 <S.IngredientInfoLayout>
                     <S.IngredientName>{ingredient.name}</S.IngredientName>
-                    <InteractionToggle
-                        type="heart"
-                        size="1rem"
-                        onClick={() => handleClick(ingredient.id)}
-                    />
                 </S.IngredientInfoLayout>
                 <S.IngredientLabel>
-                    {ingredient.day}보다
-                    <S.IngredientPrice>{ingredient.price}원</S.IngredientPrice>
+                    어제보다
+                    <S.IngredientPrice>
+                        {ingredient.priceGap}원
+                    </S.IngredientPrice>
                     저렴해요 !
                 </S.IngredientLabel>
             </S.IngredientInfo>

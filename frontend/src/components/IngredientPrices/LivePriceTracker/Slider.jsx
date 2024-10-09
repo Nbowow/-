@@ -7,44 +7,44 @@ import "swiper/css/pagination";
 import "swiper/css/scrollbar";
 import "swiper/css/autoplay";
 import LivePriceTracker from "./LivePriceTracker";
+import { useEffect, useState } from "react";
+import { getIngredientPriceChange } from "../../../api/ingredientApi";
 
-const mock = {
-    name: "양파",
-    day: "어제",
-    price: 1000,
-    img: "https://cdn.pixabay.com/photo/2015/03/14/14/00/carrots-673184_1280.jpg",
-};
 const Slider = () => {
+    const [changePrice, setChangePrice] = useState(null);
+    useEffect(() => {
+        const fetchPrice = async () => {
+            const data = await getIngredientPriceChange();
+            setChangePrice(data);
+        };
+        fetchPrice();
+    }, []);
+
     return (
         <div style={{ height: "21.5rem" }}>
-            <Swiper
-                spaceBetween={10}
-                centeredSlides={false}
-                autoplay={{
-                    delay: 0,
-                    disableOnInteraction: false,
-                }}
-                speed={5000}
-                loop={true}
-                direction="vertical"
-                slidesPerView={3}
-                modules={[Autoplay, Pagination, Navigation, Scrollbar]}
-                className="mySwiper"
-                style={{ height: "100%", width: "100%" }}
-            >
-                <SwiperSlide style={{ height: "100%" }}>
-                    <LivePriceTracker ingredient={mock} />
-                </SwiperSlide>
-                <SwiperSlide style={{ height: "100%" }}>
-                    <LivePriceTracker ingredient={mock} />
-                </SwiperSlide>
-                <SwiperSlide style={{ height: "100%" }}>
-                    <LivePriceTracker ingredient={mock} />
-                </SwiperSlide>
-                <SwiperSlide style={{ height: "100%" }}>
-                    <LivePriceTracker ingredient={mock} />
-                </SwiperSlide>
-            </Swiper>
+            {changePrice && (
+                <Swiper
+                    spaceBetween={10}
+                    centeredSlides={false}
+                    autoplay={{
+                        delay: 0,
+                        disableOnInteraction: false,
+                    }}
+                    speed={5000}
+                    loop={true}
+                    direction="vertical"
+                    slidesPerView={3}
+                    modules={[Autoplay, Pagination, Navigation, Scrollbar]}
+                    className="mySwiper"
+                    style={{ height: "100%", width: "100%" }}
+                >
+                    {changePrice.map((ingredient, index) => (
+                        <SwiperSlide key={index} style={{ height: "100%" }}>
+                            <LivePriceTracker ingredient={ingredient} />
+                        </SwiperSlide>
+                    ))}
+                </Swiper>
+            )}
         </div>
     );
 };
