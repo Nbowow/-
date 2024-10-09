@@ -19,6 +19,7 @@ public class RecipeRegisterRequestDto {
     private String ingredients;
     private String method;
 
+
     // 재료 정보
     private List<RecipeMaterialsRequestDto> recipeMaterials;
 
