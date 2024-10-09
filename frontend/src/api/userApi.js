@@ -60,3 +60,8 @@ export const fetchOtherUser = async (id) => {
     const response = await axiosInstance.get(`/users/user/${id}`);
     return response.data;
 };
+
+export const fetchUserScrap = async () => {
+    const response = await axiosInstance.get("/users/scrap");
+    return response.data;
+};

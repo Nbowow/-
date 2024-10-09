@@ -3,37 +3,29 @@ import UserProfileImage from "../../UserProfile/UserProfileImage/UserProfileImag
 import * as S from "./RecipeCard.styled";
 import PropTypes from "prop-types";
 
-const RecipeCard = ({
-    recipeId,
-    imgUrl,
-    title,
-    text,
-    showProfile,
-    profileImgUrl,
-    author,
-}) => {
+const RecipeCard = ({ recipe, showProfile }) => {
     const placeholderImage = "/images/placeholder-img.jpg";
 
     return (
         <S.RecipeCard>
             <S.Thumnail
-                src={imgUrl || placeholderImage}
+                src={recipe.image || placeholderImage}
                 onError={(e) =>
                     (e.target.src = e.target.src = placeholderImage)
                 }
             />
             <S.TextArea>
                 <ActionToggleGroup />
-                <S.Title>{title}</S.Title>
-                <S.Text>{text}</S.Text>
+                <S.Title>{recipe.title}</S.Title>
+                <S.Text>{recipe.info}</S.Text>
             </S.TextArea>
             {showProfile ? (
                 <S.Profile>
                     <UserProfileImage
-                        imageUrl={profileImgUrl}
+                        imageUrl={recipe.profileImage}
                         size="1.838rem"
                     />
-                    {author}
+                    {recipe.nickname}
                 </S.Profile>
             ) : null}
         </S.RecipeCard>
@@ -41,13 +33,14 @@ const RecipeCard = ({
 };
 
 RecipeCard.propTypes = {
-    recipeId: PropTypes.number.isRequired,
-    imgUrl: PropTypes.string,
-    title: PropTypes.string,
-    text: PropTypes.string,
+    recipe: PropTypes.shape({
+        image: PropTypes.string,
+        title: PropTypes.string.isRequired,
+        info: PropTypes.string,
+        profileImage: PropTypes.string,
+        nickname: PropTypes.string,
+    }).isRequired,
     showProfile: PropTypes.bool.isRequired,
-    profileImgUrl: PropTypes.string,
-    author: PropTypes.string,
 };
 
 export default RecipeCard;

@@ -5,6 +5,8 @@ import {
     updateUser,
     uploadProfileImage,
     fetchOtherUser,
+    getUserLike,
+    fetchUserScrap,
 } from "../api/userApi";
 import { useUserStore } from "../store/userStore";
 
@@ -62,6 +64,24 @@ export const useOtherUserInfo = (id) => {
     return useQuery({
         queryKey: [`user${id}`],
         queryFn: () => fetchOtherUser(id),
+        staleTime: 0,
+        refetchOnMount: true,
+    });
+};
+
+export const useUserLikes = () => {
+    return useQuery({
+        queryKey: [`userLike`],
+        queryFn: getUserLike,
+        staleTime: 0,
+        refetchOnMount: true,
+    });
+};
+
+export const useUserScraps = () => {
+    return useQuery({
+        queryKey: [`userScrap`],
+        queryFn: fetchUserScrap,
         staleTime: 0,
         refetchOnMount: true,
     });
