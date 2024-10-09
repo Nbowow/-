@@ -13,10 +13,10 @@ import java.util.List;
 @Repository
 public interface DayPriceRepository extends JpaRepository<DayPrice, Long> {
 
-    @Query(value = "SELECT dp.material_id, dp.price FROM (" +
-            "SELECT dp.material_id, dp.price, ROW_NUMBER() OVER (PARTITION BY dp.material_id ORDER BY dp.day DESC) as rank " +
-            "FROM dayprice dp WHERE dp.price != 0 AND dp.material_id IN :ingredientIds" +
-            ") ranked WHERE ranked.rank <= 2", nativeQuery = true)
+    @Query(value = "SELECT dp.material_id, dp.day_price FROM (" +
+            "SELECT dp.material_id, dp.day_price, ROW_NUMBER() OVER (PARTITION BY dp.material_id ORDER BY dp.day_price_day DESC) as row_num " +
+            "FROM dayprice dp WHERE dp.day_price != 0 AND dp.material_id IN :ingredientIds" +
+            ") ranked WHERE ranked.row_num <= 2", nativeQuery = true)
     List<Object[]> findIngredientPriceChanges(@Param("ingredientIds") List<Long> ingredientIds);
 
 
