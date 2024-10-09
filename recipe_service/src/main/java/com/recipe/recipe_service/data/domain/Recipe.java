@@ -81,8 +81,9 @@ public class Recipe {
     @Column(name = "recipe_comment_count")
     private Long commentCount = 0L;
 
+    @Builder.Default
     @Column(name = "recipe_kcal")
-    private Long kcal;
+    private Long kcal = 0L;
 
     // 데이터가 저장되기 전 자동으로 현재 시간과 기본값 설정
     @PrePersist
