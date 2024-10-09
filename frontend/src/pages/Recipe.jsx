@@ -13,6 +13,7 @@ const PopularRecipe = styled.h2`
     font-family: "SUITEXTRABOLD";
     padding: 20px;
     margin-left: 50px;
+    font-size: ${({ theme }) => theme.fontSize.h3};
 `;
 
 const Emoji = styled.span`
@@ -62,16 +63,16 @@ const Recipe = () => {
     const filteredRecipes = recipes.filter((recipe) => {
         return (
             (!selectedType ||
-                selectedType === "전체" ||
+                selectedType === "B_0001" ||
                 recipe.type === selectedType) &&
             (!selectedSituation ||
-                selectedSituation === "전체" ||
+                selectedSituation === "C_0001" ||
                 recipe.situation === selectedSituation) &&
             (!selectedIngredients ||
-                selectedIngredients === "전체" ||
+                selectedIngredients === "D_0001" ||
                 recipe.ingredients.includes(selectedIngredients)) &&
             (!selectedMethod ||
-                selectedMethod === "전체" ||
+                selectedMethod === "E_0001" ||
                 recipe.method === selectedMethod)
         );
     });
