@@ -4,6 +4,7 @@ import com.recipe.yorijori.client.RecipeServiceClient;
 import com.recipe.yorijori.client.SocialServiceClient;
 import com.recipe.yorijori.data.domain.User;
 import com.recipe.yorijori.data.dto.rank.RankResponseDto;
+import com.recipe.yorijori.data.dto.rank.RankResponseWrapperDto;
 import com.recipe.yorijori.data.dto.recipe.response.*;
 import com.recipe.yorijori.data.dto.user.request.UserModifyRequestDto;
 import com.recipe.yorijori.data.dto.user.request.UserSignUpDto;
@@ -157,12 +158,14 @@ public class UserService {
         userRepository.save(user);
     }
 
-    public List<RankResponseDto> getUserRank(int pageSize, int pageNumber) {
+    public RankResponseWrapperDto getUserRank(int pageSize, int pageNumber) {
 
         Pageable pageable = PageRequest.of(pageNumber - 1, pageSize, Sort.by(Sort.Direction.DESC, "score"));
         Page<User> usersPage = userRepository.findAll(pageable);
 
-        return usersPage.getContent().stream()
+        Long totalUserCount = userRepository.count();
+
+        List<RankResponseDto> rankResponseDtoList = usersPage.getContent().stream()
                 .map(user -> {
                     RankResponseDto rankResponseDto = new RankResponseDto();
                     rankResponseDto.setNickname(user.getNickname());
@@ -177,7 +180,12 @@ public class UserService {
 
                     return rankResponseDto;
                 })
-                .collect(Collectors.toList());
+                .toList();
+
+        return RankResponseWrapperDto.builder()
+                .totalUserCount(totalUserCount)
+                .rankList(rankResponseDtoList)
+                .build();
     }
 
     public void updateUserProfileImage(Long userId, String profileImageUrl) {
