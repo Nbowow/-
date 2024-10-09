@@ -38,6 +38,7 @@ public class RecipeReviewService {
                             .userId(review.getUserId())
                             .nickname(userInfo.getNickname())
                             .profileImage(userInfo.getProfileImage())
+                            .reviewImage(review.getImage()) // 레시피 리뷰 이미지
                             .rating(review.getRating())
                             .title(review.getTitle())
                             .content(review.getContent())
@@ -61,6 +62,7 @@ public class RecipeReviewService {
                 .title(recipeReviewRequestDto.getTitle())
                 .rating(recipeReviewRequestDto.getRating())
                 .content(recipeReviewRequestDto.getContent())
+                .image(recipeReviewRequestDto.getReviewImage()) // 레시피 리뷰 이미지
                 .createdDate(LocalDateTime.now())
                 .modifiedDate(LocalDateTime.now())
                 .userStatus(true)
