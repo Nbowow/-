@@ -10,6 +10,7 @@ import com.recipe.recipe_service.global.config.LevenshteinDistance;
 import com.recipe.recipe_service.repository.RecipeRepository;
 import com.recipe.recipe_service.data.dto.user.response.UserAllergyResponseDto;
 import com.recipe.recipe_service.service.RecipeService;
+import com.recipe.recipe_service.service.S3Uploader;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -17,7 +18,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -31,13 +35,32 @@ public class RecipeController {
     private final UserServiceClient userServiceClient;
     private final IngredientServiceClient ingredientServiceClient;
     private final RecipeRepository recipeRepository;
+    private final S3Uploader s3Uploader;
     // 레시피 생성
     @PostMapping("")
     public ResponseEntity<Recipe> createRecipe(
             @RequestHeader("Authorization") String authorization,
-            @RequestBody RecipeRegisterRequestDto requestDto) {
+            @RequestPart("recipeImage") MultipartFile recipeImage,  // 레시피 메인 이미지 파일
+            @RequestPart("orderImages") List<MultipartFile> orderImages, // 레시피 순서 이미지 파일들
+            @RequestPart("recipe") RecipeRegisterRequestDto requestDto) throws IOException {
 
         Long userId = userServiceClient.getUserId(authorization);
+
+        // S3에 레시피 메인 이미지 업로드
+        String recipeImageUrl = s3Uploader.saveFile(recipeImage);
+        requestDto.setImage(recipeImageUrl); // 업로드된 이미지 URL을 DTO에 저장
+
+        // S3에 레시피 순서 이미지 업로드
+        List<String> orderImageUrls = new ArrayList<>();
+        for (MultipartFile orderImage : orderImages) {
+            String orderImageUrl = s3Uploader.saveFile(orderImage);
+            orderImageUrls.add(orderImageUrl);
+        }
+
+        // 순서 이미지 URL을 DTO의 각 순서에 저장
+        for (int i = 0; i < requestDto.getRecipeOrders().size(); i++) {
+            requestDto.getRecipeOrders().get(i).setOrderImg(orderImageUrls.get(i));
+        }
 
         // 재료의 이름으로 재료 ID 가져오기
         requestDto.getRecipeMaterials().forEach(materialDto -> {
