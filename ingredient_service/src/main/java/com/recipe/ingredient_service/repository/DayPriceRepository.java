@@ -13,7 +13,7 @@ import java.util.List;
 @Repository
 public interface DayPriceRepository extends JpaRepository<DayPrice, Long> {
 
-    DayPrice findTopByIngredientIdAndPriceNotOrderByDayDesc(Long ingredientId);
+    DayPrice findTopByIngredientIdAndPriceGreaterThanOrderByDayDesc(Long ingredientId, int price);
 
     @Query(value = "SELECT ranked.material_id, ranked.day_price FROM (" +
             "SELECT dp.material_id, dp.day_price, ROW_NUMBER() OVER (PARTITION BY dp.material_id ORDER BY dp.day_price_day DESC) as row_num " +

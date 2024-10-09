@@ -178,7 +178,7 @@ public class IngredientService {
                     .build();
         }
 
-        DayPrice findTopDayIngredientPrice = dayPriceRepository.findTopByIngredientIdAndPriceNotOrderByDayDesc(findIngredient.getId());
+        DayPrice findTopDayIngredientPrice = dayPriceRepository.findTopByIngredientIdAndPriceGreaterThanOrderByDayDesc(findIngredient.getId(), 0);
         if (findTopDayIngredientPrice == null) {
             return IngredientsSearchResponseDto.builder()
                     .id(findIngredient.getId())
