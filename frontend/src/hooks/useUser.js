@@ -8,6 +8,8 @@ import {
     getUserLike,
     fetchOtherUserRecipe,
     getUserScrap,
+    followUser,
+    unFollowUser,
 } from "../api/userApi";
 import { useUserStore } from "../store/userStore";
 import {
@@ -107,6 +109,30 @@ export const useUpdateLike = () => {
         mutationFn: (id) => postRecipeLike(id),
         onSuccess: () => {
             queryClient.invalidateQueries(["userLike"]);
+        },
+    });
+};
+
+export const useFollowUser = (id) => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: () => followUser(id),
+        onSuccess: () => {
+            queryClient.invalidateQueries(["user"]);
+            queryClient.invalidateQueries([`user${id}`]);
+        },
+    });
+};
+
+export const useUnfollowUser = (id) => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: () => unFollowUser(id),
+        onSuccess: () => {
+            queryClient.invalidateQueries(["user"]);
+            queryClient.invalidateQueries([`user${id}`]);
         },
     });
 };
