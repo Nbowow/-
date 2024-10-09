@@ -10,7 +10,7 @@ import LivePriceTracker from "./LivePriceTracker";
 import { useEffect, useState } from "react";
 import { getIngredientPriceChange } from "../../../api/ingredientApi";
 
-const Slider = () => {
+const PriceSlider = () => {
     const [changePrice, setChangePrice] = useState(null);
     useEffect(() => {
         const fetchPrice = async () => {
@@ -49,4 +49,4 @@ const Slider = () => {
     );
 };
 
-export default Slider;
+export default PriceSlider;

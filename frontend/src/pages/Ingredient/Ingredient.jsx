@@ -1,7 +1,6 @@
 import Footer from "../../components/Footer/Footer";
 import IngredientOverview from "../../components/IngredientPrices/IngredientOverview";
 import SearchBar from "../../components/SearchBar/SearchBar";
-import Slider from "../../components/IngredientPrices/LivePriceTracker/Slider";
 import * as S from "./Ingredient.styled";
 import Title from "../../components/Title/Title";
 import HotMonthIngredients from "../../components/IngredientPrices/HotIngredient/HotMonthIngredients";
@@ -17,6 +16,7 @@ import {
 import { useEffect, useState } from "react";
 import HotWeekIngredients from "../../components/IngredientPrices/HotIngredient/HotWeekIngredients";
 import { useUserStore } from "../../store/userStore";
+import PriceSlider from "../../components/IngredientPrices/LivePriceTracker/PriceSlider";
 
 const Ingredient = () => {
     const [searchResult, setSearchResult] = useState(null);
@@ -72,12 +72,11 @@ const Ingredient = () => {
                         )}
                     />
                 ) : null}
-                {isLoggedIn && (
-                    <IngredientOverview
-                        like={likeIngredients}
-                        onLike={handleLike}
-                    />
-                )}
+                <IngredientOverview
+                    like={likeIngredients}
+                    onLike={handleLike}
+                />
+
                 <S.RecommendSection>
                     <HotWeekIngredients
                         like={likeIngredients}
@@ -89,7 +88,7 @@ const Ingredient = () => {
                     />
                     <S.Live>
                         <Title title={"실시간 물가 변동"} />
-                        <Slider />
+                        <PriceSlider />
                     </S.Live>
                 </S.RecommendSection>
             </S.Container>
