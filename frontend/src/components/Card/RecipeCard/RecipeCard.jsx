@@ -17,7 +17,7 @@ const RecipeCard = ({ recipe, showProfile }) => {
             <S.TextArea>
                 <ActionToggleGroup recipe={recipe} />
                 <S.Title>{recipe.title}</S.Title>
-                <S.Text>{recipe.info}</S.Text>
+                <S.Text>{recipe.intro}</S.Text>
             </S.TextArea>
             {showProfile ? (
                 <S.Profile>
@@ -36,7 +36,7 @@ RecipeCard.propTypes = {
     recipe: PropTypes.shape({
         image: PropTypes.string,
         title: PropTypes.string.isRequired,
-        info: PropTypes.string,
+        intro: PropTypes.string,
         profileImage: PropTypes.string,
         nickname: PropTypes.string,
     }).isRequired,

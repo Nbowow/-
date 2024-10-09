@@ -31,7 +31,7 @@ RecipeCardList.propTypes = {
                 .isRequired,
             image: PropTypes.string.isRequired,
             title: PropTypes.string.isRequired,
-            info: PropTypes.string.isRequired,
+            intro: PropTypes.string.isRequired,
             showProfile: PropTypes.bool.isRequired,
             profileImage: PropTypes.string,
             nickname: PropTypes.string.isRequired,
