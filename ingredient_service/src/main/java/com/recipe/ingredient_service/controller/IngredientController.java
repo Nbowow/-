@@ -11,6 +11,8 @@ import com.recipe.ingredient_service.repository.IngredientRepository;
 import com.recipe.ingredient_service.service.IngredientService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -157,5 +159,15 @@ public class IngredientController {
         return closestWord;
     }
 
+
+    @GetMapping("/autocomplete")
+    public ResponseEntity<List<String>> autocompleteRecipe(
+            @RequestParam("keyword") String keyword) {
+
+        Pageable pageable = PageRequest.of(0, 5);  // 첫 페이지에서 최대 5개의 결과를 가져오도록 설정
+        List<String> recipeSuggestions = ingredientRepository.findIngredientNamesByKeyword(keyword, pageable);
+
+        return ResponseEntity.status(HttpStatus.OK).body(recipeSuggestions);
+    }
 
 }

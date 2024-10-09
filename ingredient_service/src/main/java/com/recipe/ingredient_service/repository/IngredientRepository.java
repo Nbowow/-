@@ -29,4 +29,7 @@ public interface IngredientRepository extends JpaRepository<Ingredient, Long> {
 
     @Query("SELECT r.name FROM Ingredient r")
     List<String> findAllIngredientNames();
+
+    @Query("SELECT r.name FROM Ingredient r WHERE LOWER(r.name) LIKE LOWER(CONCAT('%', :keyword, '%'))")
+    List<String> findIngredientNamesByKeyword(String keyword, Pageable pageable);
 }
