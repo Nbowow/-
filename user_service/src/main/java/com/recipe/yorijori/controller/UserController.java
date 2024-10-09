@@ -154,14 +154,22 @@ public class UserController {
         return ResponseEntity.ok(userDto);
     }
 
+//    @GetMapping("/rank")
+//    public ResponseEntity<?> getUserRank(
+//            @RequestParam("pageSize") int pageSize,
+//            @RequestParam("pageNumber") int pageNumber) {
+//
+//        RankResponseWrapperDto rankResponseWrapper = userService.getUserRank(pageSize, pageNumber);
+//
+//        return ResponseEntity.status(HttpStatus.OK).body(rankResponseWrapper);
+//    }
+
     @GetMapping("/rank")
-    public ResponseEntity<?> getUserRank(
-            @RequestParam("pageSize") int pageSize,
-            @RequestParam("pageNumber") int pageNumber) {
+    public ResponseEntity<?> getUserRank() {
 
-        RankResponseWrapperDto rankResponseWrapper = userService.getUserRank(pageSize, pageNumber);
+        List<RankResponseDto> userRank = userService.getUserRank();
 
-        return ResponseEntity.status(HttpStatus.OK).body(rankResponseWrapper);
+        return ResponseEntity.status(HttpStatus.OK).body(userRank);
     }
 
 

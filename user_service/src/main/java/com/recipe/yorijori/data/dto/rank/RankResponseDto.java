@@ -10,6 +10,4 @@ public class RankResponseDto {
 
     private Long recipeCount;
     private Long likeCount;
-
-
 }
