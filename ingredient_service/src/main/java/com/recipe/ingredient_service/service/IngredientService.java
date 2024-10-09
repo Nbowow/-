@@ -426,9 +426,14 @@ public class IngredientService {
 
 
     public List<Long> getRecipeIdByIngredients(List<Long> ingredientIds) {
-        // 최대 3개의 레시피만 반환하도록 PageRequest 설정
-        Pageable limit = PageRequest.of(0, 3);
+        Pageable limit = PageRequest.of(0, 3);  // 최대 3개 결과 반환
 
+        // 재료가 하나인 경우 해당 재료를 사용하는 레시피를 가져옴
+        if (ingredientIds.size() == 1) {
+            return recipematerialsRepository.findRecipeIdsBySingleIngredientId(ingredientIds.get(0), limit);
+        }
+
+        // 재료가 여러 개인 경우 해당 재료를 모두 사용하는 레시피를 가져옴
         return recipematerialsRepository.findRecipeIdsByAllIngredientIds(ingredientIds, (long) ingredientIds.size(), limit);
     }
 
