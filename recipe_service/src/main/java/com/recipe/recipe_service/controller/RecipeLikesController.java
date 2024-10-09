@@ -1,6 +1,7 @@
 package com.recipe.recipe_service.controller;
 
 import com.recipe.recipe_service.client.UserServiceClient;
+import com.recipe.recipe_service.service.RecipeLikeService;
 import com.recipe.recipe_service.service.RecipeService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 public class RecipeLikesController {
 
     private final UserServiceClient userServiceClient;
-    private final RecipeService recipeService;
+    private final RecipeLikeService recipeLikeService;
 
     // 레시피 좋아요 등록
     @PostMapping("/like")
@@ -25,7 +26,7 @@ public class RecipeLikesController {
 
         Long userId = userServiceClient.getUserId(authorization);
 
-        recipeService.likeRecipe(recipeId, userId);
+        recipeLikeService.likeRecipe(recipeId, userId);
 
         return ResponseEntity.status(HttpStatus.OK).build();
     }
@@ -38,7 +39,7 @@ public class RecipeLikesController {
 
         Long userId = userServiceClient.getUserId(authorization);
 
-        recipeService.unlikeRecipe(recipeId, userId);
+        recipeLikeService.unlikeRecipe(recipeId, userId);
 
         return ResponseEntity.status(HttpStatus.OK).build();
     }

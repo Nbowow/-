@@ -70,10 +70,12 @@ public class Recipe {
     private Long userId;
 
     @Builder.Default
+    @Setter
     @Column(name = "recipe_like_count")
     private Long likeCount = 0L;
 
     @Builder.Default
+    @Setter
     @Column(name = "recipe_scrap_count")
     private Long scrapCount = 0L;
 
@@ -100,4 +102,5 @@ public class Recipe {
     protected void onUpdate() {
         this.modifiedDate = LocalDateTime.now();
     }
+
 }

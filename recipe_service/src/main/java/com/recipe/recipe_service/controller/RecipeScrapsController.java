@@ -2,6 +2,7 @@ package com.recipe.recipe_service.controller;
 
 import com.recipe.recipe_service.client.IngredientServiceClient;
 import com.recipe.recipe_service.client.UserServiceClient;
+import com.recipe.recipe_service.service.RecipeScrapService;
 import com.recipe.recipe_service.service.RecipeService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 public class RecipeScrapsController {
 
-    private final RecipeService recipeService;
+    private final RecipeScrapService recipeScrapService;
     private final UserServiceClient userServiceClient;
 
     // 레시피 스크랩 등록
@@ -26,7 +27,7 @@ public class RecipeScrapsController {
 
         Long userId = userServiceClient.getUserId(authorization);
 
-        recipeService.scrapRecipe(recipeId, userId);
+        recipeScrapService.scrapRecipe(recipeId, userId);
 
         return ResponseEntity.status(HttpStatus.OK).build();
     }
@@ -39,7 +40,7 @@ public class RecipeScrapsController {
 
         Long userId = userServiceClient.getUserId(authorization);
 
-        recipeService.unscrapRecipe(recipeId, userId);
+        recipeScrapService.unscrapRecipe(recipeId, userId);
 
         return ResponseEntity.status(HttpStatus.OK).build();
     }

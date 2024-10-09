@@ -228,84 +228,6 @@ public class RecipeService {
     }
 
     @Transactional
-    public void likeRecipe(Long recipeId, Long userId) {
-        Optional<RecipeLikes> existingLike = recipeLikesRepository.findByRecipeIdAndUserId(recipeId, userId);
-
-        if (existingLike.isPresent()) {
-            RecipeLikes recipeLikes = existingLike.get();
-            if (!recipeLikes.getStatus()) {
-                // status false -> true
-                recipeLikes.setStatus(true);
-            }
-            return;
-        }
-
-        // 새로운 좋아요 등록
-        RecipeLikes newLikes = RecipeLikes.builder()
-                .recipeId(recipeId)
-                .userId(userId)
-                .status(true) // 좋아요 상태로 설정
-                .build();
-
-        //
-
-        recipeLikesRepository.save(newLikes);
-    }
-
-    @Transactional
-    public void unlikeRecipe(Long recipeId, Long userId) {
-        Optional<RecipeLikes> existingLike = recipeLikesRepository.findByRecipeIdAndUserId(recipeId, userId);
-
-        if (existingLike.isPresent()) {
-            RecipeLikes recipeLikes = existingLike.get();
-            if (recipeLikes.getStatus()) {
-                // status true -> false (좋아요 취소)
-                recipeLikes.setStatus(false);
-            }
-        } else {
-            throw new IllegalStateException("좋아요가 등록되지 않은 상태입니다.");
-        }
-    }
-
-    @Transactional
-    public void scrapRecipe(Long recipeId, Long userId) {
-        Optional<RecipeScraps> existingScrap = recipeScrapsRepository.findByRecipeIdAndUserId(recipeId, userId);
-
-        if (existingScrap.isPresent()) {
-            RecipeScraps recipeScraps = existingScrap.get();
-            if (!recipeScraps.getStatus()) {
-                // status false -> true (스크랩 등록)
-                recipeScraps.setStatus(true);
-            }
-            return;
-        }
-
-        // 새로운 스크랩 등록
-        RecipeScraps newScrap = RecipeScraps.builder()
-                .recipeId(recipeId)
-                .userId(userId)
-                .status(true)
-                .build();
-        recipeScrapsRepository.save(newScrap);
-
-    }
-
-    @Transactional
-    public void unscrapRecipe(Long recipeId, Long userId) {
-        Optional<RecipeScraps> existingScrap = recipeScrapsRepository.findByRecipeIdAndUserId(recipeId, userId);
-
-        if (existingScrap.isPresent()) {
-            RecipeScraps recipeScraps = existingScrap.get();
-            if (recipeScraps.getStatus()) {
-                // status true -> false (스크랩 취소)
-                recipeScraps.setStatus(false);
-            }
-        } else {
-            throw new IllegalStateException("스크랩이 등록되지 않은 상태입니다.");
-        }
-    }
-
-    @Transactional
     public void addComment(Long recipeId, Long userId, String content) {
         RecipeComments newComment = RecipeComments.builder()
                 .recipeId(recipeId)
@@ -321,9 +243,6 @@ public class RecipeService {
         // 댓글 조회
         return recipeCommentsRepository.findByRecipeId(recipeId);
     }
-
-
-
 
     // 특정 userId에 해당하는 레시피 조회
     public List<UserRecipeRegistResponseDto> getRecipesByUserId(Long userId) {
