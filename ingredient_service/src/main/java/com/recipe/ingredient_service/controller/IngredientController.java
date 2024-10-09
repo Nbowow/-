@@ -37,6 +37,11 @@ public class IngredientController {
         return ingredientService.findById(materialId).getName();
     }
 
+    @GetMapping("/get-allergy/{id}")
+    public String getIngredientAllergyById(@PathVariable("id") Long materialId) {
+        return ingredientService.findAllergyById(materialId).getAllergyNum();
+    }
+
     @GetMapping("/search")
     public ResponseEntity<IngredientsSearchResponseDto> getIngredientData(
             @RequestParam("keyword") String keyword) {
