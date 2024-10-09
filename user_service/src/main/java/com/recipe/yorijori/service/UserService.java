@@ -194,4 +194,12 @@ public class UserService {
                 .orElseThrow(UserNotFoundException::new);
         return user.getEmail();
     }
+
+
+    public void plusUserScore(Long userId, Long points) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(UserNotFoundException::new);
+        user.plusScore(points);
+        userRepository.save(user);
+    }
 }

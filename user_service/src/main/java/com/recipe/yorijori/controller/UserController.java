@@ -259,8 +259,8 @@ public class UserController {
 
 
     @GetMapping("/point/{userId}")
-    ResponseEntity<?> plusPoint(@PathVariable("userId") Long userId){
-
+    public ResponseEntity<?> plusPoint(@PathVariable("userId") Long userId){
+        userService.plusUserScore(userId, 10L); // 10점 추가
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }
