@@ -5,6 +5,7 @@ import { useUserStore } from "../../../store/userStore";
 import { useUpdateReview } from "../../../hooks/useRecipe";
 import PropTypes from "prop-types";
 import * as S from "./ReviewRegist.styled";
+import useUser from "../../../hooks/useUser";
 
 const ReviewRegist = ({ onClose, id }) => {
     const [rating, setRating] = useState(0);
@@ -37,9 +38,10 @@ const ReviewRegist = ({ onClose, id }) => {
             reader.readAsDataURL(file);
         }
     };
-
+    const { isLoading: isUserLoading } = useUser();
     const user = useUserStore((state) => state.user);
 
+    if (isUserLoading) return <div></div>;
     const handleSubmit = async () => {
         if (!title || !content || rating === 0 || !user) {
             return;

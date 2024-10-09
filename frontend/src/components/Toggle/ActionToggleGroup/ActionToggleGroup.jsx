@@ -5,7 +5,7 @@ import ActionToggleCounter from "../ActionToggleCounter/ActionToggleCounter";
 import InteractionToggle from "../InteractionToggle/InteractionToggle";
 import { useEffect, useState } from "react";
 
-import { useUserStore } from "../../../store/userStore";
+import { useAuthStore } from "../../../store/userStore";
 import {
     useUpdateLike,
     useUpdateScrap,
@@ -23,16 +23,16 @@ const ActionToggleGroup = ({ recipe }) => {
     const [scrapCount, setScrapCount] = useState(0);
     const [commentCount, setCommentCount] = useState(0);
 
-    const user = useUserStore((state) => state.user);
+    const { isLoggedIn } = useAuthStore();
     const { isLoading: isUserLoading, data: likes } = useUserLikes();
     const { isLoading: isRecipeLoading, data: scraps } = useUserScraps();
 
     useEffect(() => {
-        if (user && !isUserLoading && !isRecipeLoading) {
+        if (isLoggedIn && !isUserLoading && !isRecipeLoading) {
             setIsLike(likes.some((i) => i.id === recipe.id));
             setIsScrap(scraps.some((i) => i.id === recipe.id));
         }
-    }, [user, isUserLoading, isRecipeLoading, likes, recipe.id, scraps]);
+    }, [isLoggedIn, isUserLoading, isRecipeLoading, likes, recipe.id, scraps]);
 
     useEffect(() => {
         setLikeCount(recipe.likeCount ?? 0);
@@ -46,7 +46,7 @@ const ActionToggleGroup = ({ recipe }) => {
     const { mutate: updateUnScrap } = useUpdateUnScrap();
 
     const handleLike = async () => {
-        if (!user) return;
+        if (!isLoggedIn) return;
         if (isLike) {
             updateUnLike(recipe.id);
             setLikeCount((prevCount) => prevCount - 1);
@@ -58,7 +58,7 @@ const ActionToggleGroup = ({ recipe }) => {
     };
 
     const handleScrap = async () => {
-        if (!user) return;
+        if (!isLoggedIn) return;
         if (isScrap) {
             updateUnScrap(recipe.id);
             setScrapCount((prevCount) => prevCount - 1);
