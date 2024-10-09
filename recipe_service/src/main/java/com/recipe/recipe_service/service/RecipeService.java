@@ -420,7 +420,6 @@ public class RecipeService {
         List<Recipe> popularRecipes = recipeRepository.findTopByOrderByLikeCountDesc(pageable);
 
         return popularRecipes.stream()
-                .limit(8)
                 .map(recipe -> RecipeRecommendResponseDto.builder()
                         .recipeId(recipe.getId())
                         .title(recipe.getTitle())
