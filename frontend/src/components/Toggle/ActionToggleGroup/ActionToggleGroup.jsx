@@ -11,15 +11,19 @@ import {
     postRecipeLike,
     postRecipeScrap,
 } from "../../../api/recipe";
+import { useUserStore } from "../../../store/userStore";
 
 const ActionToggleGroup = ({ post }) => {
     const [isLike, setIsLike] = useState(false);
-    const [isScrap, setIsScrap] = useState(true);
+    const [isScrap, setIsScrap] = useState(false);
 
     const [likeCount, setLikeCount] = useState(0);
     const [scrapCount, setScrapCount] = useState(0);
     const [commentCount, setCommentCount] = useState(0);
+
+    const isLoggedIn = useUserStore((state) => state.isLoggedIn);
     useEffect(() => {
+        if (!isLoggedIn) return;
         const fetchLike = async () => {
             const data = await getUserLike(post.id);
             if (data.some((i) => i.id === post.id)) setIsLike(true);
@@ -35,7 +39,7 @@ const ActionToggleGroup = ({ post }) => {
         setLikeCount(post.likeCount);
         setScrapCount(post.scrapCount);
         setCommentCount(post.commentCount);
-    }, [post]);
+    }, [post, isLoggedIn]);
 
     const handleLike = async () => {
         if (isLike) {

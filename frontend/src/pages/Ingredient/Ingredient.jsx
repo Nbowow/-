@@ -16,11 +16,11 @@ import {
 
 import { useEffect, useState } from "react";
 import HotWeekIngredients from "../../components/IngredientPrices/HotIngredient/HotWeekIngredients";
+import { useUserStore } from "../../store/userStore";
 
 const Ingredient = () => {
     const [searchResult, setSearchResult] = useState(null);
     const [likeIngredients, setLikeIngredients] = useState([]);
-
     const handleLike = (ingredient) => {
         const isLiked = likeIngredients.find((i) => i.id === ingredient.id);
         setLikeIngredients((prev) =>
@@ -36,13 +36,15 @@ const Ingredient = () => {
         }
     };
 
+    const isLoggedIn = useUserStore((state) => state.isLoggedIn);
     useEffect(() => {
+        if (!isLoggedIn) return;
         const fetchLikeIngredients = async () => {
             const result = await getLikeIngredients();
             setLikeIngredients(result);
         };
         fetchLikeIngredients();
-    }, []);
+    }, [isLoggedIn]);
 
     const handleSearch = async (searchTerm) => {
         const result = await getSearchIngredient(searchTerm);
@@ -70,10 +72,12 @@ const Ingredient = () => {
                         )}
                     />
                 ) : null}
-                <IngredientOverview
-                    like={likeIngredients}
-                    onLike={handleLike}
-                />
+                {isLoggedIn && (
+                    <IngredientOverview
+                        like={likeIngredients}
+                        onLike={handleLike}
+                    />
+                )}
                 <S.RecommendSection>
                     <HotWeekIngredients
                         like={likeIngredients}
