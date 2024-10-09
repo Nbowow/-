@@ -5,6 +5,8 @@ import styled from "styled-components";
 import { useState, useEffect } from "react";
 import { postRecipe } from "../api/recipe";
 import { fetchCategories } from "../api/category";
+import { useNavigate } from "react-router-dom";
+import PostModal from "../components/Modal/PostModal";
 
 const CATEGORY_TYPES = {
     TYPE: "종류",
@@ -44,14 +46,19 @@ const Hr = styled.hr`
     width: 80%;
 `;
 
+const Emoji = styled.span`
+    font-family: "tosseface"; // tossface 폰트 적용
+`;
+
 const PostRecipe = () => {
+    const navigate = useNavigate();
     const [recipeFormData, setRecipeFormData] = useState({
         title: "",
         name: "",
         intro: "",
         image: null,
-        servings: 0,
-        time: 0,
+        servings: "",
+        time: "",
         level: "",
         cookingTools: "",
         type: "",
@@ -59,14 +66,22 @@ const PostRecipe = () => {
         ingredients: "",
         method: "",
     });
-    const [materialGroups, setMaterialGroups] = useState([]);
-    const [orderSteps, setOrderSteps] = useState([]);
+    const [materialGroups, setMaterialGroups] = useState([
+        { name: "", materials: [{ name: "", amount: "", unit: "" }] },
+    ]);
+    const [orderSteps, setOrderSteps] = useState([
+        { image: null, content: "" },
+    ]);
     const [categories, setCategories] = useState({
         [CATEGORY_TYPES.TYPE]: [],
         [CATEGORY_TYPES.SITUATION]: [],
         [CATEGORY_TYPES.INGREDIENT]: [],
         [CATEGORY_TYPES.METHOD]: [],
     });
+
+    const [modalMessage, setModalMessage] = useState("");
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isError, setIsError] = useState(false); // 에러 상태 추가
 
     useEffect(() => {
         const getCategories = async () => {
@@ -75,32 +90,70 @@ const PostRecipe = () => {
         };
         getCategories();
     }, []);
+
     const handleSubmit = async () => {
-        const recipeMaterials = materialGroups.flatMap((group) =>
-            group.materials.map((material) => ({
-                materialName: material.name,
-                materialAmount: material.amount,
-                materialUnit: material.unit,
-                materialSubtitle: group.name,
-            })),
-        );
-
-        const recipeOrders = orderSteps.map((step, index) => ({
-            orderNum: index + 1,
-            orderImg: step.image,
-            orderContent: step.content,
-        }));
-
+        // 레시피 등록 요청
         const requestData = {
-            ...recipeFormData,
-            recipeMaterials,
-            recipeOrders,
+            title: recipeFormData.title,
+            name: recipeFormData.title,
+            intro: recipeFormData.intro,
+            image: recipeFormData.image ? recipeFormData.image.name : "",
+            servings: parseInt(recipeFormData.servings),
+            time: parseInt(recipeFormData.time),
+            level: recipeFormData.level,
+            type: recipeFormData.type,
+            situation: recipeFormData.situation,
+            ingredients: recipeFormData.ingredients,
+            method: recipeFormData.method,
+            recipeMaterials: [],
+            recipeOrders: [],
         };
-        await postRecipe(requestData);
+
+        try {
+            const response = await postRecipe(requestData);
+            if (response) {
+                // 성공 시 모달 메시지 설정
+                setModalMessage(
+                    <>
+                        <Emoji>🍳</Emoji>레시피가 등록되었습니다!
+                    </>,
+                );
+                setIsModalOpen(true);
+                navigate("/recipe");
+            }
+            // eslint-disable-next-line no-unused-vars
+        } catch (error) {
+            // 실패 시 모달 메시지 설정
+            setModalMessage(
+                <>
+                    <Emoji>⛔</Emoji>레시피 등록에 실패했습니다
+                </>,
+            );
+            setIsError(true); // 에러 상태 설정
+            setIsModalOpen(true); // 모달 열기
+        }
+    };
+
+    const closeModal = () => {
+        setIsModalOpen(false);
+        setIsError(false); // 모달 닫을 때 에러 상태 초기화
+    };
+
+    const handleConfirm = async () => {
+        // 확인 버튼 클릭 시 레시피 등록 요청
+        await handleSubmit();
     };
 
     return (
         <div>
+            {isModalOpen && (
+                <PostModal
+                    message={modalMessage}
+                    onClose={closeModal}
+                    onConfirm={handleConfirm} // 성공 시 확인 버튼
+                    isError={isError}
+                />
+            )}
             <RecipeForm
                 recipeData={recipeFormData}
                 setRecipeData={setRecipeFormData}

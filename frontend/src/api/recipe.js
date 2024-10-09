@@ -7,6 +7,7 @@ export const fetchRecipes = async (pageNumber, pageSize) => {
     const response = await axios.get(
         `${BASE_URL}/recipe?pageSize=${pageSize}&pageNumber=${pageNumber}`,
     );
+
     return response.data;
 };
 

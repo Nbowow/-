@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { PropTypes } from "prop-types";
 import {
     Container,
     Title,
@@ -13,11 +13,7 @@ import {
     ButtonContainer,
 } from "./MaterialForm.styled";
 
-const MaterialForm = () => {
-    const [materialGroups, setMaterialGroups] = useState([
-        { name: "", materials: [{ name: "", amount: "", unit: "" }] },
-    ]);
-
+const MaterialForm = ({ materialGroups, setMaterialGroups }) => {
     const handleChange = (groupIndex, materialIndex, field, value) => {
         const newMaterialGroups = [...materialGroups];
         if (field === "groupName") {
@@ -42,7 +38,7 @@ const MaterialForm = () => {
     const handleAddGroup = () => {
         setMaterialGroups([
             ...materialGroups,
-            { name: "", materials: [{ name: "", amount: "", unit: "" }] },
+            { name: "재료", materials: [{ name: "", amount: "", unit: "" }] },
         ]);
     };
 
@@ -57,7 +53,7 @@ const MaterialForm = () => {
                     <GroupContainer key={groupIndex}>
                         <GroupLabel
                             type="text"
-                            placeholder="음식명"
+                            placeholder="재료"
                             value={group.name}
                             onChange={(e) =>
                                 handleChange(
@@ -130,5 +126,19 @@ const MaterialForm = () => {
         </Container>
     );
 };
-
+MaterialForm.propTypes = {
+    materialGroups: PropTypes.arrayOf(
+        PropTypes.shape({
+            name: PropTypes.string.isRequired,
+            materials: PropTypes.arrayOf(
+                PropTypes.shape({
+                    name: PropTypes.string.isRequired,
+                    amount: PropTypes.string.isRequired,
+                    unit: PropTypes.string.isRequired,
+                }),
+            ).isRequired,
+        }),
+    ).isRequired,
+    setMaterialGroups: PropTypes.func.isRequired,
+};
 export default MaterialForm;

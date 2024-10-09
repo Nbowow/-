@@ -15,6 +15,7 @@ import Login from "./pages/Login/Login";
 import LoginLoading from "./pages/Login/LoginLoding";
 import Footer from "./components/Footer/Footer";
 import SearchRecipe from "./pages/SearchRecipe";
+import UserInfo from "./pages/UserInfo/UserInfo";
 
 function App() {
     return (
@@ -37,6 +38,7 @@ function App() {
                         />
                         <Route path="/ingredient" element={<Ingredient />} />
                         <Route path="/search" element={<SearchRecipe />} />
+                        <Route path="/user/:id" element={<UserInfo />} />
                         <Route path="*" element={<Notfound />} />
                     </Routes>
                     <Footer />

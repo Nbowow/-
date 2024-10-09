@@ -4,6 +4,10 @@ import {
     fetchUserRecipe,
     updateUser,
     uploadProfileImage,
+    fetchOtherUser,
+    getUserLike,
+    fetchOtherUserRecipe,
+    getUserScrap,
 } from "../api/userApi";
 import { useUserStore } from "../store/userStore";
 
@@ -54,5 +58,39 @@ export const useUpdateProfileImage = () => {
         onSuccess: () => {
             queryClient.invalidateQueries(["user"]);
         },
+    });
+};
+
+export const useOtherUserInfo = (id) => {
+    return useQuery({
+        queryKey: [`user${id}`],
+        queryFn: () => fetchOtherUser(id),
+        staleTime: 0,
+        refetchOnMount: true,
+    });
+};
+
+export const useUserLikes = () => {
+    return useQuery({
+        queryKey: [`userLike`],
+        queryFn: getUserLike,
+        staleTime: 0,
+        refetchOnMount: true,
+    });
+};
+
+export const useUserScraps = () => {
+    return useQuery({
+        queryKey: [`userScrap`],
+        queryFn: getUserScrap,
+        staleTime: 0,
+        refetchOnMount: true,
+    });
+};
+
+export const useOtherUserRecipe = (id) => {
+    return useQuery({
+        queryKey: [`otherUserRecipe`],
+        queryFn: () => fetchOtherUserRecipe(id),
     });
 };

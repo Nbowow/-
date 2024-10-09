@@ -52,20 +52,22 @@ const CategoryComponent = ({
     }, []);
 
     const handleCategoryClick = (category, item) => {
+        // 전체 항목을 선택할 수 있도록 수정
         if (category === CATEGORY_TYPES.TYPE) {
-            setSelectedType(item);
-            onTypeSelect(item);
+            setSelectedType(item.num);
+            onTypeSelect(item.num);
         } else if (category === CATEGORY_TYPES.SITUATION) {
-            setSelectedSituation(item);
-            onSituationSelect(item);
+            setSelectedSituation(item.num);
+            onSituationSelect(item.num);
         } else if (category === CATEGORY_TYPES.INGREDIENT) {
-            setSelectedIngredients(item);
-            onIngredientsSelect(item);
+            setSelectedIngredients(item.num);
+            onIngredientsSelect(item.num);
         } else if (category === CATEGORY_TYPES.METHOD) {
-            setSelectedMethod(item);
-            onMethodSelect(item);
+            setSelectedMethod(item.num);
+            onMethodSelect(item.num);
         }
     };
+
     return (
         <Container>
             {Object.entries(categories).map(([categoryKey, items]) => (
@@ -74,7 +76,7 @@ const CategoryComponent = ({
                     <CategoryList>
                         {items.map((item, index) => (
                             <div
-                                key={`${item}-${index}`}
+                                key={item.num}
                                 style={{
                                     display: "flex",
                                     alignItems: "center",
@@ -83,22 +85,22 @@ const CategoryComponent = ({
                                 <CategoryItem
                                     selected={
                                         (categoryKey === CATEGORY_TYPES.TYPE &&
-                                            selectedType === item) ||
+                                            selectedType === item.num) ||
                                         (categoryKey ===
                                             CATEGORY_TYPES.SITUATION &&
-                                            selectedSituation === item) ||
+                                            selectedSituation === item.num) ||
                                         (categoryKey ===
                                             CATEGORY_TYPES.INGREDIENT &&
-                                            selectedIngredients === item) ||
+                                            selectedIngredients === item.num) ||
                                         (categoryKey ===
                                             CATEGORY_TYPES.METHOD &&
-                                            selectedMethod === item)
+                                            selectedMethod === item.num)
                                     }
                                     onClick={() =>
                                         handleCategoryClick(categoryKey, item)
                                     }
                                 >
-                                    {item}
+                                    {item.name}
                                 </CategoryItem>
                                 {index < items.length - 1 && (
                                     <span style={{ margin: "0 5px" }}>|</span>

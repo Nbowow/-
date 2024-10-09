@@ -399,6 +399,13 @@ def get_best_match(item_name, reference_names, match_value):
         print(f"유효한 reference_names가 없습니다.")
         return item_name
 
+    # 한 글자일 경우 처리
+    if len(item_name) == 1:
+        if item_name in reference_names:
+            return item_name
+        else:
+            return item_name
+
     try:
         vectorizer = TfidfVectorizer().fit_transform([item_name] + reference_names)
         vectors = vectorizer.toarray()

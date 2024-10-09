@@ -84,7 +84,7 @@ material_mapping = {
 allergy_mapping = {
     '알류': ['달걀', '계란', '메추리알', '오리알', '거위알', '난백', '흰자', '난황', '노른자', '계란 파우더', '난백 파우더', '마요네즈', '타르타르 소스', '홀랜다이즈 소스',
            '에그누들', '팬케이크 믹스', '머랭', '크레페', '에그'],
-    '우유': ['우유', '연유', '크림', '치즈', '버터', '요거트', '사워 크림', '카제인', '유청 단백질', '우유 분말'],
+    '우유': ['우유', '연유', '크림', '치즈', '버터', '요거트', '사워 크림', '카제인', '유청 단백질', '우유 분말', '모차렐라치츠', '모짜렐라치즈', '크림치즈'],
     '메밀': ['메밀가루', '메밀면', '소바', '메밀빵', '메밀 크래커', '메밀 팬케이크', '메밀'],
     '땅콩': ['땅콩', '땅콩버터', '땅콩 오일', '땅콩 가루', '땅콩 소스', '땅콩 스낵'],
     '콩': ['대두', '콩', '두부', '된장', '간장', '콩기름', '콩 단백질', '템페', '낫토', '두유', '에다마메'],
@@ -403,6 +403,8 @@ def process_recipe_data(startnum):
 
         print("6. 레시피 저장")
         recipe_id = save_recipe_to_db(row)  # 레시피 저장 함수, 각 레시피에 대해 recipe_id 반환
+        if recipe_id is None:
+            continue
 
         print("7. 레시피 재료 저장")
         process_recipe_ingredients(row['재료'], recipe_id)
@@ -410,11 +412,31 @@ def process_recipe_data(startnum):
         # 레시피 단계별 정보 저장
         print("8. 레시피 주문 저장")
         try:
-            # JSON 형태의 문자열을 파이썬 리스트로 변환
-            recipe_orders = json.loads(row['조리순서'].replace("'", '"'))
-            process_recipe_orders(recipe_orders, recipe_id)
+            # 조리순서 데이터가 없는 경우를 대비한 처리
+            if '조리순서' not in row or not row['조리순서']:
+                print("조리순서 데이터가 없습니다.")
+            else:
+                # JSON 형태의 문자열을 파이썬 리스트로 변환
+                recipe_orders = json.loads(row['조리순서'].replace("'", '"'))
+
+                # 조리순서가 비어있지 않다면 처리
+                if recipe_orders:
+                    process_recipe_orders(recipe_orders, recipe_id)
+                else:
+                    print("조리순서가 비어 있습니다.")
         except json.JSONDecodeError as e:
             print(f"조리순서 데이터를 처리하는 중 오류 발생: {str(e)}")
+        except Exception as e:
+            print(f"예상치 못한 오류 발생: {str(e)}")
+
+        # # 레시피 단계별 정보 저장
+        # print("8. 레시피 주문 저장")
+        # try:
+        #     # JSON 형태의 문자열을 파이썬 리스트로 변환
+        #     recipe_orders = json.loads(row['조리순서'].replace("'", '"'))
+        #     process_recipe_orders(recipe_orders, recipe_id)
+        # except json.JSONDecodeError as e:
+        #     print(f"조리순서 데이터를 처리하는 중 오류 발생: {str(e)}")
 
     print("데이터 정제가 완료되고 DB에 저장되었습니다.")
 
@@ -515,8 +537,7 @@ def save_recipe_to_db(row):
         ).first()
 
         if existing_recipe:
-            print(f"이미 존재하는 레시피입니다: {existing_recipe.recipe_id}")
-            return existing_recipe.recipe_id  # 중복된 레시피의 ID 반환
+            return None  # 중복된 레시피의 ID 반환
 
         # 'row'를 딕셔너리로 변환
         row_dict = row.asDict()
@@ -618,11 +639,18 @@ def process_recipe_orders(recipe_orders, recipe_id):
 
 # RecipeOrders 테이블에 단계를 추가하는 함수
 def add_recipe_order(recipe_id, step_number, description, image_url):
-    """
-    RecipeOrders 테이블에 단계를 추가하는 함수
-    """
     engine = engineconnection()
     session = engine.sessionmaker()
+
+    existing_order = session.query(RecipeOrders).filter_by(
+        recipe_id=recipe_id,
+        recipe_order_num=step_number,
+        recipe_order_content=description,
+        recipe_order_img=image_url
+    ).first()
+
+    if existing_order:
+        return
 
     new_recipe_order = RecipeOrders(
         recipe_order_num=step_number,
@@ -637,11 +665,7 @@ def add_recipe_order(recipe_id, step_number, description, image_url):
 
 
 def process_recipe_ingredients(ingredients_str, recipe_id):
-    """
-    재료 문자열을 처리하여 RecipeMaterials 테이블에 각 재료 정보를 저장하는 함수
-    """
-
-    if not ingredients_str:  # ingredients_str가 None 또는 빈 문자열인 경우
+    if not ingredients_str:
         print("재료 문자열이 비어있거나 None입니다.")
         return
 
@@ -714,39 +738,39 @@ def parse_ingredients(ingredients_str):
 
 
 def extract_amount_and_unit(amount_with_unit):
-    """
-    양과 단위를 분리하는 함수 (예: '600g'에서 '600'과 'g'를 분리)
-    범위 표현과 '/'를 포함한 양을 처리하고 '조금' 같은 경우에 대한 처리를 추가
-    """
     # 정규 표현식 수정: 숫자 + 범위 (예: 1.4~1.5), 단위 포함, / 처리
-    match = re.match(r"([\d./~]+)([a-zA-Z]+)", amount_with_unit)
+    match = re.match(r'(\d+[./]?\d*)\s*(.*)', amount_with_unit)
 
     if match:
-        return match.group(1), match.group(2)  # 숫자(양)와 단위 반환
-    elif '조금' in amount_with_unit:
-        return '조금', ''  # '조금'인 경우 양으로 처리
+        return match.group(1), match.group(2)
     else:
-        return amount_with_unit, ''  # 단위가 없으면 빈 문자열 반환
+        return '', amount_with_unit
 
 
 def add_recipe_material(recipe_id, material_id, amount, unit):
-    """
-    RecipeMaterials 테이블에 재료 정보를 추가하는 함수
-    """
     engine = engineconnection()
     session = engine.sessionmaker()
 
     try:
+        # 동일한 레시피 ID와 재료 ID가 이미 존재하는지 확인
+        existing_material = session.query(RecipeMaterials).filter_by(
+            recipe_id=recipe_id,
+            material_id=material_id,
+            recipe_material_amount=amount,
+            recipe_material_unit=unit
+        ).first()
+
+        if existing_material:
+            return
+
         new_recipe_material = RecipeMaterials(
             recipe_material_amount=amount,
             recipe_material_unit=unit,
             recipe_id=recipe_id,  # 외부 키로 연결
             material_id=material_id
         )
-
         session.add(new_recipe_material)
         session.commit()
-        # print(f"레시피 ID {recipe_id}에 재료 ID {material_id} 추가 완료.")
 
     except Exception as e:
         session.rollback()  # 오류 발생 시 트랜잭션 롤백
@@ -768,6 +792,13 @@ def get_best_match(item_name, reference_names, match_value):
     if not reference_names:  # 만약 모든 reference_names가 비었다면
         print(f"유효한 reference_names가 없습니다.")
         return item_name
+
+    # 한 글자일 경우 처리
+    if len(item_name) == 1:
+        if item_name in reference_names:
+            return item_name
+        else:
+            return item_name
 
     try:
         vectorizer = TfidfVectorizer().fit_transform([item_name] + reference_names)
