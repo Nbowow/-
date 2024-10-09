@@ -10,11 +10,10 @@ from app.globals import set_hdfs_upload_status
 hdfs_client = InsecureClient('http://master:9870', user='root')
 
 
-async def upload_file_to_mysql(what_do):
+async def upload_file_to_mysql(what_do, startnum):
     spark_url = "http://master:6066/v1/submissions/create"
     filter_name = "recipe_filter.py"
     filter_url = '/opt/spark-scripts/filter.py'
-    member_id = '1'
 
     # spark 정제코드 요청
 
@@ -35,7 +34,7 @@ async def upload_file_to_mysql(what_do):
 
     data = {
         "action": "CreateSubmissionRequest",
-        "appArgs": [filter_url, "", member_id],
+        "appArgs": [filter_url, "", startnum],
         "appResource": filter_url,
         "clientSparkVersion": "3.5.2",
         "mainClass": "org.apache.spark.deploy.PythonRunner",
@@ -126,6 +125,45 @@ async def upload_price_file_to_hdfs():
 
     # HDFS 업로드 경로 (파일을 저장할 디렉토리)
     hdfs_directory = "/user/root/price/"
+
+    # HDFS 디렉토리가 없으면 생성
+    if not hdfs_client.status(hdfs_directory, strict=False):
+        hdfs_client.makedirs(hdfs_directory)
+
+    print(f"2. HDFS 디렉토리가 없으면 생성")
+
+    hdfs_file_path = ""
+
+    for file_name in csv_files:
+        local_file_path = os.path.join(local_directory, file_name)
+        hdfs_file_path = os.path.join(hdfs_directory, file_name)
+
+        # HDFS에 해당 파일이 이미 존재하는지 확인
+        if not hdfs_client.status(hdfs_file_path, strict=False):
+            # 파일이 존재하지 않으면 업로드
+            with open(local_file_path, 'rb') as local_file:
+                hdfs_client.write(hdfs_file_path, local_file)
+                print(f"Uploaded: {file_name}")
+        else:
+            print(f"Skipped (already exists): {file_name}")
+
+    set_hdfs_upload_status(False)
+
+    return {"message": f"Price Back File uploaded to {hdfs_file_path} in HDFS!"}
+
+
+async def upload_nutrient_file_to_hdfs():
+    # 업로드 할 파일 경로
+    # local_directory = "../data/recipe/"
+    local_directory = "/app/data/nutrient/"
+
+    # 로컬 디렉토리 내 모든 .csv 파일 목록 가져오기
+    csv_files = [f for f in os.listdir(local_directory) if f.endswith('.csv')]
+
+    print(f"1. 로컬 디렉토리 내 모든 .csv 파일 목록 가져오기")
+
+    # HDFS 업로드 경로 (파일을 저장할 디렉토리)
+    hdfs_directory = "/user/root/nutrient/"
 
     # HDFS 디렉토리가 없으면 생성
     if not hdfs_client.status(hdfs_directory, strict=False):

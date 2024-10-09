@@ -1,15 +1,23 @@
 import * as S from "./CardList.styled";
 import RecipeCard from "../Card/RecipeCard/RecipeCard";
 import PropTypes from "prop-types";
+import { useNavigate } from "react-router-dom";
 
 const RecipeCardList = ({ recipes, showProfile }) => {
+    const navigate = useNavigate();
+
+    const handleCardClick = (id) => {
+        navigate(`/recipe/${id}`);
+    };
+
     return (
         <S.CardList>
             {recipes.map((recipe) => (
                 <RecipeCard
-                    key={recipe.recipeId}
+                    key={recipe.id}
                     showProfile={showProfile}
                     recipe={recipe}
+                    onClick={() => handleCardClick(recipe.id)}
                 />
             ))}
         </S.CardList>
@@ -19,7 +27,7 @@ const RecipeCardList = ({ recipes, showProfile }) => {
 RecipeCardList.propTypes = {
     recipes: PropTypes.arrayOf(
         PropTypes.shape({
-            recipeId: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
+            id: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
                 .isRequired,
             image: PropTypes.string.isRequired,
             title: PropTypes.string.isRequired,

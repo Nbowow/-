@@ -6,8 +6,8 @@ import {
     uploadProfileImage,
     fetchOtherUser,
     getUserLike,
-    fetchUserScrap,
     fetchOtherUserRecipe,
+    getUserScrap,
 } from "../api/userApi";
 import { useUserStore } from "../store/userStore";
 
@@ -82,7 +82,7 @@ export const useUserLikes = () => {
 export const useUserScraps = () => {
     return useQuery({
         queryKey: [`userScrap`],
-        queryFn: fetchUserScrap,
+        queryFn: getUserScrap,
         staleTime: 0,
         refetchOnMount: true,
     });

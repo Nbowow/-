@@ -5,6 +5,16 @@ export const fetchUser = async () => {
     return response.data;
 };
 
+export const followUser = async (id) => {
+    const response = await axiosInstance.post(`/social/follow/${id}`);
+    return response.data;
+};
+
+export const unFollowUser = async (id) => {
+    const response = await axiosInstance.delete(`/social/follow/${id}`);
+    return response.data;
+};
+
 export const fetchUserRecipe = async () => {
     const response = await axiosInstance.get("/users/recipe");
     return response.data;
@@ -61,12 +71,17 @@ export const fetchOtherUser = async (id) => {
     return response.data;
 };
 
-export const fetchUserScrap = async () => {
+export const getUserScrap = async () => {
     const response = await axiosInstance.get("/users/scrap");
     return response.data;
 };
 
 export const fetchOtherUserRecipe = async (id) => {
     const response = await axiosInstance.get(`/users/recipe/other/${id}`);
+    return response.data;
+};
+
+export const getCommonCode = async () => {
+    const response = await axiosInstance.get("/users/common");
     return response.data;
 };

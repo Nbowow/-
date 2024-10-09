@@ -61,20 +61,26 @@ export const ContentArea = styled.div`
     margin-left: 100px;
 `;
 
-export const ImageUpload = styled.label`
-    width: 400px;
-    height: 400px;
-    border: 1px dashed #ccc;
-    border-radius: 4px;
+export const ImageUpload = styled.div`
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
-    cursor: pointer;
-    margin-bottom: 20px;
+    border: 1px dashed #ccc;
+    border-radius: 4px;
+    padding: 20px;
     background-color: #f2f2f2;
+    width: 300px;
+    height: 300px;
+    cursor: pointer;
+    position: relative;
+    align-self: center;
+    font-size: 16px;
 `;
+
 export const ButtonContainer = styled.div`
-    text-align: center; /* 텍스트 중앙 정렬 */
+    text-align: center;
+    cursor: pointer;
 `;
 
 export const TextArea = styled.textarea`
@@ -85,6 +91,7 @@ export const TextArea = styled.textarea`
     border-radius: 4px;
     resize: none;
     margin-bottom: 10px;
+    margin-top: 10px;
     background-color: #f2f2f2;
     font-family: "SUITREgular";
     font-size: ${({ theme }) => theme.fontSize.text};
@@ -134,6 +141,12 @@ export const ImageContainer = styled.div`
     grid-area: image;
     gap: 10px;
 `;
+
+export const ImagePreview = styled.img`
+    width: 100%;
+    height: 100%;
+`;
+
 export const TextContainer = styled.div`
     display: flex;
     flex-direction: column;
@@ -146,18 +159,26 @@ export const InputContainer = styled.div`
     grid-area: tool;
     gap: 10px;
 `;
+export const ImageContainer2 = styled.div`
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 20px;
+    width: 300px;
+    height: 300px;
+    padding: 20px;
+    border: 1px solid;
+    position: relative;
+    border-radius: 4px;
+`;
 
 export const RemoveButton = styled.button`
     position: absolute;
-    top: 5px;
-    right: 5px;
-    background: none;
+    top: 10px;
+    right: 10px;
+    background: #aaaaaa;
     border: none;
-    color: red;
+    color: white;
     cursor: pointer;
     font-size: 16px;
-
-    &:hover {
-        color: darkred;
-    }
 `;

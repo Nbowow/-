@@ -4,13 +4,14 @@ import { useUserStore } from "../../store/userStore";
 import { useRef } from "react";
 function CommentInput({ addFunc }) {
     const { isLoading } = useUserStore();
-    const inputRef = useRef(null);
     const user = useUserStore((state) => state.user);
+    const inputRef = useRef(null);
 
     if (isLoading) return <div></div>;
+
     const submitComment = () => {
         const input = inputRef.current.value.trim();
-        if (!input) return;
+        if (!input || !user) return;
         const comment = {
             nickname: user.nickname,
             content: input,
