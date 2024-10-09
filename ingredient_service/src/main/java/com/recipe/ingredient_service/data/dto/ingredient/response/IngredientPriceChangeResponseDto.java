@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class IngredientPriceChangeResponseDto {
+    private Long id;
     private String name;
     private String currentPrice;
     private String yesterdayPrice;
