@@ -426,14 +426,10 @@ public class IngredientService {
 
 
     public List<Long> getRecipeIdByIngredients(List<Long> ingredientIds) {
-        // 재료 아이디에 해당하는 레시피 재료 조회
-        List<Recipematerials> recipematerialsList = recipematerialsRepository.findByMaterialIdIn(ingredientIds);
+        // 최대 3개의 레시피만 반환하도록 PageRequest 설정
+        Pageable limit = PageRequest.of(0, 3);
 
-        // 레시피 아이디를 추출하고 중복을 제거하여 반환
-        return recipematerialsList.stream()
-                .map(Recipematerials::getRecipeId)
-                .distinct()
-                .collect(Collectors.toList());
+        return recipematerialsRepository.findRecipeIdsByAllIngredientIds(ingredientIds, (long) ingredientIds.size(), limit);
     }
 
 
