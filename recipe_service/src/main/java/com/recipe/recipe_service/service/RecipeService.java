@@ -188,7 +188,7 @@ public class RecipeService {
                 .likeCount(recipe.getLikeCount())
                 .scrapCount(recipe.getScrapCount())
                 .commentCount(recipe.getCommentCount())
-                .calorie(null)
+                .calorie(recipe.getKcal())
                 .price(null)
                 .materials(recipeMaterialsAllergyResponseDto) // 재료 추가
                 .recipeOrders(recipeOrdersResponseDto) // 요리 순서 추가
