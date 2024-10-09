@@ -4,6 +4,7 @@ import * as S from "./RecipeCard.styled";
 import PropTypes from "prop-types";
 
 const RecipeCard = ({
+    recipe,
     recipeId,
     imgUrl,
     title,
@@ -23,7 +24,7 @@ const RecipeCard = ({
                 }
             />
             <S.TextArea>
-                <ActionToggleGroup />
+                <ActionToggleGroup post={recipe} />
                 <S.Title>{title}</S.Title>
                 <S.Text>{text}</S.Text>
             </S.TextArea>
@@ -41,6 +42,7 @@ const RecipeCard = ({
 };
 
 RecipeCard.propTypes = {
+    recipe: PropTypes.object.isRequired,
     recipeId: PropTypes.number.isRequired,
     imgUrl: PropTypes.string,
     title: PropTypes.string,
