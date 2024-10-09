@@ -11,9 +11,10 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -23,6 +24,7 @@ public class RecipeReviewService {
 
     private final RecipeReviewRepository reviewRepository;
     private final UserServiceClient userServiceClient;
+    private final S3Uploader s3Uploader;
 
     public List<RecipeReviewResponseDto> getReviews(Long recipeId) {
 
@@ -51,9 +53,20 @@ public class RecipeReviewService {
 
     // 리뷰 생성
     @Transactional
-    public void createReview(String authorization, Long recipeId, RecipeReviewRequestDto recipeReviewRequestDto) {
+    public void createReview(String authorization, Long recipeId, MultipartFile reviewImage, RecipeReviewRequestDto recipeReviewRequestDto) {
 
         Long userId = userServiceClient.getUserId(authorization);
+
+        // 이미지 파일 처리 (S3에 저장)
+        String imageUrl = null;
+        // 이미지 파일이 있는 경우 S3에 업로드
+        if (reviewImage != null && !reviewImage.isEmpty()) {
+            try {
+                imageUrl = s3Uploader.saveFile(reviewImage);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
 
         // 리뷰 정보 생성
         RecipeReviews newReview = RecipeReviews.builder()
@@ -62,7 +75,7 @@ public class RecipeReviewService {
                 .title(recipeReviewRequestDto.getTitle())
                 .rating(recipeReviewRequestDto.getRating())
                 .content(recipeReviewRequestDto.getContent())
-                .image(recipeReviewRequestDto.getReviewImage()) // 레시피 리뷰 이미지
+                .image(imageUrl) // 레시피 리뷰 이미지
                 .createdDate(LocalDateTime.now())
                 .modifiedDate(LocalDateTime.now())
                 .userStatus(true)
