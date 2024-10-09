@@ -169,12 +169,22 @@ public class IngredientService {
 
     public IngredientsSearchResponseDto findIngredientData(String name) {
         Ingredient findIngredient = findMatchingIngredient(name);
-
         if (findIngredient == null) {
             return IngredientsSearchResponseDto.builder()
                     .id(null)
                     .name("Unknown")
                     .ingredientImage("")
+                    .dayprice(0)
+                    .build();
+        }
+
+        DayPrice findTopDayIngredientPrice = dayPriceRepository.findTopByIngredientIdAndPriceNotOrderByDayDesc(findIngredient.getId());
+        if (findTopDayIngredientPrice == null) {
+            return IngredientsSearchResponseDto.builder()
+                    .id(findIngredient.getId())
+                    .name(findIngredient.getName())
+                    .ingredientImage(findIngredient.getImg())
+                    .dayprice(0)
                     .build();
         }
 
@@ -182,6 +192,7 @@ public class IngredientService {
                 .id(findIngredient.getId())
                 .name(findIngredient.getName())
                 .ingredientImage(findIngredient.getImg())
+                .dayprice(findTopDayIngredientPrice.getPrice())
                 .build();
     }
 
