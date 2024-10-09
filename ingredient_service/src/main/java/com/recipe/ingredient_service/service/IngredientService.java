@@ -47,11 +47,11 @@ public class IngredientService {
 
     // 초기화 블록에서 매핑 데이터 설정
     {
-        allergyMapping.put("알류", List.of("달걀", "계란", "메추리알", "오리알", "난백", "흰자", "노른자"));
+        allergyMapping.put("알류", List.of("달걀", "계란", "메추리알", "오리알", "난백", "흰자", "노른자", "계란파우더", "난백파우더", "마요네즈"));
         allergyMapping.put("우유", List.of("우유", "연유", "크림", "치즈", "버터", "요거트", "사워 크림", "카제인", "유청 단백질", "우유 분말"));
         allergyMapping.put("메밀", List.of("메밀가루", "메밀면 (소바)", "메밀빵", "메밀 크래커", "메밀 팬케이크", "메밀"));
         allergyMapping.put("땅콩", List.of("땅콩", "땅콩버터", "땅콩 오일", "땅콩 가루", "땅콩 소스", "땅콩 스낵"));
-        allergyMapping.put("대두 (콩)", List.of("대두", "콩", "두부", "된장", "간장", "콩기름", "콩 단백질", "템페", "낫토", "두유", "에다마메"));
+        allergyMapping.put("대두", List.of("대두", "콩", "두부", "된장", "간장", "콩기름", "콩 단백질", "템페", "낫토", "두유", "에다마메"));
         allergyMapping.put("밀", List.of("밀가루", "통밀", "빵", "파스타", "크래커", "시리얼", "쿠키", "케이크", "밀가루 베이스 믹스", "밀글루텐"));
         allergyMapping.put("잣", List.of("잣", "잣 오일", "잣 가루", "잣 페스토"));
         allergyMapping.put("호두", List.of("호두", "호두 오일", "호두 가루", "호두 스낵"));
@@ -209,6 +209,7 @@ public class IngredientService {
             Long ingredientId = (Long) priceChanges.get(i)[0];
             Integer currentPrice = (Integer) priceChanges.get(i)[1];
             Integer yesterdayPrice = (Integer) priceChanges.get(i + 1)[1];
+            int priceGapPrice = (currentPrice - yesterdayPrice);
 
             String ingredientName = ingredientRepository.findById(ingredientId)
                     .map(Ingredient::getName)
@@ -219,6 +220,7 @@ public class IngredientService {
                         .name(ingredientName)
                         .currentPrice(currentPrice.toString())
                         .yesterdayPrice(yesterdayPrice.toString())
+                        .priceGap(String.valueOf(priceGapPrice))
                         .build();
 
                 responseDtoList.add(dto);
