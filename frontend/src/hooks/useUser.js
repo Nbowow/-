@@ -128,7 +128,7 @@ export const useUpdateUnLike = () => {
     return useMutation({
         mutationFn: (id) => patchRecipeUnLike(id),
         onSuccess: () => {
-            queryClient.invalidateQueries("userLike");
+            queryClient.invalidateQueries(["userLike"]);
         },
     });
 };
@@ -139,7 +139,7 @@ export const useUpdateUnScrap = () => {
     return useMutation({
         mutationFn: (id) => patchRecipeUnScrap(id),
         onSuccess: () => {
-            queryClient.invalidateQueries("userScrap");
+            queryClient.invalidateQueries(["userScrap"]);
         },
     });
 };
