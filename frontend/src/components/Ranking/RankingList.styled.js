@@ -84,6 +84,10 @@ export const UserCell = styled.div`
     justify-content: center;
     height: 50px;
 `;
+
+export const UserNavi = styled.span`
+    cursor: pointer;
+`;
 export const RankText = styled.span`
     font-family: "SUITBOLD"; // 원하는 폰트 패밀리로 변경
     font-size: 1.2em; // 원하는 폰트 크기로 변경

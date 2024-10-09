@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import PropTypes from "prop-types";
 import { useTable, useSortBy } from "react-table";
+import { useNavigate } from "react-router-dom";
 import {
     Container,
     SearchInput,
@@ -11,55 +12,14 @@ import {
     UserCell,
     RankText,
     SearchContainer,
+    UserNavi,
 } from "./RankingList.styled";
 import Pagination from "../Pagination/Pagination";
 import { fetchRanking } from "../../api/ranking";
 /* eslint-disable react/prop-types */
 
-const columns = [
-    {
-        Header: "순위",
-        accessor: "rank",
-        width: "10%",
-        Cell: ({ row }) => <RankText>{row.original.rank + 1}</RankText>,
-        sortDescFirst: false,
-    },
-    {
-        Header: "닉네임",
-        accessor: "image",
-        width: "40%",
-        Cell: ({ row }) => (
-            <UserCell>
-                <UserImage src={row.original.image} alt="User" />
-                {row.original.nickname}
-            </UserCell>
-        ),
-        sortDescFirst: true,
-    },
-    {
-        Header: "게시글수",
-        accessor: "recipeCount",
-        width: "15%",
-        sortType: "basic",
-        sortDescFirst: true,
-    },
-    {
-        Header: "좋아요수",
-        accessor: "likeCount",
-        width: "15%",
-        sortType: "basic",
-        sortDescFirst: true,
-    },
-    {
-        Header: "랭킹점수",
-        accessor: "score",
-        width: "20%",
-        sortType: "basic",
-        sortDescFirst: true,
-    },
-];
-
 const UserTable = () => {
+    const navigate = useNavigate(); // useNavigate 훅을 컴포넌트 내에서 호출
     const [searchTerm, setSearchTerm] = useState("");
     const [userData, setUserData] = useState([]);
     const [itemsPerPage] = useState(20);
@@ -76,7 +36,7 @@ const UserTable = () => {
 
     useEffect(() => {
         loadRankingData();
-    }, []);
+    }, []); // 빈 배열로 설정하여 컴포넌트 마운트 시 한 번만 호출
 
     const filteredData = useMemo(() => {
         return userData.filter((user) =>
@@ -89,6 +49,56 @@ const UserTable = () => {
         const start = currentPage * itemsPerPage;
         return filteredData.slice(start, start + itemsPerPage);
     }, [filteredData, currentPage, itemsPerPage]);
+
+    const columns = useMemo(
+        () => [
+            {
+                Header: "순위",
+                accessor: "rank",
+                width: "10%",
+                Cell: ({ row }) => <RankText>{row.original.rank + 1}</RankText>,
+                sortDescFirst: false,
+            },
+            {
+                Header: "닉네임",
+                accessor: "nickname",
+                width: "40%",
+                Cell: ({ row }) => (
+                    <UserCell>
+                        <UserImage src={row.original.image} alt="User" />
+                        <UserNavi
+                            onClick={() => navigate(`/user/${row.original.id}`)} // 유저 프로필로 이동
+                        >
+                            {row.original.nickname}
+                        </UserNavi>
+                    </UserCell>
+                ),
+                sortDescFirst: true,
+            },
+            {
+                Header: "게시글수",
+                accessor: "recipeCount",
+                width: "15%",
+                sortType: "basic",
+                sortDescFirst: true,
+            },
+            {
+                Header: "좋아요수",
+                accessor: "likeCount",
+                width: "15%",
+                sortType: "basic",
+                sortDescFirst: true,
+            },
+            {
+                Header: "랭킹점수",
+                accessor: "score",
+                width: "20%",
+                sortType: "basic",
+                sortDescFirst: true,
+            },
+        ],
+        [navigate],
+    ); // navigate를 의존성으로 추가
 
     const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
         useTable(
@@ -178,6 +188,7 @@ UserTable.propTypes = {
             recipeCount: PropTypes.number,
             likeCount: PropTypes.number,
             score: PropTypes.number,
+            id: PropTypes.string.isRequired, // ID 추가
         }),
     ).isRequired,
 };
