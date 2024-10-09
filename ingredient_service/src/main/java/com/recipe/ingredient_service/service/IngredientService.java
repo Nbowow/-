@@ -433,13 +433,8 @@ public class IngredientService {
     public List<Long> getRecipeIdByIngredients(List<Long> ingredientIds) {
         Pageable limit = PageRequest.of(0, 3);  // 최대 3개 결과 반환
 
-        // 재료가 하나인 경우 해당 재료를 사용하는 레시피를 가져옴
-        if (ingredientIds.size() == 1) {
-            return recipematerialsRepository.findRecipeIdsBySingleIngredientId(ingredientIds.get(0), limit);
-        }
-
-        // 재료가 여러 개인 경우 해당 재료를 모두 사용하는 레시피를 가져옴
-        return recipematerialsRepository.findRecipeIdsByAllIngredientIds(ingredientIds, (long) ingredientIds.size(), limit);
+        // 제공된 재료를 모두 포함하고 있을 경우 해당 레시피를 반환
+        return recipematerialsRepository.findRecipeIdsByAtLeastIngredientIds(ingredientIds, (long) ingredientIds.size(), limit);
     }
 
 
