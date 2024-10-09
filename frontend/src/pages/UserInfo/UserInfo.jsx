@@ -3,6 +3,7 @@ import UserProfile from "../../components/UserProfile/UserProfile";
 import Tab from "../../components/Tab/Tab";
 import { useNavigate, useParams } from "react-router-dom";
 import { useOtherUserInfo, useOtherUserRecipe } from "../../hooks/useUser";
+import FloatingButton from "../../components/Button/FloatingButton";
 
 const UserInfo = () => {
     const { id } = useParams();
@@ -40,6 +41,7 @@ const UserInfo = () => {
                 isFollowButtonEnabled={false}
             />
             <Tab tabs={tabs} />
+            <FloatingButton />
         </div>
     );
 };
