@@ -35,7 +35,7 @@ public class RecipeReviewController {
     public ResponseEntity<?> createReview(
             @RequestHeader("Authorization") String authorization,
             @RequestParam("id") Long recipeId,
-            @RequestParam("reviewImage") MultipartFile reviewImage,
+            @RequestPart("reviewImage") MultipartFile reviewImage,
             @RequestPart("review") RecipeReviewRequestDto requestDto) {
 
         recipeReviewService.createReview(authorization, recipeId, reviewImage, requestDto);
