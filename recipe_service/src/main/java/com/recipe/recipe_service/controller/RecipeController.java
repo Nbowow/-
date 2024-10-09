@@ -103,10 +103,10 @@ public class RecipeController {
 
     // 레시피 상세 조회
     @GetMapping("/{id}")
-    public ResponseEntity<RecipeDetailsResponseDto> getRecipe(
+    public ResponseEntity<RecipeDetailsAllergyResponseDto> getRecipe(
             @PathVariable("id") Long recipeId) {
 
-        RecipeDetailsResponseDto recipe = recipeService.getRecipe(recipeId);
+        RecipeDetailsAllergyResponseDto recipe = recipeService.getRecipe(recipeId);
 
         return ResponseEntity.status(HttpStatus.OK).body(recipe);
     }
