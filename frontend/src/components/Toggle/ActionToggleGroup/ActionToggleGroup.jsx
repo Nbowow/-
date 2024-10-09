@@ -1,6 +1,6 @@
 import PropTypes from "prop-types";
 
-import * as S from "./ActionToggleGroup.styled";
+import * as S from "./ActionToggleGroup.sytled";
 import ActionToggleCounter from "../ActionToggleCounter/ActionToggleCounter";
 import InteractionToggle from "../InteractionToggle/InteractionToggle";
 import { useEffect, useState } from "react";

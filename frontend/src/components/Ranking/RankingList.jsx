@@ -16,10 +16,10 @@ import {
 } from "./RankingList.styled";
 import Pagination from "../Pagination/Pagination";
 import { fetchRanking } from "../../api/ranking";
-/* eslint-disable react/prop-types */
 
+/* eslint-disable react/prop-types */
 const UserTable = () => {
-    const navigate = useNavigate(); // useNavigate 훅을 컴포넌트 내에서 호출
+    const navigate = useNavigate();
     const [searchTerm, setSearchTerm] = useState("");
     const [userData, setUserData] = useState([]);
     const [itemsPerPage] = useState(20);
@@ -36,7 +36,7 @@ const UserTable = () => {
 
     useEffect(() => {
         loadRankingData();
-    }, []); // 빈 배열로 설정하여 컴포넌트 마운트 시 한 번만 호출
+    }, []);
 
     const filteredData = useMemo(() => {
         return userData.filter((user) =>
@@ -98,7 +98,7 @@ const UserTable = () => {
             },
         ],
         [navigate],
-    ); // navigate를 의존성으로 추가
+    );
 
     const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
         useTable(
@@ -188,7 +188,7 @@ UserTable.propTypes = {
             recipeCount: PropTypes.number,
             likeCount: PropTypes.number,
             score: PropTypes.number,
-            id: PropTypes.string.isRequired, // ID 추가
+            id: PropTypes.string.isRequired,
         }),
     ).isRequired,
 };
