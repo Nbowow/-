@@ -61,19 +61,29 @@ public class IngredientController {
     @PostMapping("/recipe")
     public ResponseEntity<List<RecipeResponseDto>> getIngredientRecipe(@RequestBody List<IngredientRequestDto> ingredients) {
 
+        // 재료 ID 리스트를 추출
         List<Long> ingredientIds = ingredients.stream()
                 .map(IngredientRequestDto::getId)
                 .collect(Collectors.toList());
 
+        // 로그 찍기: 추출한 재료 ID 리스트
+        log.info("Ingredient IDs: {}", ingredientIds);
 
         // 재료에 해당하는 레시피 아이디 조회
         List<Long> recipeIds = ingredientService.getRecipeIdByIngredients(ingredientIds);
 
+        // 로그 찍기: 조회한 레시피 ID 리스트
+        log.info("Recipe IDs: {}", recipeIds);
+
         // FeignClient를 사용하여 레시피 서비스에서 레시피 리스트를 가져옴
         List<RecipeResponseDto> recipeList = recipeServiceClient.getRecipeList(recipeIds);
 
+        // 로그 찍기: 가져온 레시피 리스트
+        log.info("Recipe List: {}", recipeList);
+
         return ResponseEntity.status(HttpStatus.OK).body(recipeList);
     }
+
 
     @GetMapping("/popular/week")
     public ResponseEntity<List<IngredientPopularResponseDto>> getPopularWeeklyIngredients() {
