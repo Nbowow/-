@@ -222,13 +222,14 @@ public class IngredientService {
                         .name(ingredientName)
                         .currentPrice(currentPrice.toString())
                         .yesterdayPrice(yesterdayPrice.toString())
-                        .priceGap(String.valueOf(priceGapPrice))
+                        .priceGap(priceGapPrice)
                         .build();
 
                 responseDtoList.add(dto);
             }
         }
         responseDtoList.sort(Comparator.comparing(IngredientPriceChangeResponseDto::getPriceGap));
+
         return responseDtoList;
     }
 
