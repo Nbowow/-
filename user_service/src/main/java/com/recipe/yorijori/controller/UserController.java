@@ -6,6 +6,7 @@ import com.recipe.yorijori.data.dto.allergy.request.AllergyRequestDto;
 import com.recipe.yorijori.data.dto.allergy.response.AllergyResponseDto;
 import com.recipe.yorijori.data.dto.common.response.CommonResponseDto;
 import com.recipe.yorijori.data.dto.rank.RankResponseDto;
+import com.recipe.yorijori.data.dto.rank.RankResponseWrapperDto;
 import com.recipe.yorijori.data.dto.recipe.response.*;
 import com.recipe.yorijori.data.dto.user.request.UserModifyRequestDto;
 import com.recipe.yorijori.data.dto.user.request.UserSignUpDto;
@@ -158,9 +159,9 @@ public class UserController {
             @RequestParam("pageSize") int pageSize,
             @RequestParam("pageNumber") int pageNumber) {
 
-        List<RankResponseDto> rankResponseDtoList = userService.getUserRank(pageSize, pageNumber);
+        RankResponseWrapperDto rankResponseWrapper = userService.getUserRank(pageSize, pageNumber);
 
-        return ResponseEntity.status(HttpStatus.OK).body(rankResponseDtoList);
+        return ResponseEntity.status(HttpStatus.OK).body(rankResponseWrapper);
     }
 
 
