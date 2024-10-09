@@ -10,6 +10,8 @@ import com.recipe.recipe_service.global.config.LevenshteinDistance;
 import com.recipe.recipe_service.repository.RecipeRepository;
 import com.recipe.recipe_service.data.dto.user.response.UserAllergyResponseDto;
 import com.recipe.recipe_service.service.RecipeService;
+import java.util.HashMap;
+import java.util.Map;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -98,10 +100,12 @@ public class RecipeController {
             String correctedWord = searchTypo(keyword); // 오타 수정 API 호출
             return ResponseEntity.status(HttpStatus.OK).body(correctedWord);
         }
+        Map<String, Object> response = new HashMap<>();
+        response.put("recipeList", recipeList);
+        response.put("count", recipeList.size());
 
-        return ResponseEntity.status(HttpStatus.OK).body(recipeList);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
-
     // 레시피 좋아요 등록
     @PostMapping("/like")
     public ResponseEntity<?> likeRecipe(
