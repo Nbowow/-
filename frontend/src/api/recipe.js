@@ -17,10 +17,25 @@ export const searchRecipes = async (searchTerm) => {
     );
     return response.data;
 };
+// 레시피 등록
+export const postRecipe = async (formData) => {
+    const response = await axiosInstance.post("/recipe", formData, {
+        headers: {
+            "Content-Type": "multipart/form-data",
+        },
+    });
+    return response.data;
+};
 
-//레시피 등록
-export const postRecipe = async (recipeData) => {
-    const response = await axiosInstance.post("/recipe", recipeData);
+// 레시피 수정
+export const patchRecipe = async (id, recipeData) => {
+    const response = await axiosInstance.patch(`/recipe/${id}`, recipeData);
+    return response.data;
+};
+
+//레시피 삭제
+export const deleteRecipe = async (id) => {
+    const response = await axiosInstance.delete(`/recipe/${id}`);
     return response.data;
 };
 

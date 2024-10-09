@@ -4,7 +4,7 @@ import Category from "../components/Category/Category";
 import Pagination from "../components/Pagination/Pagination";
 import SortSelector from "./../components/SortSelector/SortSelector";
 import styled from "styled-components";
-import { useRecipeStore } from "../store/recipeStore"; // zustand 스토어 가져오기
+import { useRecipeStore } from "../store/recipeStore";
 import RecipeCardList from "./../components/CardList/RecipeCardList";
 import { fetchRecipes } from "../api/recipe";
 import SearchBar from "./../components/SearchBar/SearchBar";
@@ -22,10 +22,9 @@ const Emoji = styled.span`
 
 const Recipe = () => {
     const navigate = useNavigate();
+    const [recipes, setRecipes] = useState({ data: [], totalCount: 0 });
+    const recipesPerPage = 20;
 
-    const handleSearchSubmit = (term) => {
-        navigate(`/search?keyword=${encodeURIComponent(term)}`);
-    };
     const {
         selectedType,
         selectedSituation,
@@ -39,19 +38,23 @@ const Recipe = () => {
         setSelectedMethod,
         setSortOrder,
         setCurrentPage,
-    } = useRecipeStore(); // zustand 스토어 사용
+    } = useRecipeStore();
 
-    const recipesPerPage = 20;
-    const [recipes, setRecipes] = useState([]); // API 응답을 저장할 상태
+    const handleSearchSubmit = (term) => {
+        navigate(`/search?keyword=${encodeURIComponent(term)}`);
+    };
 
     useEffect(() => {
         const loadRecipes = async () => {
-            const data = await fetchRecipes(currentPage, recipesPerPage);
-            setRecipes(data);
+            const response = await fetchRecipes(currentPage, recipesPerPage);
+            setRecipes({
+                data: response.data,
+                totalCount: response.totalCount,
+            });
         };
 
         loadRecipes();
-    }, [currentPage]); // currentPage가 변경될 때마다 호출
+    }, [currentPage]);
 
     useEffect(() => {
         const params = new URLSearchParams();
@@ -60,7 +63,7 @@ const Recipe = () => {
         navigate(`?${params.toString()}`);
     }, [sortOrder, currentPage, navigate]);
 
-    const filteredRecipes = recipes.filter((recipe) => {
+    const filteredRecipes = recipes.data.filter((recipe) => {
         return (
             (!selectedType ||
                 selectedType === "B_0001" ||
@@ -90,21 +93,23 @@ const Recipe = () => {
         }
     });
 
-    const popularRecipes = [...recipes]
+    const popularRecipes = [...recipes.data]
         .sort((a, b) => b.likeCount - a.likeCount)
         .slice(0, 4);
 
-    // 페이지네이션을 위한 현재 페이지에 맞는 레시피 선택
-    const startIndex = currentPage * recipesPerPage;
-    const endIndex = startIndex + recipesPerPage;
-    const currentRecipes = sortedRecipes.slice(startIndex, endIndex);
-    const pageCount = Math.ceil(sortedRecipes.length / recipesPerPage);
+    // 전체 페이지 수 계산
+    const pageCount = Math.ceil(recipes.totalCount / recipesPerPage);
+
+    const handlePageChange = (selected) => {
+        setCurrentPage(selected);
+        window.scrollTo(0, 0); // 페이지 변경 시 상단으로 스크롤
+    };
 
     return (
         <div>
             <SearchBar
-                userId="yourUserId" // 적절한 userId를 전달
-                purpose="recipeSearch" // purpose prop을 전달
+                userId="yourUserId"
+                purpose="recipeSearch"
                 boldPlacehold="레시피 검색"
                 grayPlacehold="키워드를 입력하세요"
                 onSubmit={handleSearchSubmit}
@@ -120,11 +125,11 @@ const Recipe = () => {
                 onMethodSelect={setSelectedMethod}
             />
             <SortSelector sortOrder={sortOrder} onSortChange={setSortOrder} />
-            <RecipeCardList recipes={currentRecipes} />
+            <RecipeCardList recipes={sortedRecipes} />
             <Pagination
                 pageCount={pageCount}
-                onPageChange={({ selected }) => setCurrentPage(selected)} // 페이지 변경 시 호출
-                currentPage={currentPage} // 현재 페이지 전달
+                onPageChange={({ selected }) => handlePageChange(selected)}
+                currentPage={currentPage}
             />
         </div>
     );

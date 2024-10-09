@@ -92,27 +92,56 @@ const PostRecipe = () => {
     }, []);
 
     const handleSubmit = async () => {
-        // 레시피 등록 요청
-        const requestData = {
-            title: recipeFormData.title,
-            name: recipeFormData.title,
-            intro: recipeFormData.intro,
-            image: recipeFormData.image ? recipeFormData.image.name : "",
-            servings: parseInt(recipeFormData.servings),
-            time: parseInt(recipeFormData.time),
-            level: recipeFormData.level,
-            type: recipeFormData.type,
-            situation: recipeFormData.situation,
-            ingredients: recipeFormData.ingredients,
-            method: recipeFormData.method,
-            recipeMaterials: [],
-            recipeOrders: [],
-        };
+        const formData = new FormData();
+
+        // 기본 레시피 정보 추가
+        formData.append("title", recipeFormData.title);
+        formData.append("name", recipeFormData.title);
+        formData.append("intro", recipeFormData.intro);
+        formData.append("servings", recipeFormData.servings);
+        formData.append("time", recipeFormData.time);
+        formData.append("level", recipeFormData.level);
+        formData.append("type", recipeFormData.type);
+        formData.append("situation", recipeFormData.situation);
+        formData.append("ingredients", recipeFormData.ingredients);
+        formData.append("method", recipeFormData.method);
+
+        // 대표 이미지 추가
+        if (recipeFormData.image) {
+            formData.append("image", recipeFormData.image);
+        }
+
+        // 재료 그룹 추가
+        materialGroups.forEach((group, groupIndex) => {
+            formData.append(`materialGroups[${groupIndex}].name`, group.name);
+            group.materials.forEach((material, materialIndex) => {
+                formData.append(
+                    `materialGroups[${groupIndex}].materials[${materialIndex}].name`,
+                    material.name,
+                );
+                formData.append(
+                    `materialGroups[${groupIndex}].materials[${materialIndex}].amount`,
+                    material.amount,
+                );
+                formData.append(
+                    `materialGroups[${groupIndex}].materials[${materialIndex}].unit`,
+                    material.unit,
+                );
+            });
+        });
+
+        // 조리 순서 추가
+        orderSteps.forEach((step, index) => {
+            if (step.image) {
+                formData.append(`recipeOrders[${index}].image`, step.image);
+            }
+            formData.append(`recipeOrders[${index}].content`, step.content);
+            formData.append(`recipeOrders[${index}].orderNum`, index + 1);
+        });
 
         try {
-            const response = await postRecipe(requestData);
+            const response = await postRecipe(formData);
             if (response) {
-                // 성공 시 모달 메시지 설정
                 setModalMessage(
                     <>
                         <Emoji>🍳</Emoji>레시피가 등록되었습니다!
@@ -123,14 +152,13 @@ const PostRecipe = () => {
             }
             // eslint-disable-next-line no-unused-vars
         } catch (error) {
-            // 실패 시 모달 메시지 설정
             setModalMessage(
                 <>
                     <Emoji>⛔</Emoji>레시피 등록에 실패했습니다
                 </>,
             );
-            setIsError(true); // 에러 상태 설정
-            setIsModalOpen(true); // 모달 열기
+            setIsError(true);
+            setIsModalOpen(true);
         }
     };
 

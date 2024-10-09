@@ -16,6 +16,7 @@ import LoginLoading from "./pages/Login/LoginLoding";
 import Footer from "./components/Footer/Footer";
 import SearchRecipe from "./pages/SearchRecipe";
 import UserInfo from "./pages/UserInfo/UserInfo";
+import ProtectedRoute from "./components/ProtectedRoute"; // 새로 추가된 import
 
 function App() {
     return (
@@ -25,12 +26,33 @@ function App() {
                     <Header />
                     <Routes>
                         <Route path="/" element={<Main />} />
-                        <Route path="/post" element={<PostRecipe />} />
+                        <Route
+                            path="/post"
+                            element={
+                                <ProtectedRoute>
+                                    <PostRecipe />
+                                </ProtectedRoute>
+                            }
+                        />
                         <Route path="/recipe" element={<Recipe />} />
                         <Route path="/recipe/:id" element={<RecipeDetail />} />
                         <Route path="/ranking" element={<Ranking />} />
-                        <Route path="/modify" element={<ModifyProfile />} />
-                        <Route path="/mypage" element={<MyPage />} />
+                        <Route
+                            path="/modify"
+                            element={
+                                <ProtectedRoute>
+                                    <ModifyProfile />
+                                </ProtectedRoute>
+                            }
+                        />
+                        <Route
+                            path="/mypage"
+                            element={
+                                <ProtectedRoute>
+                                    <MyPage />
+                                </ProtectedRoute>
+                            }
+                        />
                         <Route path="/login" element={<Login />} />
                         <Route
                             path="/login-loading"
