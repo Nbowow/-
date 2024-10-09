@@ -12,7 +12,7 @@ import {
     postRecipeScrap,
 } from "../../../api/recipe";
 
-const ActionToggleGroup = ({ post }) => {
+const ActionToggleGroup = ({ recipe }) => {
     const [isLike, setIsLike] = useState(false);
     const [isScrap, setIsScrap] = useState(true);
 
@@ -21,28 +21,28 @@ const ActionToggleGroup = ({ post }) => {
     const [commentCount, setCommentCount] = useState(0);
     useEffect(() => {
         const fetchLike = async () => {
-            const data = await getUserLike(post.id);
-            if (data.some((i) => i.id === post.id)) setIsLike(true);
+            const data = await getUserLike(recipe.id);
+            if (data.some((i) => i.id === recipe.id)) setIsLike(true);
             else setIsLike(false);
         };
         const fetchScrap = async () => {
-            const data = await getUserLike(post.id);
-            if (data.some((i) => i.id === post.id)) setIsScrap(true);
+            const data = await getUserLike(recipe.id);
+            if (data.some((i) => i.id === recipe.id)) setIsScrap(true);
             else setIsScrap(false);
         };
         fetchLike();
         fetchScrap();
-        setLikeCount(post.likeCount);
-        setScrapCount(post.scrapCount);
-        setCommentCount(post.commentCount);
-    }, [post]);
+        setLikeCount(recipe.likeCount);
+        setScrapCount(recipe.scrapCount);
+        setCommentCount(recipe.commentCount);
+    }, [recipe]);
 
     const handleLike = async () => {
         if (isLike) {
-            await patchRecipeUnLike(post.id);
+            await patchRecipeUnLike(recipe.id);
             setLikeCount((prevCount) => prevCount - 1);
         } else {
-            await postRecipeLike(post.id);
+            await postRecipeLike(recipe.id);
             setLikeCount((prevCount) => prevCount + 1);
         }
         setIsLike(!isLike);
@@ -50,10 +50,10 @@ const ActionToggleGroup = ({ post }) => {
 
     const handleScrap = async () => {
         if (isScrap) {
-            await patchRecipeUnScrap(post.id);
+            await patchRecipeUnScrap(recipe.id);
             setScrapCount((prevCount) => prevCount - 1);
         } else {
-            await postRecipeScrap(post.id);
+            await postRecipeScrap(recipe.id);
             setScrapCount((prevCount) => prevCount + 1);
         }
         setIsScrap(!isScrap);
@@ -95,7 +95,7 @@ const ActionToggleGroup = ({ post }) => {
 };
 
 ActionToggleGroup.propTypes = {
-    post: PropTypes.shape({
+    recipe: PropTypes.shape({
         id: PropTypes.number.isRequired,
         likeCount: PropTypes.number.isRequired,
         scrapCount: PropTypes.number.isRequired,

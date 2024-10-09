@@ -3,19 +3,22 @@ import RecipeCard from "../Card/RecipeCard/RecipeCard";
 import PropTypes from "prop-types";
 import { useNavigate } from "react-router-dom";
 
-const RecipeCardList = ({ recipes }) => {
-    const navigate = useNavigate(); // useNavigate 훅을 사용하여 navigate 함수 가져오기
+const RecipeCardList = ({ recipes, showProfile }) => {
+    const navigate = useNavigate();
 
-    const handleCardClick = (recipeId) => {
-        navigate(`/recipe/${recipeId}`); // recipeId를 사용하여 상세 페이지로 이동
+    const handleCardClick = (id) => {
+        navigate(`/recipe/${id}`);
     };
 
     return (
         <S.CardList>
             {recipes.map((recipe) => (
-                <div key={recipe.id} onClick={() => handleCardClick(recipe.id)}>
-                    <RecipeCard {...recipe} />
-                </div>
+                <RecipeCard
+                    key={recipe.id}
+                    showProfile={showProfile}
+                    recipe={recipe}
+                    onClick={() => handleCardClick(recipe.id)}
+                />
             ))}
         </S.CardList>
     );
@@ -26,14 +29,15 @@ RecipeCardList.propTypes = {
         PropTypes.shape({
             id: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
                 .isRequired,
-            imgUrl: PropTypes.string.isRequired,
+            image: PropTypes.string.isRequired,
             title: PropTypes.string.isRequired,
-            text: PropTypes.string.isRequired,
+            info: PropTypes.string.isRequired,
             showProfile: PropTypes.bool.isRequired,
-            profileImgUrl: PropTypes.string,
-            author: PropTypes.string.isRequired,
+            profileImage: PropTypes.string,
+            nickname: PropTypes.string.isRequired,
         }).isRequired,
     ).isRequired,
+    showProfile: PropTypes.bool.isRequired,
 };
 
 export default RecipeCardList;

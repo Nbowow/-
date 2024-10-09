@@ -27,13 +27,15 @@ const ModifyProfile = () => {
         },
     ];
 
+    const maxSize = 1 * 1024 * 1024;
+
     const handleProfileClick = () => {
         fileInputRef.current.click();
     };
 
     const handleFileChange = async (event) => {
         const file = event.target.files[0];
-        if (!file) return;
+        if (!file || file.size > maxSize) return;
 
         uploadProfileImage(file);
     };

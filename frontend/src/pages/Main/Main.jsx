@@ -5,6 +5,7 @@ import LinkBanner from "../../components/Banner/LinkBanner";
 
 import * as S from "./Main.styled";
 import { useNavigate } from "react-router-dom";
+import FloatingButton from "../../components/Button/FloatingButton";
 
 // TODO: 테스트용 데이터
 const winterMenus = [
@@ -245,6 +246,7 @@ const Main = () => {
             </div>
 
             <LinkBanner />
+            <FloatingButton />
         </S.Main>
     );
 };
