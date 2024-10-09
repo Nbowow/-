@@ -25,6 +25,6 @@ public interface UserServiceClient {
 
 
     @GetMapping("/api/v1/users/point/{userId}")
-    ResponseEntity<?> plusPoint(@PathVariable("userId") Long userId);
+    ResponseEntity<?> plusPoint(@RequestHeader("Authorization") String authorization, @PathVariable("userId") Long userId);
 
 }
