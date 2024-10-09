@@ -1,5 +1,5 @@
-/* eslint-disable react/prop-types */
 import { useState } from "react";
+import PropTypes from "prop-types"; // PropTypes 추가
 import {
     Container,
     Title,
@@ -38,7 +38,7 @@ const OrderForm = ({ orderSteps, setOrderSteps }) => {
         const file = event.target.files[0];
         if (file) {
             const newSteps = [...orderSteps];
-            newSteps[activeStep].image = file; // 파일 객체를 저장
+            newSteps[activeStep].image = file;
             setOrderSteps(newSteps);
         }
     };
@@ -51,9 +51,9 @@ const OrderForm = ({ orderSteps, setOrderSteps }) => {
     };
 
     const handleImageRemove = (e) => {
-        e.stopPropagation(); // 이벤트 전파 방지
+        e.stopPropagation();
         const newSteps = [...orderSteps];
-        newSteps[activeStep].image = null; // 이미지 객체를 null로 설정
+        newSteps[activeStep].image = null;
         setOrderSteps(newSteps);
     };
 
@@ -131,6 +131,18 @@ const OrderForm = ({ orderSteps, setOrderSteps }) => {
             </FormLayout>
         </Container>
     );
+};
+
+// PropTypes 추가
+OrderForm.propTypes = {
+    orderSteps: PropTypes.arrayOf(
+        PropTypes.shape({
+            image: PropTypes.instanceOf(File),
+            content: PropTypes.string.isRequired,
+            orderNum: PropTypes.number.isRequired,
+        }),
+    ).isRequired,
+    setOrderSteps: PropTypes.func.isRequired,
 };
 
 export default OrderForm;

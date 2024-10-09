@@ -29,14 +29,6 @@ const CATEGORY_TYPES = {
     METHOD: "방법",
 };
 
-// eslint-disable-next-line no-unused-vars
-const TYPE_TO_CODE = {
-    TYPE: "B",
-    SITUATION: "C",
-    INGREDIENT: "D",
-    METHOD: "E",
-};
-
 const RecipeForm = ({ recipeData, setRecipeData, categories }) => {
     const handleChange = (e) => {
         const { name, value } = e.target;

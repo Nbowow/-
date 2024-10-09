@@ -1,4 +1,4 @@
-/* eslint-disable react/prop-types */
+import { PropTypes } from "prop-types";
 import {
     Container,
     Title,
@@ -126,5 +126,19 @@ const MaterialForm = ({ materialGroups, setMaterialGroups }) => {
         </Container>
     );
 };
-
+MaterialForm.propTypes = {
+    materialGroups: PropTypes.arrayOf(
+        PropTypes.shape({
+            name: PropTypes.string.isRequired,
+            materials: PropTypes.arrayOf(
+                PropTypes.shape({
+                    name: PropTypes.string.isRequired,
+                    amount: PropTypes.string.isRequired,
+                    unit: PropTypes.string.isRequired,
+                }),
+            ).isRequired,
+        }),
+    ).isRequired,
+    setMaterialGroups: PropTypes.func.isRequired,
+};
 export default MaterialForm;

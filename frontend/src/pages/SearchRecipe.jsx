@@ -15,6 +15,7 @@ const PopularRecipe = styled.h2`
     margin-left: 50px;
     font-size: ${({ theme }) => theme.fontSize.h3};
 `;
+
 const Emoji = styled.span`
     font-family: "tossface";
 `;
@@ -29,6 +30,18 @@ const NoResultContainer = styled.div`
 const NoResult = styled.h2`
     font-family: "SUITEXTRABOLD";
     padding: 20px;
+    display: flex;
+    align-items: center;
+`;
+
+const NoResultSearch = styled.p`
+    font-family: "SUITEXTRABOLD";
+    padding: 20px;
+    cursor: pointer;
+    color: blue;
+    / &:hover {
+        text-decoration: underline;
+    }
 `;
 
 const SearchRecipe = () => {
@@ -74,33 +87,26 @@ const SearchRecipe = () => {
 
         // 레시피 데이터 로드
         const loadRecipes = async () => {
-            try {
-                let data;
-                if (keyword) {
-                    data = await searchRecipes(keyword);
-                } else {
-                    data = await fetchRecipes(page, recipesPerPage);
-                }
+            let data;
+            if (keyword) {
+                data = await searchRecipes(keyword);
+            } else {
+                data = await fetchRecipes(page, recipesPerPage);
+            }
 
-                // 응답이 배열인지 확인
-                if (Array.isArray(data)) {
-                    setRecipes(data);
-                    setErrorMessage(null); // 에러 메시지 초기화
-                } else {
-                    const message = data;
-                    setRecipes([]); // 배열이 아닐 경우 빈 배열로 설정
-                    setErrorMessage(message); // 에러 메시지 설정
-                }
-                // eslint-disable-next-line no-unused-vars
-            } catch (error) {
-                setRecipes([]); // 오류 발생 시 빈 배열로 설정
-                setErrorMessage("레시피 로드 중 오류 발생"); // 에러 메시지 설정
+            if (Array.isArray(data)) {
+                setRecipes(data);
+                setErrorMessage(null);
+            } else {
+                const message = data;
+                setRecipes([]);
+                setErrorMessage(message);
             }
         };
 
         loadRecipes();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [location.search]); // URL이 변경될 때마다 실행
+    }, [location.search]);
 
     // 레시피 필터링 로직
     const filteredRecipes = Array.isArray(recipes)
@@ -126,6 +132,12 @@ const SearchRecipe = () => {
         .sort((a, b) => b.likeCount - a.likeCount)
         .slice(0, 4);
 
+    const handleNoResultClick = () => {
+        if (errorMessage) {
+            navigate(`/search?keyword=${encodeURIComponent(errorMessage)}`);
+        }
+    };
+
     return (
         <div>
             <SearchBar
@@ -149,8 +161,13 @@ const SearchRecipe = () => {
                     <NoResult>
                         <Emoji>😥</Emoji>
                         검색 결과가 없습니다.
-                        {errorMessage && <div>{errorMessage}</div>}{" "}
-                        {/* 에러 메시지 출력 */}
+                    </NoResult>
+                    <NoResult>
+                        혹시 이걸 찾으시나요?
+                        <NoResultSearch onClick={handleNoResultClick}>
+                            {errorMessage && <div>{errorMessage}</div>}{" "}
+                            {/* 에러 메시지 출력 */}
+                        </NoResultSearch>
                     </NoResult>
                 </NoResultContainer>
             ) : (
@@ -196,7 +213,7 @@ const SearchRecipe = () => {
                             )}
                             onPageChange={({ selected }) =>
                                 setCurrentPage(selected)
-                            } // 페이지 변경 시 호출
+                            }
                             currentPage={currentPage}
                         />
                     )}
