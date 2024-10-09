@@ -65,8 +65,19 @@ export const getUserLike = async () => {
     const response = await axiosInstance.get("/users/like");
     return response.data;
 };
+
+export const fetchOtherUser = async (id) => {
+    const response = await axiosInstance.get(`/users/user/${id}`);
+    return response.data;
+};
+
 export const getUserScrap = async () => {
     const response = await axiosInstance.get("/users/scrap");
+    return response.data;
+};
+
+export const fetchOtherUserRecipe = async (id) => {
+    const response = await axiosInstance.get(`/users/recipe/other/${id}`);
     return response.data;
 };
 

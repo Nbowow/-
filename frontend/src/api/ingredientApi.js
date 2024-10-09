@@ -50,3 +50,12 @@ export const getIngredientLowPrices = async (word) => {
     });
     return response.data;
 };
+
+export const getRelatedRecipe = async (ingredient) => {
+    const response = await axiosInstance.post("/ingredient/recipe", ingredient);
+    return response.data;
+};
+export const getIngredientPriceChange = async () => {
+    const response = await axiosInstance.get("/ingredient/change", {});
+    return response.data;
+};

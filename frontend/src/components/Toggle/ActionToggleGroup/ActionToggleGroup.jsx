@@ -4,56 +4,74 @@ import * as S from "./ActionToggleGroup.sytled";
 import ActionToggleCounter from "../ActionToggleCounter/ActionToggleCounter";
 import InteractionToggle from "../InteractionToggle/InteractionToggle";
 import { useEffect, useState } from "react";
-import { getUserLike } from "../../../api/userApi";
-import {
-    patchRecipeUnLike,
-    patchRecipeUnScrap,
-    postRecipeLike,
-    postRecipeScrap,
-} from "../../../api/recipe";
 
-const ActionToggleGroup = ({ post }) => {
+import { useUserStore } from "../../../store/userStore";
+import {
+    useUpdateLike,
+    useUpdateScrap,
+    useUpdateUnScrap,
+    useUserLikes,
+    useUserScraps,
+} from "../../../hooks/useUser";
+
+const ActionToggleGroup = ({ recipe }) => {
     const [isLike, setIsLike] = useState(false);
-    const [isScrap, setIsScrap] = useState(true);
+    const [isScrap, setIsScrap] = useState(false);
 
     const [likeCount, setLikeCount] = useState(0);
     const [scrapCount, setScrapCount] = useState(0);
     const [commentCount, setCommentCount] = useState(0);
+
+    const isLoggedIn = useUserStore((state) => state.isLoggedIn);
+
+    const { isLoading: isUserLoading, data: likes } = useUserLikes();
+    const { isLoading: isRecipeLoading, data: scraps } = useUserScraps();
+
     useEffect(() => {
-        const fetchLike = async () => {
-            const data = await getUserLike(post.id);
-            if (data.some((i) => i.id === post.id)) setIsLike(true);
-            else setIsLike(false);
-        };
-        const fetchScrap = async () => {
-            const data = await getUserLike(post.id);
-            if (data.some((i) => i.id === post.id)) setIsScrap(true);
-            else setIsScrap(false);
-        };
-        fetchLike();
-        fetchScrap();
-        setLikeCount(post.likeCount);
-        setScrapCount(post.scrapCount);
-        setCommentCount(post.commentCount);
-    }, [post]);
+        if (isLoggedIn) {
+            setIsLike(likes.some((i) => i.id === recipe.id));
+            setIsScrap(scraps.some((i) => i.id === recipe.id));
+        }
+        if (!isUserLoading && !isRecipeLoading) {
+            setLikeCount(recipe.likeCount ?? 0);
+            setScrapCount(recipe.scrapCount ?? 0);
+            setCommentCount(recipe.commentCount ?? 0);
+        }
+    }, [
+        isLoggedIn,
+        likes,
+        scraps,
+        recipe,
+        isUserLoading,
+        isRecipeLoading,
+        isLike,
+        isScrap,
+    ]);
+
+    const { mutate: updateLike } = useUpdateLike();
+    const { mutate: updateUnLike } = useUpdateUnScrap();
+    const { mutate: updateScrap } = useUpdateScrap();
+    const { mutate: updateUnScrap } = useUpdateUnScrap();
 
     const handleLike = async () => {
+        if (!isLoggedIn) return;
         if (isLike) {
-            await patchRecipeUnLike(post.id);
+            updateUnLike(recipe.id);
             setLikeCount((prevCount) => prevCount - 1);
         } else {
-            await postRecipeLike(post.id);
+            updateLike(recipe.id);
             setLikeCount((prevCount) => prevCount + 1);
         }
         setIsLike(!isLike);
     };
 
     const handleScrap = async () => {
+        if (!isLoggedIn) return;
         if (isScrap) {
-            await patchRecipeUnScrap(post.id);
+            updateUnScrap(recipe.id);
             setScrapCount((prevCount) => prevCount - 1);
         } else {
-            await postRecipeScrap(post.id);
+            updateScrap(recipe.id);
             setScrapCount((prevCount) => prevCount + 1);
         }
         setIsScrap(!isScrap);
@@ -95,7 +113,7 @@ const ActionToggleGroup = ({ post }) => {
 };
 
 ActionToggleGroup.propTypes = {
-    post: PropTypes.shape({
+    recipe: PropTypes.shape({
         id: PropTypes.number.isRequired,
         likeCount: PropTypes.number.isRequired,
         scrapCount: PropTypes.number.isRequired,

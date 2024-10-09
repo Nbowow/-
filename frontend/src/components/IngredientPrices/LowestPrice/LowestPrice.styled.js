@@ -19,3 +19,7 @@ export const Img = styled.img`
     width: 13%;
     border-radius: ${({ theme }) => theme.borderRadius.medium};
 `;
+
+export const LowestPriceWrapper = styled.div`
+    width: 50%;
+`;

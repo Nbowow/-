@@ -3,10 +3,9 @@ import { useState } from "react";
 import { getIngredientPrices } from "../../../api/ingredientApi";
 import InteractionToggle from "../../Toggle/InteractionToggle/InteractionToggle";
 import Button from "../../Button/Button";
-import LowestPrice from "../LowestPrice/LowestPrice";
-import Title from "../../Title/Title";
 import * as S from "./SearchResult.styled";
 import YearlyPriceChart from "../YearlyPriceChart/YearlyPriceChart";
+import LowestPrices from "../LowestPrice/LowestPrices";
 
 const SearchResult = ({ result, onLike, like }) => {
     const [showInfo, setShowInfo] = useState(false);
@@ -45,14 +44,7 @@ const SearchResult = ({ result, onLike, like }) => {
                     {showInfo && (
                         <S.MoreInfo show={showInfo}>
                             <YearlyPriceChart priceHistory={priceHistory} />
-                            <S.LowestPriceWrapper>
-                                <Title title={"최저가"} />
-                                {/* TODO: 최저가 정보를 받아와서 map 사용해 렌더링 */}
-                                <LowestPrice />
-                                <LowestPrice />
-                                <LowestPrice />
-                                <LowestPrice />
-                            </S.LowestPriceWrapper>
+                            <LowestPrices name={result.name} />
                         </S.MoreInfo>
                     )}
                 </>
