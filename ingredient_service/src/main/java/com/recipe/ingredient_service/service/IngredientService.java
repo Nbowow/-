@@ -8,6 +8,7 @@ import com.recipe.ingredient_service.data.domain.Ingredient;
 import com.recipe.ingredient_service.data.domain.UserLikeMaterials;
 import com.recipe.ingredient_service.data.dto.ingredient.DayDto;
 import com.recipe.ingredient_service.data.dto.ingredient.response.*;
+import com.recipe.ingredient_service.global.exception.AlreadyLikedException;
 import com.recipe.ingredient_service.repository.DayPriceRepository;
 import com.recipe.ingredient_service.repository.IngredientRepository;
 import com.recipe.ingredient_service.repository.RecipematerialsRepository;
@@ -408,6 +409,11 @@ public class IngredientService {
     }
 
     public void addUserIngredientLike(Long userId, Long ingredientId) {
+
+        boolean isAlreadyLiked = userLikeMaterialsRepository.existsByUserIdAndIngredientId(userId, ingredientId);
+        if (isAlreadyLiked) {
+                throw new AlreadyLikedException();
+        }
         UserLikeMaterials newLike = UserLikeMaterials.builder()
                 .userId(userId)
                 .ingredientId(ingredientId)
