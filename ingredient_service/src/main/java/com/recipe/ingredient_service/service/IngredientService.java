@@ -448,6 +448,13 @@ public class IngredientService {
                 .orElseThrow(() -> new NoSuchElementException("해당 재료가 존재하지 않습니다."));
     }
 
+    public Ingredient findAllergyById(Long materialId) {
+        return ingredientRepository.findById(materialId)
+                .orElseThrow(() -> new NoSuchElementException("해당 재료가 존재하지 않습니다."));
+
+
+    }
+
     public List<LowestPriceDto> getLowestPriceResult(String query, String display, String start, String sort) throws Exception {
         Object data = naverSearchClient.getLowestPriceResult(query, display, start, sort);
         ObjectMapper objectMapper = new ObjectMapper();

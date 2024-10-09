@@ -3,6 +3,7 @@ package com.recipe.recipe_service.service;
 import com.recipe.recipe_service.client.IngredientServiceClient;
 import com.recipe.recipe_service.client.UserServiceClient;
 import com.recipe.recipe_service.data.domain.*;
+import com.recipe.recipe_service.data.dto.ingredient.response.RecipeMaterialsAllergyResponseDto;
 import com.recipe.recipe_service.data.dto.ingredient.response.RecipeMaterialsResponseDto;
 import com.recipe.recipe_service.data.dto.recipe.request.RecipeRegisterRequestDto;
 import com.recipe.recipe_service.data.dto.recipe.response.*;
@@ -104,7 +105,7 @@ public class RecipeService {
         Page<Recipe> recipePage = recipeRepository.findAll(pageable);
 
         // 페이지 결과에서 데이터를 추출하여 DTO로 변환
-        List<RecipeDetailsResponseDto> recipeList = recipePage.getContent().stream()
+        return recipePage.getContent().stream()
                 .map(recipe -> RecipeDetailsResponseDto.builder()
                         .id(recipe.getId())
                         .title(recipe.getTitle())
@@ -125,11 +126,9 @@ public class RecipeService {
                         .commentCount(recipe.getCommentCount())
                         .build())
                 .toList();
-
-        return recipeList;
     }
 
-    public RecipeDetailsResponseDto getRecipe(Long recipeId) {
+    public RecipeDetailsAllergyResponseDto getRecipe(Long recipeId) {
 
         // 레시피 조회
         Recipe recipe = recipeRepository.findById(recipeId)
@@ -142,13 +141,14 @@ public class RecipeService {
         List<RecipeMaterials> recipeMaterials = recipeMaterialsRepository.findByRecipeId(recipeId);
 
         // 재료를 DTO로 변환
-        List<RecipeMaterialsResponseDto> recipeMaterialsResponseDto = recipeMaterials.stream()
-                .map(material -> RecipeMaterialsResponseDto.builder()
+        List<RecipeMaterialsAllergyResponseDto> recipeMaterialsAllergyResponseDto = recipeMaterials.stream()
+                .map(material -> RecipeMaterialsAllergyResponseDto.builder()
                         .materialId(material.getMaterialId())
                         .materialName(ingredientServiceClient.getIngredientNameById(material.getMaterialId())) // 재료 이름 가져오기
                         .amount(material.getAmount())
                         .unit(material.getUnit())
                         .subtitle(material.getSubtitle())
+                        .allergyCode(ingredientServiceClient.getIngredientAllergyById(material.getMaterialId()))
                         .build())
                 .toList();
 
@@ -166,7 +166,7 @@ public class RecipeService {
 
 
         // 레시피 상세 정보를 RecipeDetailsResponseDto로 변환
-        RecipeDetailsResponseDto recipeDetailsResponseDto = RecipeDetailsResponseDto.builder()
+        return RecipeDetailsAllergyResponseDto.builder()
                 .id(recipe.getId())
                 .title(recipe.getTitle())
                 .name(recipe.getName())
@@ -190,11 +190,9 @@ public class RecipeService {
                 .commentCount(recipe.getCommentCount())
                 .calorie(null)
                 .price(null)
-                .materials(recipeMaterialsResponseDto) // 재료 추가
+                .materials(recipeMaterialsAllergyResponseDto) // 재료 추가
                 .recipeOrders(recipeOrdersResponseDto) // 요리 순서 추가
                 .build();
-
-        return recipeDetailsResponseDto;
 
     }
 
