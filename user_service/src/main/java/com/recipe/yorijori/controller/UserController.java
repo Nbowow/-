@@ -257,4 +257,10 @@ public class UserController {
                 .orElseThrow(InCorrectAccessTokenException::new);
     }
 
+
+    @GetMapping("/point/{userId}")
+    ResponseEntity<?> plusPoint(@PathVariable("userId") Long userId){
+
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 }

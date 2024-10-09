@@ -23,4 +23,8 @@ public interface UserServiceClient {
     @GetMapping("/api/v1/users/allergys")
     ResponseEntity<List<UserAllergyResponseDto>> getUserAllergies(@RequestHeader("Authorization") String authorization);
 
+
+    @GetMapping("/api/v1/users/point/{userId}")
+    ResponseEntity<?> plusPoint(@PathVariable("userId") Long userId);
+
 }
