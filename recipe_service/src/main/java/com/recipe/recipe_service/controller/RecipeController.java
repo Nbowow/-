@@ -47,6 +47,8 @@ public class RecipeController {
 
         Recipe responseRecipe = recipeService.createRecipe(requestDto, userId);
 
+        userServiceClient.plusPoint(userId);
+
         return ResponseEntity.status(HttpStatus.CREATED).body(responseRecipe);
     }
     
