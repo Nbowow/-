@@ -139,7 +139,6 @@ public class UserController {
 
         String userEmail = getUserEmailFromRequest(request);
 
-        log.info("User email retrieved: {}", userEmail);
         UserResponseDto userDto = userService.getUserByEmail(userEmail);
 
         return ResponseEntity.ok(userDto);
