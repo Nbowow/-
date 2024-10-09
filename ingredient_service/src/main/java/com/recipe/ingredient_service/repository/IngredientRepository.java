@@ -18,6 +18,7 @@ public interface IngredientRepository extends JpaRepository<Ingredient, Long> {
 
     Optional<Ingredient> findByName(String name);
 
+
     Page<Ingredient> findAll(Pageable pageable);
 
     @Query("SELECT i.id FROM Ingredient i WHERE i.priceStatus = true")
@@ -26,4 +27,9 @@ public interface IngredientRepository extends JpaRepository<Ingredient, Long> {
     @Query("SELECT i FROM Ingredient i WHERE i.id IN :ingredientIds")
     List<Ingredient> findByIds(@Param("ingredientIds") List<Long> ingredientIds);
 
+    @Query("SELECT r.name FROM Ingredient r")
+    List<String> findAllIngredientNames();
+
+    @Query("SELECT r.name FROM Ingredient r WHERE LOWER(r.name) LIKE LOWER(CONCAT('%', :keyword, '%'))")
+    List<String> findIngredientNamesByKeyword(String keyword, Pageable pageable);
 }

@@ -6,12 +6,15 @@ import com.recipe.recipe_service.data.domain.Recipe;
 import com.recipe.recipe_service.data.dto.ingredient.response.IngredientLikeResponseDto;
 import com.recipe.recipe_service.data.dto.recipe.request.RecipeRegisterRequestDto;
 import com.recipe.recipe_service.data.dto.recipe.response.*;
+import com.recipe.recipe_service.data.dto.recommend.response.RecipeRecommendResponseDto;
+import com.recipe.recipe_service.data.dto.recommend.response.RecipeRecommendResponseWrapperDto;
 import com.recipe.recipe_service.global.config.LevenshteinDistance;
 import com.recipe.recipe_service.repository.RecipeRepository;
 import com.recipe.recipe_service.data.dto.user.response.UserAllergyResponseDto;
 import com.recipe.recipe_service.service.RecipeService;
 import java.util.HashMap;
 import java.util.Map;
+import com.recipe.recipe_service.service.S3Uploader;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -19,7 +22,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -33,13 +39,32 @@ public class RecipeController {
     private final UserServiceClient userServiceClient;
     private final IngredientServiceClient ingredientServiceClient;
     private final RecipeRepository recipeRepository;
+    private final S3Uploader s3Uploader;
     // 레시피 생성
     @PostMapping("")
     public ResponseEntity<Recipe> createRecipe(
             @RequestHeader("Authorization") String authorization,
-            @RequestBody RecipeRegisterRequestDto requestDto) {
+            @RequestPart("recipeImage") MultipartFile recipeImage,  // 레시피 메인 이미지 파일
+            @RequestPart("orderImages") List<MultipartFile> orderImages, // 레시피 순서 이미지 파일들
+            @RequestPart("recipe") RecipeRegisterRequestDto requestDto) throws IOException {
 
         Long userId = userServiceClient.getUserId(authorization);
+
+        // S3에 레시피 메인 이미지 업로드
+        String recipeImageUrl = s3Uploader.saveFile(recipeImage);
+        requestDto.setImage(recipeImageUrl); // 업로드된 이미지 URL을 DTO에 저장
+
+        // S3에 레시피 순서 이미지 업로드
+        List<String> orderImageUrls = new ArrayList<>();
+        for (MultipartFile orderImage : orderImages) {
+            String orderImageUrl = s3Uploader.saveFile(orderImage);
+            orderImageUrls.add(orderImageUrl);
+        }
+
+        // 순서 이미지 URL을 DTO의 각 순서에 저장
+        for (int i = 0; i < requestDto.getRecipeOrders().size(); i++) {
+            requestDto.getRecipeOrders().get(i).setOrderImg(orderImageUrls.get(i));
+        }
 
         // 재료의 이름으로 재료 ID 가져오기
         requestDto.getRecipeMaterials().forEach(materialDto -> {
@@ -48,6 +73,8 @@ public class RecipeController {
         });
 
         Recipe responseRecipe = recipeService.createRecipe(requestDto, userId);
+
+        userServiceClient.plusPoint(authorization,userId);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(responseRecipe);
     }
@@ -66,7 +93,7 @@ public class RecipeController {
 
     // 레시피 전체 조회
     @GetMapping("")
-    public ResponseEntity<List<RecipeDetailsResponseDto>> getAllRecipes(
+    public ResponseEntity<?> getAllRecipes(
             @RequestParam("pageSize") int pageSize,
             @RequestParam("pageNumber") int pageNumber) {
 
@@ -74,16 +101,21 @@ public class RecipeController {
         // pageNumber가 1부터 시작한다고 가정하고 0부터 시작하도록 맞춤
         List<RecipeDetailsResponseDto> recipeList = recipeService.getAllRecipes(pageNumber - 1, pageSize);
 
-        return ResponseEntity.status(HttpStatus.OK).body(recipeList);
+        Long totalRecipesCount = recipeRepository.count();
+
+        // PagedResponseDto에 레시피 목록과 총 개수를 담아 반환
+        PagedResponseDto<RecipeDetailsResponseDto> response = new PagedResponseDto<>(recipeList, totalRecipesCount);
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
 
     }
 
     // 레시피 상세 조회
     @GetMapping("/{id}")
-    public ResponseEntity<RecipeDetailsResponseDto> getRecipe(
+    public ResponseEntity<RecipeDetailsAllergyResponseDto> getRecipe(
             @PathVariable("id") Long recipeId) {
 
-        RecipeDetailsResponseDto recipe = recipeService.getRecipe(recipeId);
+        RecipeDetailsAllergyResponseDto recipe = recipeService.getRecipe(recipeId);
 
         return ResponseEntity.status(HttpStatus.OK).body(recipe);
     }
@@ -132,6 +164,7 @@ public class RecipeController {
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
+
     // 특정 사용자가 만든 레시피 조회
     @GetMapping("/user/{userId}")
     public ResponseEntity<List<UserRecipeRegistResponseDto>> getUserRecipes(@PathVariable("userId") Long userId) {
@@ -154,9 +187,9 @@ public class RecipeController {
     }
 
 
-    // 사용자 알러지 기반 레시피 추천
+    // 사용자 알러지, 선호재료 기반 레시피 추천
     @GetMapping("/recommend")
-    public ResponseEntity<List<RecipeRecommendResponseDto>> getUserRecommendations(
+    public ResponseEntity<RecipeRecommendResponseWrapperDto> getUserRecommendations(
             @RequestHeader("Authorization") String authorization) {
 
         Long userId = userServiceClient.getUserId(authorization);
@@ -177,7 +210,26 @@ public class RecipeController {
         // 사용자 선호 재료 기반 레시피 추천
         List<RecipeRecommendResponseDto> recommendedRecipes = recipeService.getRecipesByIngredients(safeIngredientIds);
 
-        return ResponseEntity.status(HttpStatus.OK).body(recommendedRecipes);
+
+        String message;
+        if (recommendedRecipes.size() >= 4) {
+            // 레시피가 4개 이상이면 사용자 선호 재료 기반 추천
+            message = "사용자 선호 재료를 기반으로 레시피를 추천했어요";
+
+            // 레시피가 8개 미만일 경우 인기순으로 채우기
+            if (recommendedRecipes.size() < 8) {
+                List<RecipeRecommendResponseDto> popularRecipes = recipeService.getPopularRecipes(8 - recommendedRecipes.size());
+                recommendedRecipes.addAll(popularRecipes);
+            }
+        } else {
+            // 레시피가 4개 미만일 경우 가장 인기가 많은 레시피 추천
+            message = "가장 인기가 많은 레시피를 추천했어요";
+            recommendedRecipes = recipeService.getPopularRecipes(8);
+        }
+
+        // 결과를 RecipeRecommendResponseWrapperDto로 감싸서 반환
+        RecipeRecommendResponseWrapperDto responseWrapper = new RecipeRecommendResponseWrapperDto(message, recommendedRecipes);
+        return ResponseEntity.status(HttpStatus.OK).body(responseWrapper);
     }
 
     @PostMapping("/list")
@@ -241,6 +293,5 @@ public class RecipeController {
         return ResponseEntity.status(HttpStatus.OK).body(recipeSuggestions);
     }
 
-    // 날씨 기반 레시피 추천
 
 }

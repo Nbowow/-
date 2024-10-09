@@ -6,6 +6,7 @@ import com.recipe.yorijori.data.dto.allergy.request.AllergyRequestDto;
 import com.recipe.yorijori.data.dto.allergy.response.AllergyResponseDto;
 import com.recipe.yorijori.data.dto.common.response.CommonResponseDto;
 import com.recipe.yorijori.data.dto.rank.RankResponseDto;
+import com.recipe.yorijori.data.dto.rank.RankResponseWrapperDto;
 import com.recipe.yorijori.data.dto.recipe.response.*;
 import com.recipe.yorijori.data.dto.user.request.UserModifyRequestDto;
 import com.recipe.yorijori.data.dto.user.request.UserSignUpDto;
@@ -26,6 +27,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -136,6 +138,7 @@ public class UserController {
     public ResponseEntity<UserResponseDto> getUserInfo(HttpServletRequest request) {
 
         String userEmail = getUserEmailFromRequest(request);
+
         UserResponseDto userDto = userService.getUserByEmail(userEmail);
 
         return ResponseEntity.ok(userDto);
@@ -151,14 +154,22 @@ public class UserController {
         return ResponseEntity.ok(userDto);
     }
 
+//    @GetMapping("/rank")
+//    public ResponseEntity<?> getUserRank(
+//            @RequestParam("pageSize") int pageSize,
+//            @RequestParam("pageNumber") int pageNumber) {
+//
+//        RankResponseWrapperDto rankResponseWrapper = userService.getUserRank(pageSize, pageNumber);
+//
+//        return ResponseEntity.status(HttpStatus.OK).body(rankResponseWrapper);
+//    }
+
     @GetMapping("/rank")
-    public ResponseEntity<?> getUserRank(
-            @RequestParam("pageSize") int pageSize,
-            @RequestParam("pageNumber") int pageNumber) {
+    public ResponseEntity<?> getUserRank() {
 
-        List<RankResponseDto> rankResponseDtoList = userService.getUserRank(pageSize, pageNumber);
+        List<RankResponseDto> userRank = userService.getUserRank();
 
-        return ResponseEntity.status(HttpStatus.OK).body(rankResponseDtoList);
+        return ResponseEntity.status(HttpStatus.OK).body(userRank);
     }
 
 
@@ -242,11 +253,13 @@ public class UserController {
     @GetMapping("/recipe/other/{id}")
     public ResponseEntity<?> getOtherRecipe(@PathVariable Long id) {
         List<UserRecipeRegistResponseDto> userRecipeRegisterResponseDto = recipeServiceClient.getUserRecipes(id);
-        if (!userRecipeRegisterResponseDto.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.OK).body(userRecipeRegisterResponseDto);
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No recipes found for this user.");
+
+        // 비어있을 경우 빈 배열 반환
+        if (userRecipeRegisterResponseDto.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.OK).body(Collections.emptyList());
         }
+
+        return ResponseEntity.status(HttpStatus.OK).body(userRecipeRegisterResponseDto);
     }
 
 
@@ -257,4 +270,10 @@ public class UserController {
                 .orElseThrow(InCorrectAccessTokenException::new);
     }
 
+
+    @GetMapping("/point/{userId}")
+    public ResponseEntity<?> plusPoint(@PathVariable("userId") Long userId){
+        userService.plusUserScore(userId, 10L); // 10점 추가
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 }

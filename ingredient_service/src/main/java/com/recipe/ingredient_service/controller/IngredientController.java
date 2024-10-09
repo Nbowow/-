@@ -6,9 +6,13 @@ import com.recipe.ingredient_service.data.domain.Ingredient;
 import com.recipe.ingredient_service.data.dto.ingredient.request.IngredientRequestDto;
 import com.recipe.ingredient_service.data.dto.ingredient.response.*;
 import com.recipe.ingredient_service.data.dto.recipe.response.RecipeResponseDto;
+import com.recipe.ingredient_service.global.config.LevenshteinDistance;
+import com.recipe.ingredient_service.repository.IngredientRepository;
 import com.recipe.ingredient_service.service.IngredientService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,6 +29,7 @@ public class IngredientController {
     private final UserServiceClient userServiceClient;
     private final IngredientService ingredientService;
     private final RecipeServiceClient recipeServiceClient;
+    private final IngredientRepository ingredientRepository;
 
 
     @GetMapping("/get-num/{name}")
@@ -37,10 +42,23 @@ public class IngredientController {
         return ingredientService.findById(materialId).getName();
     }
 
+    @GetMapping("/get-allergy/{id}")
+    public String getIngredientAllergyById(@PathVariable("id") Long materialId) {
+        return ingredientService.findAllergyById(materialId).getAllergyNum();
+    }
+
     @GetMapping("/search")
-    public ResponseEntity<IngredientsSearchResponseDto> getIngredientData(
+    public ResponseEntity<?> getIngredientData(
             @RequestParam("keyword") String keyword) {
-        return ResponseEntity.status(HttpStatus.OK).body(ingredientService.findIngredientData(keyword));
+        IngredientsSearchResponseDto responseDto = ingredientService.findIngredientData(keyword);
+
+        if (responseDto.getId() == null) {
+            String correctedWord = searchTypo(keyword);
+            responseDto = ingredientService.findIngredientData(correctedWord);
+        }
+
+        // 검색 결과를 반환
+        return ResponseEntity.status(HttpStatus.OK).body(responseDto);
     }
 
     @GetMapping("/change")
@@ -55,25 +73,18 @@ public class IngredientController {
 
     @PostMapping("/recipe")
     public ResponseEntity<List<RecipeResponseDto>> getIngredientRecipe(@RequestBody List<IngredientRequestDto> ingredients) {
-        // 요청된 재료 리스트에서 아이디 추출
-        log.info("Received ingredients request: {}", ingredients); // 입력된 재료 리스트 로그
 
+        // 재료 ID 리스트를 추출
         List<Long> ingredientIds = ingredients.stream()
                 .map(IngredientRequestDto::getId)
                 .collect(Collectors.toList());
 
-        log.info("Extracted ingredient IDs: {}", ingredientIds); // 추출된 재료 아이디 로그
-
-        // 재료에 해당하는 레시피 아이디 조회
         List<Long> recipeIds = ingredientService.getRecipeIdByIngredients(ingredientIds);
-        log.info("Found recipe IDs based on ingredients: {}", recipeIds); // 조회된 레시피 아이디 로그
 
-        // FeignClient를 사용하여 레시피 서비스에서 레시피 리스트를 가져옴
         List<RecipeResponseDto> recipeList = recipeServiceClient.getRecipeList(recipeIds);
-        log.info("Fetched recipe details: {}", recipeList); // 가져온 레시피 정보 로그
-
         return ResponseEntity.status(HttpStatus.OK).body(recipeList);
     }
+
 
     @GetMapping("/popular/week")
     public ResponseEntity<List<IngredientPopularResponseDto>> getPopularWeeklyIngredients() {
@@ -119,5 +130,34 @@ public class IngredientController {
         return new ResponseEntity<>(ingredientService.getLowestPriceResult(query, display, start, sort), HttpStatus.OK);
     }
 
+    private String searchTypo(String query) {
+        List<String> recipeNames = ingredientRepository.findAllIngredientNames(); // DB에서 모든 레시피 이름 가져오기
+        return getMostSimilarWord(query, recipeNames);
+    }
+
+    private String getMostSimilarWord(String query, List<String> wordDictionary) {
+        String closestWord = query;
+        int minDistance = Integer.MAX_VALUE;
+
+        for (String word : wordDictionary) {
+            int distance = LevenshteinDistance.computeLevenshteinDistance(query, word);
+            if (distance < minDistance) {
+                minDistance = distance;
+                closestWord = word;
+            }
+        }
+        return closestWord;
+    }
+
+
+    @GetMapping("/autocomplete")
+    public ResponseEntity<List<String>> autocompleteRecipe(
+            @RequestParam("keyword") String keyword) {
+
+        Pageable pageable = PageRequest.of(0, 5);  // 첫 페이지에서 최대 5개의 결과를 가져오도록 설정
+        List<String> recipeSuggestions = ingredientRepository.findIngredientNamesByKeyword(keyword, pageable);
+
+        return ResponseEntity.status(HttpStatus.OK).body(recipeSuggestions);
+    }
 
 }

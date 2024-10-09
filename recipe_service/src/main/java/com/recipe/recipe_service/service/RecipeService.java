@@ -3,9 +3,10 @@ package com.recipe.recipe_service.service;
 import com.recipe.recipe_service.client.IngredientServiceClient;
 import com.recipe.recipe_service.client.UserServiceClient;
 import com.recipe.recipe_service.data.domain.*;
-import com.recipe.recipe_service.data.dto.ingredient.response.RecipeMaterialsResponseDto;
+import com.recipe.recipe_service.data.dto.ingredient.response.RecipeMaterialsAllergyResponseDto;
 import com.recipe.recipe_service.data.dto.recipe.request.RecipeRegisterRequestDto;
 import com.recipe.recipe_service.data.dto.recipe.response.*;
+import com.recipe.recipe_service.data.dto.recommend.response.RecipeRecommendResponseDto;
 import com.recipe.recipe_service.data.dto.user.response.UserSimpleResponseDto;
 import com.recipe.recipe_service.repository.*;
 import jakarta.persistence.EntityNotFoundException;
@@ -19,7 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -104,7 +104,7 @@ public class RecipeService {
         Page<Recipe> recipePage = recipeRepository.findAll(pageable);
 
         // 페이지 결과에서 데이터를 추출하여 DTO로 변환
-        List<RecipeDetailsResponseDto> recipeList = recipePage.getContent().stream()
+        return recipePage.getContent().stream()
                 .map(recipe -> RecipeDetailsResponseDto.builder()
                         .id(recipe.getId())
                         .title(recipe.getTitle())
@@ -125,11 +125,9 @@ public class RecipeService {
                         .commentCount(recipe.getCommentCount())
                         .build())
                 .toList();
-
-        return recipeList;
     }
 
-    public RecipeDetailsResponseDto getRecipe(Long recipeId) {
+    public RecipeDetailsAllergyResponseDto getRecipe(Long recipeId) {
 
         // 레시피 조회
         Recipe recipe = recipeRepository.findById(recipeId)
@@ -142,13 +140,14 @@ public class RecipeService {
         List<RecipeMaterials> recipeMaterials = recipeMaterialsRepository.findByRecipeId(recipeId);
 
         // 재료를 DTO로 변환
-        List<RecipeMaterialsResponseDto> recipeMaterialsResponseDto = recipeMaterials.stream()
-                .map(material -> RecipeMaterialsResponseDto.builder()
+        List<RecipeMaterialsAllergyResponseDto> recipeMaterialsAllergyResponseDto = recipeMaterials.stream()
+                .map(material -> RecipeMaterialsAllergyResponseDto.builder()
                         .materialId(material.getMaterialId())
                         .materialName(ingredientServiceClient.getIngredientNameById(material.getMaterialId())) // 재료 이름 가져오기
                         .amount(material.getAmount())
                         .unit(material.getUnit())
                         .subtitle(material.getSubtitle())
+                        .allergyCode(ingredientServiceClient.getIngredientAllergyById(material.getMaterialId()))
                         .build())
                 .toList();
 
@@ -166,7 +165,7 @@ public class RecipeService {
 
 
         // 레시피 상세 정보를 RecipeDetailsResponseDto로 변환
-        RecipeDetailsResponseDto recipeDetailsResponseDto = RecipeDetailsResponseDto.builder()
+        return RecipeDetailsAllergyResponseDto.builder()
                 .id(recipe.getId())
                 .title(recipe.getTitle())
                 .name(recipe.getName())
@@ -188,13 +187,11 @@ public class RecipeService {
                 .likeCount(recipe.getLikeCount())
                 .scrapCount(recipe.getScrapCount())
                 .commentCount(recipe.getCommentCount())
-                .calorie(null)
+                .calorie(recipe.getKcal())
                 .price(null)
-                .materials(recipeMaterialsResponseDto) // 재료 추가
+                .materials(recipeMaterialsAllergyResponseDto) // 재료 추가
                 .recipeOrders(recipeOrdersResponseDto) // 요리 순서 추가
                 .build();
-
-        return recipeDetailsResponseDto;
 
     }
 
@@ -230,82 +227,6 @@ public class RecipeService {
     }
 
     @Transactional
-    public void likeRecipe(Long recipeId, Long userId) {
-        Optional<RecipeLikes> existingLike = recipeLikesRepository.findByRecipeIdAndUserId(recipeId, userId);
-
-        if (existingLike.isPresent()) {
-            RecipeLikes recipeLikes = existingLike.get();
-            if (!recipeLikes.getStatus()) {
-                // status false -> true
-                recipeLikes.setStatus(true);
-            }
-            return;
-        }
-
-        // 새로운 좋아요 등록
-        RecipeLikes newLikes = RecipeLikes.builder()
-                .recipeId(recipeId)
-                .userId(userId)
-                .status(true) // 좋아요 상태로 설정
-                .build();
-
-        recipeLikesRepository.save(newLikes);
-    }
-
-    @Transactional
-    public void unlikeRecipe(Long recipeId, Long userId) {
-        Optional<RecipeLikes> existingLike = recipeLikesRepository.findByRecipeIdAndUserId(recipeId, userId);
-
-        if (existingLike.isPresent()) {
-            RecipeLikes recipeLikes = existingLike.get();
-            if (recipeLikes.getStatus()) {
-                // status true -> false (좋아요 취소)
-                recipeLikes.setStatus(false);
-            }
-        } else {
-            throw new IllegalStateException("좋아요가 등록되지 않은 상태입니다.");
-        }
-    }
-
-    @Transactional
-    public void scrapRecipe(Long recipeId, Long userId) {
-        Optional<RecipeScraps> existingScrap = recipeScrapsRepository.findByRecipeIdAndUserId(recipeId, userId);
-
-        if (existingScrap.isPresent()) {
-            RecipeScraps recipeScraps = existingScrap.get();
-            if (!recipeScraps.getStatus()) {
-                // status false -> true (스크랩 등록)
-                recipeScraps.setStatus(true);
-            }
-            return;
-        }
-
-        // 새로운 스크랩 등록
-        RecipeScraps newScrap = RecipeScraps.builder()
-                .recipeId(recipeId)
-                .userId(userId)
-                .status(true)
-                .build();
-        recipeScrapsRepository.save(newScrap);
-
-    }
-
-    @Transactional
-    public void unscrapRecipe(Long recipeId, Long userId) {
-        Optional<RecipeScraps> existingScrap = recipeScrapsRepository.findByRecipeIdAndUserId(recipeId, userId);
-
-        if (existingScrap.isPresent()) {
-            RecipeScraps recipeScraps = existingScrap.get();
-            if (recipeScraps.getStatus()) {
-                // status true -> false (스크랩 취소)
-                recipeScraps.setStatus(false);
-            }
-        } else {
-            throw new IllegalStateException("스크랩이 등록되지 않은 상태입니다.");
-        }
-    }
-
-    @Transactional
     public void addComment(Long recipeId, Long userId, String content) {
         RecipeComments newComment = RecipeComments.builder()
                 .recipeId(recipeId)
@@ -321,9 +242,6 @@ public class RecipeService {
         // 댓글 조회
         return recipeCommentsRepository.findByRecipeId(recipeId);
     }
-
-
-
 
     // 특정 userId에 해당하는 레시피 조회
     public List<UserRecipeRegistResponseDto> getRecipesByUserId(Long userId) {
@@ -481,33 +399,12 @@ public class RecipeService {
 
     public List<RecipeRecommendResponseDto> getRecipesByIngredients(List<Long> ingredientIds) {
 
-        // 1. 모든 레시피 조회
-        List<Recipe> recipes = recipeRepository.findAll();
+        long minMatchCount = ingredientIds.size() >= 3 ? 3 : 1;
 
-        // 2. 재료 개수에 따라 다른 조건으로 필터링
-        List<Recipe> filteredRecipes = recipes.stream()
-                .filter(recipe -> {
-                    // recipematerials 테이블에서 해당 레시피의 재료 목록 가져오기
-                    List<Long> recipeIngredientIds = recipeMaterialsRepository.findByRecipeId(recipe.getId()).stream()
-                            .map(RecipeMaterials::getMaterialId)
-                            .toList();
+        // 조건에 맞는 레시피 조회
+        List<Recipe> recipes = recipeRepository.findRecipesByIngredients(ingredientIds, minMatchCount);
 
-                    // 사용자의 선호 재료와 레시피 재료가 몇 개 일치하는지 계산
-                    long matchCount = ingredientIds.stream()
-                            .filter(recipeIngredientIds::contains)
-                            .count();
-
-                    // 만약 재료가 3개 이상이면 3개가 일치
-                    if (ingredientIds.size() >= 3) {
-                        return matchCount >= 3;
-                    } else {
-                        return matchCount >= 1; // 선호 재료가 1~2개인 경우 최소 1개라도 일치하면 추천
-                    }
-                })
-                .toList();
-
-        // 3. 필터링된 레시피를 DTO로 변환
-        return filteredRecipes.stream()
+        return recipes.stream()
                 .map(recipe -> RecipeRecommendResponseDto.builder()
                         .recipeId(recipe.getId())
                         .title(recipe.getTitle())
@@ -517,7 +414,58 @@ public class RecipeService {
                 .toList();
     }
 
+    // 좋아요를 많이 받은 레시피 순으로 조회
+    public List<RecipeRecommendResponseDto> getPopularRecipes(int limit) {
+        Pageable pageable = PageRequest.of(0, limit); // limit 개수만큼 상위 레시피 조회
+        List<Recipe> popularRecipes = recipeRepository.findTopByOrderByLikeCountDesc(pageable);
 
+        return popularRecipes.stream()
+                .map(recipe -> RecipeRecommendResponseDto.builder()
+                        .recipeId(recipe.getId())
+                        .title(recipe.getTitle())
+                        .image(recipe.getImage())
+                        .intro(recipe.getIntro())
+                        .build())
+                .toList();
+    }
 
+    // 성능 너~무 안좋음
+//    public List<RecipeRecommendResponseDto> getRecipesByIngredients(List<Long> ingredientIds) {
+//
+//        // 1. 모든 레시피 조회
+//        List<Recipe> recipes = recipeRepository.findAll();
+//
+//        // 2. 재료 개수에 따라 다른 조건으로 필터링
+//        List<Recipe> filteredRecipes = recipes.stream()
+//                .filter(recipe -> {
+//                    // recipematerials 테이블에서 해당 레시피의 재료 목록 가져오기
+//                    List<Long> recipeIngredientIds = recipeMaterialsRepository.findByRecipeId(recipe.getId()).stream()
+//                            .map(RecipeMaterials::getMaterialId)
+//                            .toList();
+//
+//                    // 사용자의 선호 재료와 레시피 재료가 몇 개 일치하는지 계산
+//                    long matchCount = ingredientIds.stream()
+//                            .filter(recipeIngredientIds::contains)
+//                            .count();
+//
+//                    // 만약 재료가 3개 이상이면 3개가 일치
+//                    if (ingredientIds.size() >= 3) {
+//                        return matchCount >= 3;
+//                    } else {
+//                        return matchCount >= 1; // 선호 재료가 1~2개인 경우 최소 1개라도 일치하면 추천
+//                    }
+//                })
+//                .toList();
+//
+//        // 3. 필터링된 레시피를 DTO로 변환
+//        return filteredRecipes.stream()
+//                .map(recipe -> RecipeRecommendResponseDto.builder()
+//                        .recipeId(recipe.getId())
+//                        .title(recipe.getTitle())
+//                        .image(recipe.getImage())
+//                        .intro(recipe.getIntro())
+//                        .build())
+//                .toList();
+//    }
 
 }

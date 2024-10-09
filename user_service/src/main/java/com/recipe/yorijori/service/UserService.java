@@ -4,6 +4,7 @@ import com.recipe.yorijori.client.RecipeServiceClient;
 import com.recipe.yorijori.client.SocialServiceClient;
 import com.recipe.yorijori.data.domain.User;
 import com.recipe.yorijori.data.dto.rank.RankResponseDto;
+import com.recipe.yorijori.data.dto.rank.RankResponseWrapperDto;
 import com.recipe.yorijori.data.dto.recipe.response.*;
 import com.recipe.yorijori.data.dto.user.request.UserModifyRequestDto;
 import com.recipe.yorijori.data.dto.user.request.UserSignUpDto;
@@ -157,18 +158,50 @@ public class UserService {
         userRepository.save(user);
     }
 
-    public List<RankResponseDto> getUserRank(int pageSize, int pageNumber) {
+//    public RankResponseWrapperDto getUserRank(int pageSize, int pageNumber) {
+//
+//        Pageable pageable = PageRequest.of(pageNumber - 1, pageSize, Sort.by(Sort.Direction.DESC, "score"));
+//        Page<User> usersPage = userRepository.findAll(pageable);
+//
+//        Long totalUserCount = userRepository.count();
+//
+//        List<RankResponseDto> rankResponseDtoList = usersPage.getContent().stream()
+//                .map(user -> {
+//                    RankResponseDto rankResponseDto = new RankResponseDto();
+//                    rankResponseDto.setNickname(user.getNickname());
+//                    rankResponseDto.setImage(user.getProfileImage());
+//                    rankResponseDto.setScore(user.getScore());
+//
+//                    List<UserRecipeRegistResponseDto> userRecipes = recipeServiceClient.getUserRecipes(user.getUserId());
+//                    rankResponseDto.setRecipeCount((long) userRecipes.size());
+//
+//                    List<UserRecipeLikeResponseDto> userRecipeLikes = recipeServiceClient.getUserLikeRecipes(user.getUserId());
+//                    rankResponseDto.setLikeCount((long) userRecipeLikes.size());
+//
+//                    return rankResponseDto;
+//                })
+//                .toList();
+//
+//        return RankResponseWrapperDto.builder()
+//                .totalUserCount(totalUserCount)
+//                .rankList(rankResponseDtoList)
+//                .build();
+//    }
 
-        Pageable pageable = PageRequest.of(pageNumber - 1, pageSize, Sort.by(Sort.Direction.DESC, "score"));
-        Page<User> usersPage = userRepository.findAll(pageable);
+    public List<RankResponseDto> getUserRank() {
 
-        return usersPage.getContent().stream()
+        // Fetch all users
+        List<User> users = userRepository.findAll();
+
+        // Convert each user to RankResponseDto and return the list
+        return users.stream()
                 .map(user -> {
                     RankResponseDto rankResponseDto = new RankResponseDto();
                     rankResponseDto.setNickname(user.getNickname());
                     rankResponseDto.setImage(user.getProfileImage());
                     rankResponseDto.setScore(user.getScore());
 
+                    // Fetch user's recipe count and likes count using external services
                     List<UserRecipeRegistResponseDto> userRecipes = recipeServiceClient.getUserRecipes(user.getUserId());
                     rankResponseDto.setRecipeCount((long) userRecipes.size());
 
@@ -177,7 +210,7 @@ public class UserService {
 
                     return rankResponseDto;
                 })
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public void updateUserProfileImage(Long userId, String profileImageUrl) {
@@ -193,5 +226,13 @@ public class UserService {
         User user = userRepository.findById(id)
                 .orElseThrow(UserNotFoundException::new);
         return user.getEmail();
+    }
+
+
+    public void plusUserScore(Long userId, Long points) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(UserNotFoundException::new);
+        user.plusScore(points);
+        userRepository.save(user);
     }
 }

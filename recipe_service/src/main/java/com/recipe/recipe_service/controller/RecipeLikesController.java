@@ -1,8 +1,7 @@
 package com.recipe.recipe_service.controller;
 
-import com.recipe.recipe_service.client.IngredientServiceClient;
 import com.recipe.recipe_service.client.UserServiceClient;
-import com.recipe.recipe_service.service.RecipeScrapService;
+import com.recipe.recipe_service.service.RecipeLikeService;
 import com.recipe.recipe_service.service.RecipeService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,33 +13,33 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/recipe")
 @AllArgsConstructor
 @Slf4j
-public class RecipeScrapsController {
+public class RecipeLikesController {
 
-    private final RecipeScrapService recipeScrapService;
     private final UserServiceClient userServiceClient;
+    private final RecipeLikeService recipeLikeService;
 
-    // 레시피 스크랩 등록
-    @PostMapping("/scrap")
-    public ResponseEntity<?> scrapRecipe(
+    // 레시피 좋아요 등록
+    @PostMapping("/like")
+    public ResponseEntity<?> likeRecipe(
             @RequestHeader("Authorization") String authorization,
             @RequestParam("id") Long recipeId) {
 
         Long userId = userServiceClient.getUserId(authorization);
 
-        recipeScrapService.scrapRecipe(recipeId, userId);
+        recipeLikeService.likeRecipe(recipeId, userId);
 
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
-    // 레시피 스크랩 취소
-    @PatchMapping("/unscrap")
-    public ResponseEntity<?> unscrapRecipe(
+    // 레시피 좋아요 취소
+    @PatchMapping("/unlike")
+    public ResponseEntity<?> unlikeRecipe(
             @RequestHeader("Authorization") String authorization,
             @RequestParam("id") Long recipeId) {
 
         Long userId = userServiceClient.getUserId(authorization);
 
-        recipeScrapService.unscrapRecipe(recipeId, userId);
+        recipeLikeService.unlikeRecipe(recipeId, userId);
 
         return ResponseEntity.status(HttpStatus.OK).build();
     }

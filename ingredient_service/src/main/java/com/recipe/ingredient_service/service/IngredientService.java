@@ -5,10 +5,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.recipe.ingredient_service.client.NaverSearchClient;
 import com.recipe.ingredient_service.data.domain.DayPrice;
 import com.recipe.ingredient_service.data.domain.Ingredient;
-import com.recipe.ingredient_service.data.domain.Recipematerials;
 import com.recipe.ingredient_service.data.domain.UserLikeMaterials;
 import com.recipe.ingredient_service.data.dto.ingredient.DayDto;
 import com.recipe.ingredient_service.data.dto.ingredient.response.*;
+import com.recipe.ingredient_service.global.exception.AlreadyLikedException;
 import com.recipe.ingredient_service.repository.DayPriceRepository;
 import com.recipe.ingredient_service.repository.IngredientRepository;
 import com.recipe.ingredient_service.repository.RecipematerialsRepository;
@@ -47,11 +47,12 @@ public class IngredientService {
 
     // 초기화 블록에서 매핑 데이터 설정
     {
-        allergyMapping.put("알류", List.of("달걀", "계란", "메추리알", "오리알", "난백", "흰자", "노른자"));
-        allergyMapping.put("우유", List.of("우유", "연유", "크림", "치즈", "버터", "요거트", "사워 크림", "카제인", "유청 단백질", "우유 분말"));
-        allergyMapping.put("메밀", List.of("메밀가루", "메밀면 (소바)", "메밀빵", "메밀 크래커", "메밀 팬케이크", "메밀"));
+        allergyMapping.put("알류", List.of("달걀", "계란", "메추리알", "오리알", "난백", "흰자", "노른자", "계란파우더", "난백파우더", "마요네즈", "타르타르 소스", "홀랜다이즈 소스",
+                "에그누들", "팬케이크 믹스", "머랭", "크레페", "에그"));
+        allergyMapping.put("우유", List.of("우유", "연유", "크림", "치즈", "버터", "요거트", "사워 크림", "카제인", "유청 단백질", "우유 분말", "모차렐라치츠", "모짜렐라치즈", "크림치즈"));
+        allergyMapping.put("메밀", List.of("메밀가루", "메밀면", "소바", "메밀빵", "메밀 크래커", "메밀 팬케이크", "메밀"));
         allergyMapping.put("땅콩", List.of("땅콩", "땅콩버터", "땅콩 오일", "땅콩 가루", "땅콩 소스", "땅콩 스낵"));
-        allergyMapping.put("대두 (콩)", List.of("대두", "콩", "두부", "된장", "간장", "콩기름", "콩 단백질", "템페", "낫토", "두유", "에다마메"));
+        allergyMapping.put("대두", List.of("대두", "콩", "두부", "된장", "간장", "콩기름", "콩 단백질", "템페", "낫토", "두유", "에다마메"));
         allergyMapping.put("밀", List.of("밀가루", "통밀", "빵", "파스타", "크래커", "시리얼", "쿠키", "케이크", "밀가루 베이스 믹스", "밀글루텐"));
         allergyMapping.put("잣", List.of("잣", "잣 오일", "잣 가루", "잣 페스토"));
         allergyMapping.put("호두", List.of("호두", "호두 오일", "호두 가루", "호두 스낵"));
@@ -63,15 +64,15 @@ public class IngredientService {
         allergyMapping.put("복숭아", List.of("복숭아", "복숭아 잼", "복숭아 통조림", "복숭아 주스"));
         allergyMapping.put("토마토", List.of("토마토", "토마토 페이스트", "토마토 소스", "토마토 퓨레", "케첩"));
         allergyMapping.put("닭고기", List.of("닭고기", "닭가슴살", "닭날개", "닭다리", "치킨 스톡", "닭고기 소시지"));
-        allergyMapping.put("돼지고기", List.of("돼지고기", "삼겹살", "베이컨", "햄", "소시지", "돼지갈비"));
-        allergyMapping.put("쇠고기", List.of("쇠고기", "소고기", "스테이크", "쇠고기 소시지", "쇠고기 스톡", "쇠고기 다짐육"));
-        allergyMapping.put("아황산류 (황산화물)", List.of("건조 과일", "와인"));
+        allergyMapping.put("돼지고기", List.of("돼지고기", "삼겹살", "베이컨", "햄", "소시지", "돼지갈비", "돼지앞다리살", "앞다리살", "돼지삼겹살", "돼지목심", "목살", "목심"));
+        allergyMapping.put("쇠고기", List.of("쇠고기", "소고기", "스테이크", "쇠고기 소시지", "쇠고기 스톡", "쇠고기 다짐육", "소갈비", "설도", "안심", "등심", "양지", "소안심", "소등심", "소양지"));
+        allergyMapping.put("아황산류", List.of("건조 과일", "와인"));
 
         allergyCodeMapping.put("알류", "A_0001");
         allergyCodeMapping.put("우유", "A_0002");
         allergyCodeMapping.put("메밀", "A_0003");
         allergyCodeMapping.put("땅콩", "A_0004");
-        allergyCodeMapping.put("대두 (콩)", "A_0005");
+        allergyCodeMapping.put("대두", "A_0005");
         allergyCodeMapping.put("밀", "A_0006");
         allergyCodeMapping.put("잣", "A_0007");
         allergyCodeMapping.put("호두", "A_0008");
@@ -85,7 +86,7 @@ public class IngredientService {
         allergyCodeMapping.put("닭고기", "A_0016");
         allergyCodeMapping.put("돼지고기", "A_0017");
         allergyCodeMapping.put("쇠고기", "A_0018");
-        allergyCodeMapping.put("아황산류 (황산화물)", "A_0019");
+        allergyCodeMapping.put("아황산류", "A_0019");
     }
 
     public Ingredient findMatchingIngredient(String ingredientName) {
@@ -169,12 +170,22 @@ public class IngredientService {
 
     public IngredientsSearchResponseDto findIngredientData(String name) {
         Ingredient findIngredient = findMatchingIngredient(name);
-
         if (findIngredient == null) {
             return IngredientsSearchResponseDto.builder()
                     .id(null)
                     .name("Unknown")
                     .ingredientImage("")
+                    .dayprice(0)
+                    .build();
+        }
+
+        DayPrice findTopDayIngredientPrice = dayPriceRepository.findTopByIngredientIdAndPriceGreaterThanOrderByDayDesc(findIngredient.getId(), 0);
+        if (findTopDayIngredientPrice == null) {
+            return IngredientsSearchResponseDto.builder()
+                    .id(findIngredient.getId())
+                    .name(findIngredient.getName())
+                    .ingredientImage(findIngredient.getImg())
+                    .dayprice(0)
                     .build();
         }
 
@@ -182,6 +193,7 @@ public class IngredientService {
                 .id(findIngredient.getId())
                 .name(findIngredient.getName())
                 .ingredientImage(findIngredient.getImg())
+                .dayprice(findTopDayIngredientPrice.getPrice())
                 .build();
     }
 
@@ -209,6 +221,10 @@ public class IngredientService {
             Long ingredientId = (Long) priceChanges.get(i)[0];
             Integer currentPrice = (Integer) priceChanges.get(i)[1];
             Integer yesterdayPrice = (Integer) priceChanges.get(i + 1)[1];
+            int priceGapPrice = (currentPrice - yesterdayPrice);
+
+            if (priceGapPrice == 0)
+                continue;
 
             String ingredientName = ingredientRepository.findById(ingredientId)
                     .map(Ingredient::getName)
@@ -216,14 +232,17 @@ public class IngredientService {
 
             if (!ingredientName.equals("Unknown Ingredient")) {
                 IngredientPriceChangeResponseDto dto = IngredientPriceChangeResponseDto.builder()
+                        .id(ingredientId)
                         .name(ingredientName)
                         .currentPrice(currentPrice.toString())
                         .yesterdayPrice(yesterdayPrice.toString())
+                        .priceGap(priceGapPrice)
                         .build();
 
                 responseDtoList.add(dto);
             }
         }
+        responseDtoList.sort(Comparator.comparing(IngredientPriceChangeResponseDto::getPriceGap));
 
         return responseDtoList;
     }
@@ -390,6 +409,11 @@ public class IngredientService {
     }
 
     public void addUserIngredientLike(Long userId, Long ingredientId) {
+
+        boolean isAlreadyLiked = userLikeMaterialsRepository.existsByUserIdAndIngredientId(userId, ingredientId);
+        if (isAlreadyLiked) {
+                throw new AlreadyLikedException();
+        }
         UserLikeMaterials newLike = UserLikeMaterials.builder()
                 .userId(userId)
                 .ingredientId(ingredientId)
@@ -424,20 +448,23 @@ public class IngredientService {
 
 
     public List<Long> getRecipeIdByIngredients(List<Long> ingredientIds) {
-        // 재료 아이디에 해당하는 레시피 재료 조회
-        List<Recipematerials> recipematerialsList = recipematerialsRepository.findByMaterialIdIn(ingredientIds);
+        Pageable limit = PageRequest.of(0, 3);  // 최대 3개 결과 반환
 
-        // 레시피 아이디를 추출하고 중복을 제거하여 반환
-        return recipematerialsList.stream()
-                .map(Recipematerials::getRecipeId)
-                .distinct()
-                .collect(Collectors.toList());
+        // 제공된 재료를 모두 포함하고 있을 경우 해당 레시피를 반환
+        return recipematerialsRepository.findRecipeIdsByAtLeastIngredientIds(ingredientIds, (long) ingredientIds.size(), limit);
     }
 
 
     public Ingredient findById(Long materialId) {
         return ingredientRepository.findById(materialId)
                 .orElseThrow(() -> new NoSuchElementException("해당 재료가 존재하지 않습니다."));
+    }
+
+    public Ingredient findAllergyById(Long materialId) {
+        return ingredientRepository.findById(materialId)
+                .orElseThrow(() -> new NoSuchElementException("해당 재료가 존재하지 않습니다."));
+
+
     }
 
     public List<LowestPriceDto> getLowestPriceResult(String query, String display, String start, String sort) throws Exception {

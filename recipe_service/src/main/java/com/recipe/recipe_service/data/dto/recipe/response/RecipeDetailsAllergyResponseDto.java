@@ -1,14 +1,15 @@
 package com.recipe.recipe_service.data.dto.recipe.response;
 
+import com.recipe.recipe_service.data.dto.ingredient.response.RecipeMaterialsAllergyResponseDto;
+import com.recipe.recipe_service.data.dto.ingredient.response.RecipeMaterialsResponseDto;
+import lombok.Builder;
+import lombok.Data;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import java.util.List;
 
-@Getter
-@AllArgsConstructor
-@NoArgsConstructor
-public class UserRecipeScrapResponseDto {
+@Data
+@Builder
+public class RecipeDetailsAllergyResponseDto {
     private Long id; // 레시피 ID
     private String title;
     private String name;
@@ -23,10 +24,22 @@ public class UserRecipeScrapResponseDto {
     private String situation;
     private String ingredients;
     private String method;
+
     private Long userId; // 레시피 등록한 회원 ID
+    private String nickname;
+    private String profileImage;
+    private String summary;
+
     private Long likeCount;
     private Long scrapCount;
     private Long commentCount;
-    private String nickname;
-    private String profileImage;
+
+    private Long calorie; // 예상 칼로리
+    private Long price; // 에상 가격
+
+    // 재료 목록
+    private List<RecipeMaterialsAllergyResponseDto> materials;
+
+    // 요리 순서
+    private List<RecipeOrdersResponseDto> recipeOrders;
 }

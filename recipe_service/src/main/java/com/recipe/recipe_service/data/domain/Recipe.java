@@ -70,10 +70,12 @@ public class Recipe {
     private Long userId;
 
     @Builder.Default
+    @Setter
     @Column(name = "recipe_like_count")
     private Long likeCount = 0L;
 
     @Builder.Default
+    @Setter
     @Column(name = "recipe_scrap_count")
     private Long scrapCount = 0L;
 
@@ -81,8 +83,9 @@ public class Recipe {
     @Column(name = "recipe_comment_count")
     private Long commentCount = 0L;
 
+    @Builder.Default
     @Column(name = "recipe_kcal")
-    private Long kcal;
+    private Long kcal = 0L;
 
     // 데이터가 저장되기 전 자동으로 현재 시간과 기본값 설정
     @PrePersist
@@ -99,4 +102,5 @@ public class Recipe {
     protected void onUpdate() {
         this.modifiedDate = LocalDateTime.now();
     }
+
 }

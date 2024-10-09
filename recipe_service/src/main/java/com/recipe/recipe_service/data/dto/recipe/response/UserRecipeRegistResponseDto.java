@@ -12,7 +12,7 @@ public class UserRecipeRegistResponseDto {
     private Long id; // 레시피 ID
     private String title;
     private String name;
-    private String info;
+    private String intro;
     private String image;
     private Long viewCount;
     private Long servings; // 레시피 용량
