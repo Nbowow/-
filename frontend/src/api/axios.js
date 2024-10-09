@@ -28,7 +28,6 @@ axiosInstance.interceptors.response.use(
         const { logout } = useAuthStore.getState();
         if (error.response?.status === 401) {
             logout();
-            window.location.href = "/";
         }
         return Promise.reject(error);
     },

@@ -4,7 +4,6 @@ import * as S from "./ActionToggleGroup.sytled";
 import ActionToggleCounter from "../ActionToggleCounter/ActionToggleCounter";
 import InteractionToggle from "../InteractionToggle/InteractionToggle";
 import { useEffect, useState } from "react";
-import { getUserLike } from "../../../api/userApi";
 import {
     patchRecipeUnLike,
     patchRecipeUnScrap,
@@ -12,6 +11,7 @@ import {
     postRecipeScrap,
 } from "../../../api/recipe";
 import { useUserStore } from "../../../store/userStore";
+import { useUserLikes, useUserScraps } from "../../../hooks/useUser";
 
 const ActionToggleGroup = ({ recipe }) => {
     const [isLike, setIsLike] = useState(false);
@@ -22,24 +22,19 @@ const ActionToggleGroup = ({ recipe }) => {
     const [commentCount, setCommentCount] = useState(0);
 
     const isLoggedIn = useUserStore((state) => state.isLoggedIn);
+
+    const { isLoading: isUserLoading, data: likes } = useUserLikes();
+    const { isLoading: isRecipeLoading, data: scraps } = useUserScraps();
+
     useEffect(() => {
-        if (!isLoggedIn) return;
-        const fetchLike = async () => {
-            const data = await getUserLike(recipe.id);
-            if (data.some((i) => i.id === recipe.id)) setIsLike(true);
-            else setIsLike(false);
-        };
-        const fetchScrap = async () => {
-            const data = await getUserLike(recipe.id);
-            if (data.some((i) => i.id === recipe.id)) setIsScrap(true);
-            else setIsScrap(false);
-        };
-        fetchLike();
-        fetchScrap();
-        setLikeCount(recipe.likeCount);
-        setScrapCount(recipe.scrapCount);
-        setCommentCount(recipe.commentCount);
-    }, [recipe, isLoggedIn]);
+        if (isLoggedIn && !isUserLoading && !isRecipeLoading) {
+            setIsLike(likes.some((i) => i.id === recipe.id));
+            setIsScrap(scraps.some((i) => i.id === recipe.id));
+            setLikeCount(recipe.likeCount ?? 0);
+            setScrapCount(recipe.scrapCount ?? 0);
+            setCommentCount(recipe.commentCount ?? 0);
+        }
+    }, [isLoggedIn, likes, scraps, recipe, isUserLoading, isRecipeLoading]);
 
     const handleLike = async () => {
         if (isLike) {
