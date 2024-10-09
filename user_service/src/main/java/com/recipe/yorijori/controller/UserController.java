@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -137,7 +138,6 @@ public class UserController {
 
         String userEmail = getUserEmailFromRequest(request);
 
-        log.info("User email retrieved: {}", userEmail);
         UserResponseDto userDto = userService.getUserByEmail(userEmail);
 
         return ResponseEntity.ok(userDto);
@@ -244,11 +244,13 @@ public class UserController {
     @GetMapping("/recipe/other/{id}")
     public ResponseEntity<?> getOtherRecipe(@PathVariable Long id) {
         List<UserRecipeRegistResponseDto> userRecipeRegisterResponseDto = recipeServiceClient.getUserRecipes(id);
-        if (!userRecipeRegisterResponseDto.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.OK).body(userRecipeRegisterResponseDto);
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No recipes found for this user.");
+
+        // 비어있을 경우 빈 배열 반환
+        if (userRecipeRegisterResponseDto.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.OK).body(Collections.emptyList());
         }
+
+        return ResponseEntity.status(HttpStatus.OK).body(userRecipeRegisterResponseDto);
     }
 
 
