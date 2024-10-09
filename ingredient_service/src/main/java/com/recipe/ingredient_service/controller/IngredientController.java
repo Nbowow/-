@@ -52,10 +52,12 @@ public class IngredientController {
             @RequestParam("keyword") String keyword) {
         IngredientsSearchResponseDto responseDto = ingredientService.findIngredientData(keyword);
 
-        if(responseDto.getId() == null) {
-            String correctedWord = searchTypo(keyword); // 오타 수정 API 호출
-            return ResponseEntity.status(HttpStatus.OK).body(correctedWord);
+        if (responseDto.getId() == null) {
+            String correctedWord = searchTypo(keyword);
+            responseDto = ingredientService.findIngredientData(correctedWord);
         }
+
+        // 검색 결과를 반환
         return ResponseEntity.status(HttpStatus.OK).body(responseDto);
     }
 
