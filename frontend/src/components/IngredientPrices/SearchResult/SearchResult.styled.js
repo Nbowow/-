@@ -16,9 +16,6 @@ export const slideIn = keyframes`
   }
 `;
 
-export const LowestPriceWrapper = styled.div`
-    width: 50%;
-`;
 export const MoreInfo = styled.div`
     ${flexCenterStyle}
     background-color: ${({ theme }) => theme.color.gray.lighter};
