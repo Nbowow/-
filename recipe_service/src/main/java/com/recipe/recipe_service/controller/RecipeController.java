@@ -102,32 +102,6 @@ public class RecipeController {
         return ResponseEntity.status(HttpStatus.OK).body(recipeList);
     }
 
-    // 레시피 좋아요 등록
-    @PostMapping("/like")
-    public ResponseEntity<?> likeRecipe(
-            @RequestHeader("Authorization") String authorization,
-            @RequestParam("id") Long recipeId) {
-
-        Long userId = userServiceClient.getUserId(authorization);
-
-        recipeService.likeRecipe(recipeId, userId);
-
-        return ResponseEntity.status(HttpStatus.OK).build();
-    }
-
-    // 레시피 좋아요 취소
-    @PatchMapping("/unlike")
-    public ResponseEntity<?> unlikeRecipe(
-            @RequestHeader("Authorization") String authorization,
-            @RequestParam("id") Long recipeId) {
-
-        Long userId = userServiceClient.getUserId(authorization);
-
-        recipeService.unlikeRecipe(recipeId, userId);
-
-        return ResponseEntity.status(HttpStatus.OK).build();
-    }
-
     // 특정 사용자가 만든 레시피 조회
     @GetMapping("/user/{userId}")
     public ResponseEntity<List<UserRecipeRegistResponseDto>> getUserRecipes(@PathVariable("userId") Long userId) {

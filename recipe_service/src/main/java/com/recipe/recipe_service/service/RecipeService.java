@@ -249,6 +249,8 @@ public class RecipeService {
                 .status(true) // 좋아요 상태로 설정
                 .build();
 
+        //
+
         recipeLikesRepository.save(newLikes);
     }
 
