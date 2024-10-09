@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -34,9 +35,10 @@ public class RecipeReviewController {
     public ResponseEntity<?> createReview(
             @RequestHeader("Authorization") String authorization,
             @RequestParam("id") Long recipeId,
-            @RequestBody RecipeReviewRequestDto requestDto) {
+            @RequestParam("reviewImage") MultipartFile reviewImage,
+            @RequestPart("review") RecipeReviewRequestDto requestDto) {
 
-        recipeReviewService.createReview(authorization, recipeId, requestDto);
+        recipeReviewService.createReview(authorization, recipeId, reviewImage, requestDto);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
