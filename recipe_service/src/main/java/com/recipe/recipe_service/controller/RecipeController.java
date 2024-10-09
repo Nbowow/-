@@ -6,6 +6,8 @@ import com.recipe.recipe_service.data.domain.Recipe;
 import com.recipe.recipe_service.data.dto.ingredient.response.IngredientLikeResponseDto;
 import com.recipe.recipe_service.data.dto.recipe.request.RecipeRegisterRequestDto;
 import com.recipe.recipe_service.data.dto.recipe.response.*;
+import com.recipe.recipe_service.data.dto.recommend.response.RecipeRecommendResponseDto;
+import com.recipe.recipe_service.data.dto.recommend.response.RecipeRecommendResponseWrapperDto;
 import com.recipe.recipe_service.global.config.LevenshteinDistance;
 import com.recipe.recipe_service.repository.RecipeRepository;
 import com.recipe.recipe_service.data.dto.user.response.UserAllergyResponseDto;
@@ -149,9 +151,9 @@ public class RecipeController {
     }
 
 
-    // 사용자 알러지 기반 레시피 추천
+    // 사용자 알러지, 선호재료 기반 레시피 추천
     @GetMapping("/recommend")
-    public ResponseEntity<List<RecipeRecommendResponseDto>> getUserRecommendations(
+    public ResponseEntity<RecipeRecommendResponseWrapperDto> getUserRecommendations(
             @RequestHeader("Authorization") String authorization) {
 
         Long userId = userServiceClient.getUserId(authorization);
@@ -172,7 +174,26 @@ public class RecipeController {
         // 사용자 선호 재료 기반 레시피 추천
         List<RecipeRecommendResponseDto> recommendedRecipes = recipeService.getRecipesByIngredients(safeIngredientIds);
 
-        return ResponseEntity.status(HttpStatus.OK).body(recommendedRecipes);
+
+        String message;
+        if (recommendedRecipes.size() >= 4) {
+            // 레시피가 4개 이상이면 사용자 선호 재료 기반 추천
+            message = "사용자 선호 재료를 기반으로 레시피를 추천했어요";
+
+            // 레시피가 8개 미만일 경우 인기순으로 채우기
+            if (recommendedRecipes.size() < 8) {
+                List<RecipeRecommendResponseDto> popularRecipes = recipeService.getPopularRecipes(8 - recommendedRecipes.size());
+                recommendedRecipes.addAll(popularRecipes);
+            }
+        } else {
+            // 레시피가 4개 미만일 경우 가장 인기가 많은 레시피 추천
+            message = "가장 인기가 많은 레시피를 추천했어요";
+            recommendedRecipes = recipeService.getPopularRecipes(8);
+        }
+
+        // 결과를 RecipeRecommendResponseWrapperDto로 감싸서 반환
+        RecipeRecommendResponseWrapperDto responseWrapper = new RecipeRecommendResponseWrapperDto(message, recommendedRecipes);
+        return ResponseEntity.status(HttpStatus.OK).body(responseWrapper);
     }
 
     @PostMapping("/list")

@@ -41,4 +41,7 @@ public interface RecipeRepository extends JpaRepository<Recipe, Long> {
     List<Recipe> findRecipesByIngredients(
             @Param("ingredientIds") List<Long> ingredientIds,
             @Param("minMatchCount") long minMatchCount);
+
+    @Query("SELECT r FROM Recipe r ORDER BY r.likeCount DESC")
+    List<Recipe> findTopByOrderByLikeCountDesc(Pageable pageable);
 }
