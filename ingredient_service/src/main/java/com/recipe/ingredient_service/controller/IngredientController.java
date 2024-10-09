@@ -60,6 +60,7 @@ public class IngredientController {
                 .map(IngredientRequestDto::getId)
                 .collect(Collectors.toList());
 
+
         // 재료에 해당하는 레시피 아이디 조회
         List<Long> recipeIds = ingredientService.getRecipeIdByIngredients(ingredientIds);
 
