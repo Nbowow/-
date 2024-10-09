@@ -91,7 +91,7 @@ public class RecipeController {
 
     // 레시피 전체 조회
     @GetMapping("")
-    public ResponseEntity<List<RecipeDetailsResponseDto>> getAllRecipes(
+    public ResponseEntity<?> getAllRecipes(
             @RequestParam("pageSize") int pageSize,
             @RequestParam("pageNumber") int pageNumber) {
 
@@ -99,7 +99,12 @@ public class RecipeController {
         // pageNumber가 1부터 시작한다고 가정하고 0부터 시작하도록 맞춤
         List<RecipeDetailsResponseDto> recipeList = recipeService.getAllRecipes(pageNumber - 1, pageSize);
 
-        return ResponseEntity.status(HttpStatus.OK).body(recipeList);
+        Long totalRecipesCount = recipeRepository.count();
+
+        // PagedResponseDto에 레시피 목록과 총 개수를 담아 반환
+        PagedResponseDto<RecipeDetailsResponseDto> response = new PagedResponseDto<>(recipeList, totalRecipesCount);
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
 
     }
 
