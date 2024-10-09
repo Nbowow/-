@@ -4,14 +4,15 @@ import * as S from "./ActionToggleGroup.sytled";
 import ActionToggleCounter from "../ActionToggleCounter/ActionToggleCounter";
 import InteractionToggle from "../InteractionToggle/InteractionToggle";
 import { useEffect, useState } from "react";
-import {
-    patchRecipeUnLike,
-    patchRecipeUnScrap,
-    postRecipeLike,
-    postRecipeScrap,
-} from "../../../api/recipe";
+
 import { useUserStore } from "../../../store/userStore";
-import { useUserLikes, useUserScraps } from "../../../hooks/useUser";
+import {
+    useUpdateLike,
+    useUpdateScrap,
+    useUpdateUnScrap,
+    useUserLikes,
+    useUserScraps,
+} from "../../../hooks/useUser";
 
 const ActionToggleGroup = ({ recipe }) => {
     const [isLike, setIsLike] = useState(false);
@@ -27,32 +28,50 @@ const ActionToggleGroup = ({ recipe }) => {
     const { isLoading: isRecipeLoading, data: scraps } = useUserScraps();
 
     useEffect(() => {
-        if (isLoggedIn && !isUserLoading && !isRecipeLoading) {
+        if (isLoggedIn) {
             setIsLike(likes.some((i) => i.id === recipe.id));
             setIsScrap(scraps.some((i) => i.id === recipe.id));
+        }
+        if (!isUserLoading && !isRecipeLoading) {
             setLikeCount(recipe.likeCount ?? 0);
             setScrapCount(recipe.scrapCount ?? 0);
             setCommentCount(recipe.commentCount ?? 0);
         }
-    }, [isLoggedIn, likes, scraps, recipe, isUserLoading, isRecipeLoading]);
+    }, [
+        isLoggedIn,
+        likes,
+        scraps,
+        recipe,
+        isUserLoading,
+        isRecipeLoading,
+        isLike,
+        isScrap,
+    ]);
+
+    const { mutate: updateLike } = useUpdateLike();
+    const { mutate: updateUnLike } = useUpdateUnScrap();
+    const { mutate: updateScrap } = useUpdateScrap();
+    const { mutate: updateUnScrap } = useUpdateUnScrap();
 
     const handleLike = async () => {
+        if (!isLoggedIn) return;
         if (isLike) {
-            await patchRecipeUnLike(recipe.id);
+            updateUnLike(recipe.id);
             setLikeCount((prevCount) => prevCount - 1);
         } else {
-            await postRecipeLike(recipe.id);
+            updateLike(recipe.id);
             setLikeCount((prevCount) => prevCount + 1);
         }
         setIsLike(!isLike);
     };
 
     const handleScrap = async () => {
+        if (!isLoggedIn) return;
         if (isScrap) {
-            await patchRecipeUnScrap(recipe.id);
+            updateUnScrap(recipe.id);
             setScrapCount((prevCount) => prevCount - 1);
         } else {
-            await postRecipeScrap(recipe.id);
+            updateScrap(recipe.id);
             setScrapCount((prevCount) => prevCount + 1);
         }
         setIsScrap(!isScrap);

@@ -19,7 +19,7 @@ export const RelatedRecipe = ({ like }) => {
                 recipes.map((recipe) => (
                     <IntroCard
                         key={recipe.id}
-                        text={recipe.info}
+                        text={recipe.intro}
                         title={recipe.title}
                         imgUrl={recipe.image}
                     />

@@ -12,6 +12,12 @@ import {
     unFollowUser,
 } from "../api/userApi";
 import { useUserStore } from "../store/userStore";
+import {
+    patchRecipeUnLike,
+    patchRecipeUnScrap,
+    postRecipeLike,
+    postRecipeScrap,
+} from "../api/recipe";
 
 const useUser = () => {
     const setUser = useUserStore((state) => state.setUser);
@@ -97,6 +103,16 @@ export const useOtherUserRecipe = (id) => {
     });
 };
 
+export const useUpdateLike = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: (id) => postRecipeLike(id),
+        onSuccess: () => {
+            queryClient.invalidateQueries(["userLike"]);
+        },
+    });
+};
+
 export const useFollowUser = (id) => {
     const queryClient = useQueryClient();
 
@@ -117,6 +133,39 @@ export const useUnfollowUser = (id) => {
         onSuccess: () => {
             queryClient.invalidateQueries(["user"]);
             queryClient.invalidateQueries([`user${id}`]);
+        },
+    });
+};
+
+export const useUpdateScrap = () => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: (id) => postRecipeScrap(id),
+        onSuccess: () => {
+            queryClient.invalidateQueries(["userScrap"]);
+        },
+    });
+};
+
+export const useUpdateUnLike = () => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: (id) => patchRecipeUnLike(id),
+        onSuccess: () => {
+            queryClient.invalidateQueries(["userLike"]);
+        },
+    });
+};
+
+export const useUpdateUnScrap = () => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: (id) => patchRecipeUnScrap(id),
+        onSuccess: () => {
+            queryClient.invalidateQueries(["userScrap"]);
         },
     });
 };
