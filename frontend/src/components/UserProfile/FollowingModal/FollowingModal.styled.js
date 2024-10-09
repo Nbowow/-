@@ -50,6 +50,7 @@ export const TabButton = styled.button`
 `;
 
 export const UserList = styled.div`
+    padding-top: 10px;
     display: flex;
     flex-direction: column;
 `;
