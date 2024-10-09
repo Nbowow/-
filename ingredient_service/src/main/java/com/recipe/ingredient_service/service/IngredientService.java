@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.recipe.ingredient_service.client.NaverSearchClient;
 import com.recipe.ingredient_service.data.domain.DayPrice;
 import com.recipe.ingredient_service.data.domain.Ingredient;
-import com.recipe.ingredient_service.data.domain.Recipematerials;
 import com.recipe.ingredient_service.data.domain.UserLikeMaterials;
 import com.recipe.ingredient_service.data.dto.ingredient.DayDto;
 import com.recipe.ingredient_service.data.dto.ingredient.response.*;
@@ -211,6 +210,9 @@ public class IngredientService {
             Integer yesterdayPrice = (Integer) priceChanges.get(i + 1)[1];
             int priceGapPrice = (currentPrice - yesterdayPrice);
 
+            if (priceGapPrice == 0)
+                continue;
+
             String ingredientName = ingredientRepository.findById(ingredientId)
                     .map(Ingredient::getName)
                     .orElse("Unknown Ingredient");
@@ -226,7 +228,7 @@ public class IngredientService {
                 responseDtoList.add(dto);
             }
         }
-
+        responseDtoList.sort(Comparator.comparing(IngredientPriceChangeResponseDto::getPriceGap));
         return responseDtoList;
     }
 
