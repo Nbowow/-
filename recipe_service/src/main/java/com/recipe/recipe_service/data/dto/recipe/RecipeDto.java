@@ -8,7 +8,7 @@ import java.io.Serializable;
 public class RecipeDto implements Serializable {
     private String title;
     private String name;
-    private String info;
+    private String intro;
 
     private Long userId;
 }
