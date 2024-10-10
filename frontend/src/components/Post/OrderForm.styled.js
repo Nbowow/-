@@ -1,12 +1,9 @@
 import styled from "styled-components";
 
 export const Container = styled.div`
-    max-width: 1200px;
+    max-width: 1000px;
     margin: 0 auto;
     padding: 20px;
-    /* background-color: #ffffff;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); */
 `;
 
 export const TitleContainer = styled.div`
@@ -15,14 +12,14 @@ export const TitleContainer = styled.div`
 `;
 
 export const Title = styled.h1`
-    font-size: ${({ theme }) => theme.fontSize.h1};
+    font-size: ${({ theme }) => theme.fontSize.h3};
     color: #333;
     margin-bottom: 10px;
     font-family: "SUITEXTRABOLD";
 `;
 
 export const SubTitle = styled.p`
-    font-size: 22px;
+    font-size: ${({ theme }) => theme.fontSize.subText};
     color: #888;
     font-family: "SUITSEMIBOLD";
 `;
@@ -71,12 +68,12 @@ export const ImageUpload = styled.div`
     border-radius: 4px;
     padding: 20px;
     background-color: #f2f2f2;
-    width: 300px;
-    height: 300px;
+    width: 200px;
+    height: 200px;
     cursor: pointer;
     position: relative;
     align-self: center;
-    font-size: 16px;
+    font-size: ${({ theme }) => theme.fontSize.text};
 `;
 
 export const ButtonContainer = styled.div`
@@ -86,7 +83,7 @@ export const ButtonContainer = styled.div`
 
 export const TextArea = styled.textarea`
     width: 400px;
-    height: 250px;
+    height: 200px;
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 4px;
@@ -95,7 +92,7 @@ export const TextArea = styled.textarea`
     margin-top: 10px;
     background-color: #f2f2f2;
     font-family: "SUITREgular";
-    font-size: ${({ theme }) => theme.fontSize.text};
+    font-size: ${({ theme }) => theme.fontSize.subText};
 `;
 
 export const Input = styled.input`
@@ -104,7 +101,7 @@ export const Input = styled.input`
     border-radius: 4px;
     background-color: #f2f2f2;
     font-family: "SUITREgular";
-    font-size: ${({ theme }) => theme.fontSize.text};
+    font-size: ${({ theme }) => theme.fontSize.subText};
 `;
 
 export const SubmitButton = styled.button`
@@ -124,7 +121,7 @@ export const SubmitButton = styled.button`
 `;
 
 export const Text = styled.p`
-    font-size: 22px;
+    font-size: ${({ theme }) => theme.fontSize.text};
     color: ${({ theme }) => theme.color.gray.light};
     margin-top: 10px;
     font-family: "SUITSEMIBOLD";
@@ -133,7 +130,7 @@ export const Text = styled.p`
 export const Label = styled.label`
     margin-bottom: 8px;
     font-family: "SUITSEMIBOLD";
-    font-size: ${({ theme }) => theme.fontSize.h3};
+    font-size: ${({ theme }) => theme.fontSize.h4};
 `;
 
 export const ImageContainer = styled.div`
@@ -165,8 +162,8 @@ export const ImageContainer2 = styled.div`
     flex-direction: column;
     align-items: center;
     margin-top: 20px;
-    width: 300px;
-    height: 300px;
+    width: 200px;
+    height: 200px;
     padding: 20px;
     border: 1px solid;
     position: relative;

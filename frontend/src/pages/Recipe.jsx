@@ -140,7 +140,7 @@ const Recipe = () => {
                     <S.NoResultContainer>
                         <S.NoResult>
                             <S.Emoji>😥</S.Emoji>
-                            검색 결과가 없습니다.
+                            필터 된 레시피가 없습니다.
                         </S.NoResult>
                     </S.NoResultContainer>
                 </div>
