@@ -3,10 +3,14 @@ import UserProfileImage from "../../UserProfile/UserProfileImage/UserProfileImag
 import { Rating } from "react-simple-star-rating";
 import * as S from "./ReviewDetail.styled";
 const ReviewDetail = ({ review, recipe, totalRating }) => {
+    const placeholderImage = "/images/placeholder-img.jpg";
     return (
         <S.Wrapper>
             <S.FlexLayout>
-                <UserProfileImage imageUrl={recipe.image} size={"2.5em"} />
+                <UserProfileImage
+                    imageUrl={recipe.image || placeholderImage}
+                    size={"2.5em"}
+                />
                 <S.FlexInside>
                     <S.RecipeName>{recipe.name}</S.RecipeName>
                     <S.FlexCenter>
@@ -21,7 +25,10 @@ const ReviewDetail = ({ review, recipe, totalRating }) => {
                 </S.FlexInside>
             </S.FlexLayout>
 
-            <S.ReviewImg src={review.reviewImage} alt="리뷰 이미지" />
+            <S.ReviewImg
+                src={review.reviewImage || placeholderImage}
+                alt="리뷰 이미지"
+            />
             <S.FlexLayout>
                 <UserProfileImage
                     imageUrl={review.profileImage}
