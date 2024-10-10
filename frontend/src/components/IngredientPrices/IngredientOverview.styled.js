@@ -27,8 +27,8 @@ export const Wrapper = styled.div`
 
 export const TabWrapper = styled.div`
     ${flexStartStyle}
-    width: 50%;
-    margin-top: -4rem;
+    width: 40%;
+    margin-top: -5rem;
 `;
 
 export const RelatedRecipeWrapper = styled.div`
@@ -36,4 +36,19 @@ export const RelatedRecipeWrapper = styled.div`
     flex-direction: column;
     width: 70%;
     animation: ${fadeIn} 1s ease-in-out;
+`;
+
+export const TitleWrapper = styled.div``;
+export const TotalPrice = styled.div`
+    font-family: ${({ theme }) => theme.fontWeight.bold};
+    border-bottom: 1px solid ${({ theme }) => theme.color.green};
+    margin: 0 0.3rem;
+`;
+export const LikeHeader = styled.div`
+    width: 100%;
+    ${flexStartStyle}
+`;
+export const TotalPriceWrapper = styled.div`
+    ${flexStartStyle}
+    font-size: ${({ theme }) => theme.fontSize.text};
 `;

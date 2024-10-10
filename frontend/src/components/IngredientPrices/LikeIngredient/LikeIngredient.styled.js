@@ -27,6 +27,7 @@ export const Img = styled.img`
     width: 70%;
     margin: ${({ theme }) => theme.spacing.medium} 0;
 `;
+export const Price = styled.div``;
 export const Info = styled.div`
     ${flexBetweenStyle}
     flex-direction: column;
@@ -58,4 +59,13 @@ export const Remove = styled.div`
     opacity: 0.7;
     font-size: ${({ theme }) => theme.fontSize.subText};
     font-family: "TossFace";
+`;
+
+export const PriceWrapper = styled.div`
+    margin-top: 0.5rem;
+    ${flexBetweenStyle}
+    font-size: ${({ theme }) => theme.fontSize.text};
+`;
+export const PriceLabel = styled.div`
+    font-size: ${({ theme }) => theme.fontSize.subText};
 `;
