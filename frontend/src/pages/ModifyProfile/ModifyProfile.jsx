@@ -3,16 +3,43 @@ import ModifyUserInfoForm from "../../components/ModifyProfile/ModifyUserInfoFor
 import AllergyListForm from "../../components/ModifyProfile/AllergyListForm/AllergyListForm";
 import * as S from "./ModifyProfile.styled";
 import UserProfileImage from "../../components/UserProfile/UserProfileImage/UserProfileImage";
-import { useUserStore } from "../../store/userStore";
+import { useUserStore, useAuthStore } from "../../store/userStore";
 import { useRef } from "react";
 import useUser from "../../hooks/useUser";
+import { useNavigate } from "react-router-dom";
 import { useUpdateProfileImage } from "../../hooks/useUser";
+import { ToastContainer, toast, Slide } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import styled from "styled-components";
+import { useEffect } from "react";
+
+const CustomToastContainer = styled(ToastContainer)`
+    .Toastify__toast {
+        font-family: "SUITMedium";
+        font-size: 15px;
+        letter-spacing: 0.02rem;
+    }
+`;
 
 const ModifyProfile = () => {
+    const navigate = useNavigate();
     const { isLoading } = useUser();
+    const { isLoggedIn } = useAuthStore.getState();
     const user = useUserStore((state) => state.user);
     const { mutate: uploadProfileImage } = useUpdateProfileImage();
     const fileInputRef = useRef(null);
+    useEffect(() => {
+        if (!isLoggedIn) {
+            toast.error("로그인이 필요해요.", {
+                position: "top-center",
+                transition: Slide,
+                autoClose: 1000,
+                onClose: () => {
+                    navigate("/login");
+                },
+            });
+        }
+    }, [isLoggedIn, navigate]);
 
     if (isLoading) return <div></div>;
 
@@ -53,6 +80,7 @@ const ModifyProfile = () => {
                 />
             </S.ProfileImageWrapper>
             <Tab tabs={tabs} />
+            <CustomToastContainer stacked />
         </S.ModifyProfile>
     );
 };

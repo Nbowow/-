@@ -1,5 +1,6 @@
 import * as S from "./IntroCard.styled";
 import PropTypes from "prop-types";
+import { useNavigate } from "react-router-dom";
 
 /**
  * IntroCard 컴포넌트는 이미지, 제목 및 텍스트로 구성된 카드를 렌더링합니다.
@@ -18,29 +19,33 @@ import PropTypes from "prop-types";
  * const imgUrl = "/images/sample.jpg";
  * return <IntroCard title={title} text={text} imgUrl={imgUrl} />;
  */
-const IntroCard = ({ imgUrl = "", title, text }) => {
+const IntroCard = ({ recipe }) => {
     const placeholderImage = "/images/placeholder-img.jpg";
+    const navigate = useNavigate();
 
     return (
-        <S.IntroCard>
+        <S.IntroCard onClick={() => navigate(`/recipe/${recipe.recipeId}`)}>
             <S.Thumnail
-                src={imgUrl || placeholderImage}
+                src={recipe.image || placeholderImage}
                 onError={(e) =>
                     (e.target.src = e.target.src = placeholderImage)
                 }
             />
             <S.TextArea>
-                <S.Title>{title}</S.Title>
-                <S.Text>{text}</S.Text>
+                <S.Title>{recipe.title}</S.Title>
+                <S.Text>{recipe.intro}</S.Text>
             </S.TextArea>
         </S.IntroCard>
     );
 };
 
 IntroCard.propTypes = {
-    imgUrl: PropTypes.string,
-    title: PropTypes.string.isRequired,
-    text: PropTypes.string.isRequired,
+    recipe: PropTypes.shape({
+        recipeId: PropTypes.string.isRequired,
+        image: PropTypes.string,
+        title: PropTypes.string.isRequired,
+        intro: PropTypes.string.isRequired,
+    }).isRequired,
 };
 
 export default IntroCard;

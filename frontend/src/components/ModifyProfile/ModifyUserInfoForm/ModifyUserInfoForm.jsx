@@ -3,6 +3,8 @@ import * as S from "./ModifyUserInfoForm.styled";
 import PropTypes from "prop-types";
 import { useUpdateUser } from "../../../hooks/useUser";
 import { useState } from "react";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const ModifyUserInfoForm = ({ user }) => {
     const [nickname, setNickname] = useState(user.nickname);
@@ -12,7 +14,17 @@ const ModifyUserInfoForm = ({ user }) => {
 
     const onClickButton = (e) => {
         e.preventDefault();
-        mutation.mutate({ nickname, summary });
+        mutation.mutate(
+            { nickname, summary },
+            {
+                onSuccess: () => {
+                    toast.success("프로필이 변경되었어요.");
+                },
+                onError: () => {
+                    toast.error("프로필 변경에 실패했어요");
+                },
+            },
+        );
     };
 
     return (

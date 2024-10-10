@@ -9,7 +9,7 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 
-const CardSlider = ({ color, data }) => {
+const CardSlider = ({ color, message, data }) => {
     const chunkArray = (array, chunckSize) => {
         const results = [];
         for (let i = 0; i < array.length; i += chunckSize) {
@@ -22,7 +22,7 @@ const CardSlider = ({ color, data }) => {
 
     return (
         <S.CardSlider>
-            <S.Title>추운 겨울에 집에서 이런 메뉴는 어떠세요?</S.Title>
+            <S.Title>{message}</S.Title>
             <Swiper
                 modules={[Navigation, Pagination, Autoplay, A11y]}
                 slidesPerView={1}
@@ -34,12 +34,7 @@ const CardSlider = ({ color, data }) => {
                     <SwiperSlide key={index}>
                         <S.CardPack color={color}>
                             {chunk.map((item, itemIndex) => (
-                                <IntroCard
-                                    key={itemIndex}
-                                    title={item.title}
-                                    text={item.text}
-                                    imgUrl={item.imgUrl}
-                                />
+                                <IntroCard key={itemIndex} recipe={item} />
                             ))}
                         </S.CardPack>
                     </SwiperSlide>
@@ -51,11 +46,13 @@ const CardSlider = ({ color, data }) => {
 
 CardSlider.propTypes = {
     color: PropTypes.string,
+    message: PropTypes.string,
     data: PropTypes.arrayOf(
         PropTypes.shape({
+            recipeId: PropTypes.string.isRequired,
+            image: PropTypes.string,
             title: PropTypes.string.isRequired,
-            text: PropTypes.string.isRequired,
-            imgUrl: PropTypes.string.isRequired,
+            intro: PropTypes.string.isRequired,
         }),
     ).isRequired,
 };

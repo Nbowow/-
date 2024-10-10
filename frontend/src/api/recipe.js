@@ -107,3 +107,13 @@ export const postReview = async (formData, id) => {
     });
     return response.data;
 };
+
+export const fetchRecommend = async () => {
+    const response = await axiosInstance.get("/recipe/recommend");
+    return response.data;
+};
+
+export const fetchRecommendCommon = async () => {
+    const response = await axiosInstance.get("/recipe/recommend/common");
+    return response.data;
+};

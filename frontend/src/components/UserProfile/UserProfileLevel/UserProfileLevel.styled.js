@@ -13,7 +13,7 @@ export const Title = styled.h2`
     display: flex;
     align-items: center;
     font-family: "SUITSemibold";
-    font-size: ${({ theme }) => theme.fontSize.h4};
+    font-size: ${({ theme }) => theme.fontSize.text};
     margin-bottom: 15px;
 `;
 
@@ -31,12 +31,12 @@ export const ProgressBarWrapper = styled.div`
 export const ProgressBarContainer = styled.div`
     background-color: #f0f0f0;
     border-radius: 10px;
-    height: 10px;
+    height: 13px;
     width: 100%;
 `;
 
 export const ProgressBar = styled.div`
-    background-color: ${({ theme }) => theme.color.point.yellow};
+    background-color: ${({ color }) => color};
     border-radius: 10px;
     height: 100%;
     width: ${({ progress }) => progress}%;
@@ -50,7 +50,16 @@ export const LevelInfo = styled.p`
 `;
 
 export const Text = styled.div`
-    font-family: "SUITMedium";
+    font-family: "SUITBold";
     font-size: ${({ theme }) => theme.fontSize.text};
     padding: 8px;
+`;
+
+export const TextWrapper = styled.div`
+    display: flex;
+    gap: 6px;
+
+    .level {
+        font-family: "SUITHeavy";
+    }
 `;
