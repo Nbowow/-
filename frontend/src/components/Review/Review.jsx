@@ -7,11 +7,12 @@ import EmptyPlaceHolder from "../EmptyPlaceholder/EmptyPlaceHolder";
 import PropTypes from "prop-types";
 import ReviewRegistButton from "./ReviewRegist/ReviewRegistButton";
 import { useReview } from "../../hooks/useRecipe";
+import { useAuthStore } from "../../store/userStore";
 
 const Review = ({ recipe }) => {
     const [rating, setRating] = useState(Array(5).fill(0));
     const { data: reviews = [], isLoading } = useReview(recipe.id);
-
+    const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
     useEffect(() => {
         if (reviews.length > 0 && !isLoading) {
             const ratingCounts = reviews.reduce((acc, review) => {
@@ -21,14 +22,13 @@ const Review = ({ recipe }) => {
             setRating(ratingCounts);
         }
     }, [reviews, isLoading]);
-
     return (
         <S.ReviewSection>
             {!isLoading && reviews.length > 0 ? (
                 <>
                     <S.ReviewSectionTop>
                         <S.ReviewTitle>리뷰 {reviews.length}개</S.ReviewTitle>
-                        <ReviewRegistButton />
+                        {isLoggedIn && <ReviewRegistButton id={recipe.id} />}
                     </S.ReviewSectionTop>
                     <S.ReviewSectionBottom>
                         <ReviewRating rating={rating} />
@@ -37,13 +37,20 @@ const Review = ({ recipe }) => {
                         ))}
                     </S.ReviewSectionBottom>
                     <S.ReviewRegistButtonWrapper>
-                        <ReviewModalButton reviews={reviews} recipe={recipe} />
+                        {reviews.length >= 3 && (
+                            <ReviewModalButton
+                                reviews={reviews}
+                                recipe={recipe}
+                            />
+                        )}
                     </S.ReviewRegistButtonWrapper>
                 </>
             ) : (
                 <S.NoReviewsMessage>
                     <EmptyPlaceHolder
-                        button={<ReviewRegistButton recipe={recipe} />}
+                        button={
+                            isLoggedIn && <ReviewRegistButton id={recipe.id} />
+                        }
                         content="등록된 리뷰가 없습니다."
                         height={"15rem"}
                         width={"100%"}

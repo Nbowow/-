@@ -3,10 +3,10 @@ import styled from "styled-components";
 import { flexCenterStyle } from "../../../styles/common";
 export const BarWrapper = styled.div`
     ${flexCenterStyle}
-    width: 60%;
+    width: 55%;
     padding: ${({ theme }) => theme.spacing.small};
     margin-left: ${({ theme }) => theme.spacing.medium};
-    margin-right: -0.5rem;
+    height: 6rem;
 `;
 export const RatingWrapper = styled.div`
     ${flexCenterStyle}
@@ -22,7 +22,7 @@ export const RatingLabel = styled.div`
 `;
 export const Wrapper = styled.div`
     ${flexCenterStyle}
-    width: 18rem;
+    width: 17rem;
     height: 8rem;
 
     background-color: ${({ theme }) => theme.color.gray.lighter};

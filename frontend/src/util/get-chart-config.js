@@ -132,11 +132,13 @@ export const barConfig = (color) => {
 
 export const barOptions = (data, color) => {
     return {
+        responsive: true,
+        maintainAspectRatio: false,
         indexAxis: "y",
+        aspectRatio: 1,
+
         scales: {
             x: {
-                max: 100,
-
                 beginAtZero: true,
                 stacked: true,
                 display: true,
@@ -166,7 +168,6 @@ export const barOptions = (data, color) => {
                 },
             },
         },
-        responsive: true,
         plugins: {
             legend: {
                 display: false,

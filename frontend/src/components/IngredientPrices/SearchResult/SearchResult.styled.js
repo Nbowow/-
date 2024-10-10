@@ -34,7 +34,6 @@ export const Name = styled.div`
 export const Price = styled.div`
     font-size: ${({ theme }) => theme.fontSize.h4};
     font-family: ${({ theme }) => theme.fontWeight.semiBold};
-    color: ${({ theme }) => theme.color.point.red};
     margin: 0 ${({ theme }) => theme.spacing.medium};
 `;
 export const ResultInfo = styled.div`
@@ -70,3 +69,4 @@ export const Img = styled.img`
     width: 15%;
     border-radius: ${({ theme }) => theme.borderRadius.small};
 `;
+export const Unit = styled.div``;

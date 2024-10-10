@@ -42,7 +42,7 @@ export const IngredientName = styled.div`
     font-family: ${({ theme }) => theme.fontWeight.bold};
 `;
 export const IngredientPrice = styled.div`
-    margin-left: ${({ theme }) => theme.spacing.small};
+    margin: 0 ${({ theme }) => theme.spacing.small};
     font-family: ${({ theme }) => theme.fontWeight.bold};
     color: ${({ theme, isExpensive }) =>
         isExpensive ? theme.color.point.red : "blue"};

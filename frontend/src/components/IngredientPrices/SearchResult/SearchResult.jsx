@@ -1,5 +1,5 @@
 import PropTypes from "prop-types";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { getIngredientPrices } from "../../../api/ingredientApi";
 import InteractionToggle from "../../Toggle/InteractionToggle/InteractionToggle";
 import Button from "../../Button/Button";
@@ -8,13 +8,21 @@ import YearlyPriceChart from "../YearlyPriceChart/YearlyPriceChart";
 import LowestPrices from "../LowestPrice/LowestPrices";
 
 const SearchResult = ({ result, onLike, like }) => {
+    const placeholderImage = "/images/placeholder-img.jpg";
+
     const [showInfo, setShowInfo] = useState(false);
     const [priceHistory, setPriceHistory] = useState();
     const handleClick = async () => {
-        const data = await getIngredientPrices(result.id);
-        setPriceHistory(data);
         setShowInfo((prev) => !prev);
     };
+    useEffect(() => {
+        const fetchData = async () => {
+            const data = await getIngredientPrices(result.id);
+            setPriceHistory(data);
+        };
+        fetchData();
+    }, [result]);
+
     return (
         <S.Wrapper>
             {result.name !== "Unknown" ? (
@@ -22,12 +30,20 @@ const SearchResult = ({ result, onLike, like }) => {
                     <S.ResultWrapper>
                         <S.ResultInfo>
                             <S.Img
-                                src={result.ingredientImage}
+                                src={result.ingredientImage || placeholderImage}
                                 alt="ingredient"
                             />
                             <S.Label>
                                 <S.Name>{result.name}</S.Name>
                             </S.Label>
+
+                            {result.dayprice !== 0 && (
+                                <S.Label>
+                                    <S.Price>{result.dayprice}원</S.Price>
+                                    <S.Unit>(100g)</S.Unit>
+                                </S.Label>
+                            )}
+
                             <Button
                                 text="자세히 보기"
                                 onClick={() => handleClick()}

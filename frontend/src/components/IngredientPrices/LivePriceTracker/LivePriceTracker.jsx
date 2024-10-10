@@ -30,7 +30,7 @@ const LivePriceTracker = ({ ingredient, handleClick }) => {
                             : -ingredient.priceGap}
                         원
                     </S.IngredientPrice>
-                    이 더
+                    더
                     <S.IngredientPrice isExpensive={isExpensive}>
                         {isExpensive ? "상승" : "인하"}
                     </S.IngredientPrice>
