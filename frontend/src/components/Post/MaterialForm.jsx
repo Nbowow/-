@@ -38,7 +38,7 @@ const MaterialForm = ({ materialGroups, setMaterialGroups }) => {
 
     const handleRemoveMaterial = (groupIndex, materialIndex) => {
         const newMaterialGroups = [...materialGroups];
-        newMaterialGroups[groupIndex].materials.splice(materialIndex, 1); // 해당 재료 삭제
+        newMaterialGroups[groupIndex].materials.splice(materialIndex, 1);
         setMaterialGroups(newMaterialGroups);
     };
 
@@ -51,7 +51,7 @@ const MaterialForm = ({ materialGroups, setMaterialGroups }) => {
 
     const handleRemoveGroup = (groupIndex) => {
         const newMaterialGroups = [...materialGroups];
-        newMaterialGroups.splice(groupIndex, 1); // 해당 그룹 삭제
+        newMaterialGroups.splice(groupIndex, 1);
         setMaterialGroups(newMaterialGroups);
     };
 
@@ -78,7 +78,7 @@ const MaterialForm = ({ materialGroups, setMaterialGroups }) => {
                             }
                         />
                         {groupIndex > 0 && (
-                            <RemoveButton // 그룹 삭제 버튼
+                            <RemoveButton
                                 type="button"
                                 onClick={() => handleRemoveGroup(groupIndex)}
                             >
@@ -126,9 +126,8 @@ const MaterialForm = ({ materialGroups, setMaterialGroups }) => {
                                         )
                                     }
                                 />
-                                {/* 첫 번째 재료가 아닐 때만 삭제 버튼 표시 */}
                                 {materialIndex > 0 && (
-                                    <RemoveButton // 재료 삭제 버튼
+                                    <RemoveButton
                                         type="button"
                                         onClick={() =>
                                             handleRemoveMaterial(
@@ -149,7 +148,6 @@ const MaterialForm = ({ materialGroups, setMaterialGroups }) => {
                             >
                                 재료 추가
                             </AddButton>
-                            {/* 첫 번째 그룹이 아닐 때만 삭제 버튼 표시 */}
                         </ButtonContainer>
                     </GroupContainer>
                 ))}

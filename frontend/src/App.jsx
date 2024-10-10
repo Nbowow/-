@@ -29,9 +29,9 @@ function App() {
                         <Route
                             path="/post"
                             element={
-                                <PostRecipe />
-                                // <ProtectedRoute>
-                                // </ProtectedRoute>
+                                <ProtectedRoute>
+                                    <PostRecipe />
+                                </ProtectedRoute>
                             }
                         />
                         <Route path="/recipe" element={<Recipe />} />

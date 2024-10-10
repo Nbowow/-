@@ -1,10 +1,9 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import Pagination from "../components/Pagination/Pagination";
-import SortSelector from "../components/SortSelector/SortSelector";
 import { useSearchResultStore } from "../store/recipeStore";
 import RecipeCardList from "../components/CardList/RecipeCardList";
-import { fetchRecipes, searchRecipes } from "../api/recipe";
+import { searchRecipes } from "../api/recipe";
 import SearchBar from "../components/SearchBar/SearchBar";
 import * as S from "./SearchRecipe.styled";
 import RecipeCardSkeleton from "../components/SkeletonLoading/RecipeSkeleton";
@@ -14,80 +13,45 @@ const SearchRecipe = () => {
     const location = useLocation();
     const query = new URLSearchParams(location.search);
 
-    const { sortOrder, currentPage, setSortOrder, setCurrentPage } =
-        useSearchResultStore();
-
+    const { setCurrentPage } = useSearchResultStore();
     const recipesPerPage = 20;
     const [recipes, setRecipes] = useState([]);
     const [errorMessage, setErrorMessage] = useState(null);
     const [totalCount, setTotalCount] = useState(0);
     const [loading, setLoading] = useState(true);
+
     const keyword = query.get("keyword") || "";
+    const currentPage = parseInt(query.get("page")) || 0;
 
     useEffect(() => {
         const loadRecipes = async () => {
             setLoading(true);
-            let data;
-            const page = parseInt(query.get("page")) || 0;
-
             try {
-                if (keyword) {
-                    data = await searchRecipes(keyword);
-                } else {
-                    data = await fetchRecipes(page, recipesPerPage);
-                }
+                const data = await searchRecipes(
+                    keyword,
+                    currentPage,
+                    recipesPerPage,
+                );
 
-                if (data && Array.isArray(data.recipeList)) {
-                    setRecipes(data.recipeList);
-                    setTotalCount(data.count);
+                if (data && Array.isArray(data.recipes)) {
+                    setRecipes(data.recipes);
+                    setTotalCount(data.totalCount);
                     setErrorMessage(null);
                 } else {
-                    const message = data;
                     setRecipes([]);
-                    setErrorMessage(message);
+                    setErrorMessage(data);
                 }
-                // eslint-disable-next-line no-unused-vars
-            } catch (error) {
-                setErrorMessage("레시피를 불러오는데 실패했습니다.");
             } finally {
                 setLoading(false);
             }
         };
 
         loadRecipes();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [location.search, keyword, recipesPerPage]);
-
-    const popularRecipes = [...recipes]
-        .sort((a, b) => b.likeCount - a.likeCount)
-        .slice(0, 4);
-
-    const sortedRecipes = [...recipes].sort((a, b) => {
-        switch (sortOrder) {
-            case "최신순":
-                return new Date(b.modifiedDate) - new Date(a.modifiedDate);
-            case "추천순":
-                return b.likeCount - a.likeCount;
-            case "댓글순":
-                return b.viewCount - a.viewCount;
-            default:
-                return 0;
-        }
-    });
-
-    const paginatedRecipes = sortedRecipes.slice(
-        currentPage * recipesPerPage,
-        (currentPage + 1) * recipesPerPage,
-    );
-
-    const handleNoResultClick = () => {
-        if (errorMessage) {
-            navigate(`/search?keyword=${encodeURIComponent(errorMessage)}`);
-        }
-    };
+        // URL의 페이지 값으로 스토어의 currentPage 동기화
+        setCurrentPage(currentPage);
+    }, [keyword, currentPage, setCurrentPage]);
 
     const handleSearch = (term) => {
-        setCurrentPage(0);
         navigate(`/search?keyword=${encodeURIComponent(term)}&page=0`);
     };
 
@@ -99,11 +63,12 @@ const SearchRecipe = () => {
                 boldPlacehold="레시피 검색"
                 grayPlacehold="키워드를 입력하세요"
                 onSubmit={handleSearch}
+                value={keyword} // 검색어를 SearchBar에 전달
             />
 
             {loading ? (
                 <RecipeCardSkeleton />
-            ) : paginatedRecipes.length === 0 ? (
+            ) : recipes.length === 0 ? (
                 <S.NoResultContainer>
                     <S.NoResult>
                         <S.Emoji>😥</S.Emoji>
@@ -112,7 +77,9 @@ const SearchRecipe = () => {
                     {errorMessage && (
                         <S.NoResult>
                             혹시 이걸 찾으시나요?
-                            <S.NoResultSearch onClick={handleNoResultClick}>
+                            <S.NoResultSearch
+                                onClick={() => handleSearch(errorMessage)}
+                            >
                                 {errorMessage}
                             </S.NoResultSearch>
                         </S.NoResult>
@@ -120,36 +87,14 @@ const SearchRecipe = () => {
                 </S.NoResultContainer>
             ) : (
                 <>
-                    {keyword && (
-                        <>
-                            <S.PopularRecipe>
-                                <S.Emoji>🔥</S.Emoji> {keyword} 인기 레시피
-                            </S.PopularRecipe>
-                            <RecipeCardList
-                                recipes={popularRecipes}
-                                showProfile={true}
-                            />
-                        </>
-                    )}
-
-                    <SortSelector
-                        sortOrder={sortOrder}
-                        onSortChange={(order) => {
-                            setSortOrder(order);
-                            setCurrentPage(0);
-                        }}
-                    />
-
-                    <RecipeCardList
-                        recipes={paginatedRecipes}
-                        showProfile={true}
-                    />
-
+                    <S.ResultHeader>
+                        🔍 {keyword}에 대한 레시피가 {totalCount}개 있습니다
+                    </S.ResultHeader>
+                    <RecipeCardList recipes={recipes} showProfile={true} />
                     {Math.ceil(totalCount / recipesPerPage) > 1 && (
                         <Pagination
                             pageCount={Math.ceil(totalCount / recipesPerPage)}
                             onPageChange={({ selected }) => {
-                                setCurrentPage(selected);
                                 navigate(
                                     `/search?keyword=${encodeURIComponent(keyword)}&page=${selected}`,
                                 );

@@ -10,10 +10,11 @@ export const fetchRecipes = async (pageNumber, pageSize) => {
     return response.data;
 };
 
-export const searchRecipes = async (searchTerm) => {
+export const searchRecipes = async (searchTerm, pageNumber, pageSize) => {
     const response = await axios.get(
-        `${BASE_URL}/recipe/search?keyword=${searchTerm}`,
+        `${BASE_URL}/recipe/search?keyword=${searchTerm}&pageNumber=${pageNumber + 1}&pageSize=${pageSize}`,
     );
+
     return response.data;
 };
 
@@ -59,6 +60,7 @@ export const postRecipe = async (formData) => {
             "Content-Type": "multipart/form-data",
         },
     });
+
     return response.data;
 };
 

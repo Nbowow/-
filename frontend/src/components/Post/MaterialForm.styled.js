@@ -100,7 +100,7 @@ export const AddGroupButton = styled(AddButton)`
 
 export const RemoveButton = styled.button`
     position: flex;
-    background: #aaaaaa;
+    background: ${({ theme }) => theme.color.gray.light};
     border: none;
     color: white;
     cursor: pointer;
