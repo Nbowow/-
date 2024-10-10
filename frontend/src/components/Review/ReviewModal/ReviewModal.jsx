@@ -6,10 +6,15 @@ import ReviewDetail from "../ReviewDetail/ReviewDetail";
 
 const ReviewModal = ({ recipe, reviews }) => {
     const [selectedReviewId, setSelectedReviewId] = useState(null);
-
+    const [totalRating, setTotalRating] = useState(0);
     useEffect(() => {
         if (reviews.length > 0) {
             setSelectedReviewId(0);
+            const ratingCounts = reviews.reduce((acc, review) => {
+                acc += review.rating;
+                return acc;
+            }, 0);
+            setTotalRating(ratingCounts / reviews.length);
         }
     }, [reviews]);
 
@@ -33,6 +38,7 @@ const ReviewModal = ({ recipe, reviews }) => {
                     </S.Reviews>
 
                     <ReviewDetail
+                        totalRating={totalRating}
                         review={reviews[selectedReviewId]}
                         recipe={recipe}
                     />

@@ -5,12 +5,10 @@ export const ReviewContainer = styled.div`
     flex-direction: column;
     align-items: center;
     padding: 20px;
-    border: 1px solid #ddd;
     border-radius: 8px;
     width: 100%;
     max-width: 600px;
     margin: 0 auto;
-    background-color: #f9f9f9;
 `;
 
 export const Title = styled.h2`

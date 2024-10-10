@@ -49,19 +49,26 @@ export const TextAreaBox = styled.textarea`
     font-family: ${({ theme }) => theme.fontWeight.regular};
     background-color: ${({ theme }) => theme.color.gray.lighter};
     border: 1px solid ${({ theme }) => theme.color.gray.lighter};
-
     width: 100%;
-    height: 4rem;
-    padding: 0.1rem 0.1rem 2rem 0.2rem;
+    height: 5rem;
+    padding: 1rem 0.2rem;
     border-radius: ${({ theme }) => theme.borderRadius.medium};
     outline: none;
+    resize: none;
+    text-indent: 1rem;
 `;
-
+export const ButtonWrapper = styled.div`
+    width: 100%;
+    ${flexAlignEndStyle}
+    flex-direction: column;
+    margin: 0.5rem 0;
+`;
 export const TextAreaWrapper = styled.div`
     ${flexAlignEndStyle}
     flex-direction: column;
     margin-top: ${({ theme }) => theme.spacing.large};
     width: 100%;
+    resize: none;
 `;
 
 export const CommentInputWrapper = styled.div`

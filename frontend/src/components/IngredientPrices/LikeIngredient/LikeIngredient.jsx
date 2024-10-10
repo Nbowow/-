@@ -44,6 +44,15 @@ const IngredientLike = ({ ingredients, onClick, onLike }) => {
                                 }
                             />
                             <S.Name>{ingredient.name}</S.Name>
+
+                            <S.PriceWrapper>
+                                {ingredient.price && (
+                                    <S.Price>{ingredient.price}원</S.Price>
+                                )}
+                                <S.PriceLabel>
+                                    {ingredient.price ? "(100g)" : "정보 없음"}
+                                </S.PriceLabel>
+                            </S.PriceWrapper>
                         </S.Info>
                     );
                 })}

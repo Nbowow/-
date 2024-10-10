@@ -15,6 +15,7 @@ const IngredientOverview = ({ like, onLike }) => {
     const [priceHistory, setPriceHistory] = useState(null);
     const [name, setName] = useState(null);
     const [tabs, setTabs] = useState([]);
+    const [totalPrice, setTotalPrice] = useState(0);
 
     useEffect(() => {
         if (like.length === 0) return;
@@ -25,6 +26,14 @@ const IngredientOverview = ({ like, onLike }) => {
         };
         fetchIngredientPrices();
     }, [rowIdx, like]);
+
+    useEffect(() => {
+        const data = like.reduce((acc, cur) => {
+            if (cur.price === undefined) return acc;
+            return acc + cur.price;
+        }, 0);
+        setTotalPrice(data);
+    }, [like]);
 
     useEffect(() => {
         setTabs([
@@ -88,7 +97,18 @@ const IngredientOverview = ({ like, onLike }) => {
             {like.length > 0 ? (
                 <>
                     <S.IngredientLikeSection>
-                        <Title title={"나의 식재료"} />
+                        <S.LikeHeader>
+                            <S.TitleWrapper>
+                                <Title title={"나의 식재료"} />
+                            </S.TitleWrapper>
+                            <S.TotalPriceWrapper>
+                                총 가격은
+                                <S.TotalPrice>
+                                    {totalPrice} 원
+                                </S.TotalPrice>{" "}
+                                입니다.
+                            </S.TotalPriceWrapper>
+                        </S.LikeHeader>
                         <S.Wrapper>
                             <LikeIngredient
                                 onClick={clickHandler}

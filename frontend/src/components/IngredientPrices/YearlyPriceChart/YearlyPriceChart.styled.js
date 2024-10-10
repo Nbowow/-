@@ -2,7 +2,7 @@ import styled from "styled-components";
 import { flexCenterStyle, flexStartStyle } from "../../../styles/common";
 
 export const ChartWrapper = styled.div`
-    width: 90%;
+    width: 85%;
 `;
 export const TagWrapper = styled.div`
     width: 80%;

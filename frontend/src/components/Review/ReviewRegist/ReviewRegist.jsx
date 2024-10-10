@@ -41,9 +41,8 @@ const ReviewRegist = ({ onClose, id }) => {
     const { isLoading: isUserLoading } = useUser();
     const user = useUserStore((state) => state.user);
 
-    if (isUserLoading) return <div></div>;
     const handleSubmit = async () => {
-        if (!title || !content || rating === 0 || !user) {
+        if (!title || !content || rating === 0) {
             return;
         }
         const data = JSON.stringify({
@@ -57,7 +56,7 @@ const ReviewRegist = ({ onClose, id }) => {
         if (selectedFile) {
             formData.append("reviewImage", selectedFile);
         }
-
+        if (!isUserLoading && !user) onClose();
         mutate(
             { formData, id },
             {

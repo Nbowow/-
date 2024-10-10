@@ -24,10 +24,8 @@ function CommentInput({ id }) {
     const { isLoggedIn } = useAuthStore.getState();
 
     const { mutate: updateComment } = useUpdateComment();
-
-    if (isLoading) return <div></div>;
     const submitComment = () => {
-        if (!isLoggedIn) {
+        if (!isLoading && !isLoggedIn) {
             toast.error("로그인이 필요해요.", {
                 position: "top-center",
                 transition: Slide,
@@ -59,7 +57,15 @@ function CommentInput({ id }) {
                 ref={inputRef}
                 onKeyDown={handleKeyPress}
             />
-            <Button onClick={() => submitComment()} text="등록" />
+            <S.ButtonWrapper>
+                <Button
+                    width="5rem"
+                    height="2rem"
+                    type="small"
+                    onClick={() => submitComment()}
+                    text="등록"
+                />
+            </S.ButtonWrapper>
             <CustomToastContainer stacked />
         </S.TextAreaWrapper>
     );
