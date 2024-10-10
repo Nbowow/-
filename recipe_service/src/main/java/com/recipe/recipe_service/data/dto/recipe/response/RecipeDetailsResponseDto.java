@@ -33,12 +33,4 @@ public class RecipeDetailsResponseDto {
     private Long scrapCount;
     private Long commentCount;
 
-    private Long calorie; // 예상 칼로리
-    private Long price; // 에상 가격
-
-    // 재료 목록
-    private List<RecipeMaterialsResponseDto> materials;
-
-    // 요리 순서
-    private List<RecipeOrdersResponseDto> recipeOrders;
 }
