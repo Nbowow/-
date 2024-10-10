@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import {
+    flexAlignEndStyle,
     flexBetweenStyle,
     flexCenterStyle,
     flexStartStyle,
@@ -22,11 +23,16 @@ export const ReviewSection = styled.div`
 
 export const ReviewTitle = styled.div`
     ${flexStartStyle}
-    font-size: ${({ theme }) => theme.fontSize.h4};
-    font-family: ${({ theme }) => theme.fontWeight.bold};
+    font-family: ${({ theme }) => theme.fontWeight.medium};
 `;
 
 export const NoReviewsMessage = styled.div`
     ${flexCenterStyle}
     width: 80%;
+`;
+export const ReviewRegistButtonWrapper = styled.div`
+    ${flexAlignEndStyle}
+    flex-direction: column;
+    width: 80%;
+    margin-top: ${({ theme }) => theme.spacing.large};
 `;

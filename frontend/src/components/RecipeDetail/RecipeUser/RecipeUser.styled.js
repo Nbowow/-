@@ -21,7 +21,7 @@ export const UserInfo = styled.div`
 
 export const UserName = styled.div`
     font-size: ${({ theme }) => theme.fontSize.h4};
-    font-family: ${({ theme }) => theme.fontWeight.medium};
+    font-family: ${({ theme }) => theme.fontWeight.bold};
     margin-right: ${({ theme }) => theme.spacing.medium};
 `;
 export const UserHome = styled.div`
