@@ -15,7 +15,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @Table(name = "Users")
 @ToString
 @Builder
-public class User extends BaseTimeEntity{
+public class User extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,6 +30,10 @@ public class User extends BaseTimeEntity{
 
     @Column(name = "user_image")
     private String profileImage;
+
+    @Builder.Default
+    @Column(name = "user_summary")
+    private String summary = "";
 
     @Column(name = "user_name")
     private String name;
@@ -59,16 +63,27 @@ public class User extends BaseTimeEntity{
     @Column(name = "user_refresh_token")
     private String refreshToken;
 
-    public void authorizeUser() {
-        this.role = Role.USER;
-    }
-
-    // 비밀번호 암호화 메소드
     public void passwordEncode(PasswordEncoder passwordEncoder) {
         this.password = passwordEncoder.encode(this.password);
     }
 
     public void updateRefreshToken(String updateRefreshToken) {
         this.refreshToken = updateRefreshToken;
+    }
+
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
+    }
+
+    public void setSummary(String summary) {
+        this.summary = summary;
+    }
+
+    public void setProfileImage(String profileImageUrl) {
+        this.profileImage = profileImageUrl;
+    }
+
+    public void plusScore(Long points) {
+        this.score += points;
     }
 }

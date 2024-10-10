@@ -57,7 +57,10 @@ dependencies {
 	// Eureka Client for Spring Cloud Netflix
 	implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
 
+	// S3
+	implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
 
+	
 	runtimeOnly 'com.mysql:mysql-connector-j'
 	implementation 'com.auth0:java-jwt:4.2.1'
 

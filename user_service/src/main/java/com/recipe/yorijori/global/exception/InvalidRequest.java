@@ -3,7 +3,7 @@ package com.recipe.yorijori.global.exception;
 import lombok.Getter;
 
 @Getter
-public class InvalidRequest extends YorijoriException{
+public class InvalidRequest extends YorijoriException {
     private static final String MESSAGE = "잘못된 요청입니다.";
 
 
@@ -18,7 +18,7 @@ public class InvalidRequest extends YorijoriException{
 
 
     @Override
-    public int getStatusCode(){
+    public int getStatusCode() {
         return 400;
     }
 }

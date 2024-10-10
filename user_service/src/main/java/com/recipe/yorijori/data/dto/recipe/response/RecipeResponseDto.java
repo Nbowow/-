@@ -6,6 +6,6 @@ import lombok.Data;
 public class RecipeResponseDto {
     private String title;
     private String name;
-    private String info;
+    private String intro;
     private Long userId;
 }

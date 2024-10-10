@@ -1,7 +1,8 @@
 package com.recipe.yorijori.global.exception;
 
-public class Unauthorized extends YorijoriException{
-    private static final String MESSAGE = "인증이 필요합니다.";
+public class Unauthorized extends YorijoriException {
+    private static final String MESSAGE = "리프레시 토큰이 없거나 유효하지 않습니다.";
+
     public Unauthorized() {
         super(MESSAGE);
     }
