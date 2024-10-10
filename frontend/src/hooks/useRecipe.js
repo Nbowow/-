@@ -1,5 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { getReviews, postReview } from "../api/recipe";
+import {
+    fetchRecommend,
+    fetchRecommendCommon,
+    getReviews,
+    postReview,
+} from "../api/recipe";
 
 export const useReview = (id) => {
     return useQuery({
@@ -17,5 +22,19 @@ export const useUpdateReview = () => {
         onSuccess: (data, variables) => {
             queryClient.invalidateQueries([`review${variables.id}`]);
         },
+    });
+};
+
+export const useRecommend = () => {
+    return useQuery({
+        queryKey: ["recommendRecipe"],
+        queryFn: fetchRecommend,
+    });
+};
+
+export const useRecommendCommon = () => {
+    return useQuery({
+        queryKey: ["recommendCommon"],
+        queryFn: fetchRecommendCommon,
     });
 };
