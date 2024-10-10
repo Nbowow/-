@@ -46,7 +46,7 @@ const IngredientLike = ({ ingredients, onClick, onLike }) => {
                             <S.Name>{ingredient.name}</S.Name>
 
                             <S.PriceWrapper>
-                                {ingredient.price && (
+                                {ingredient.price !== 0 && (
                                     <S.Price>{ingredient.price}원</S.Price>
                                 )}
                                 <S.PriceLabel>
