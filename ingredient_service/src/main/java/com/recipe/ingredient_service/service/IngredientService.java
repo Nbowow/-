@@ -184,7 +184,7 @@ public class IngredientService {
             return IngredientsSearchResponseDto.builder()
                     .id(findIngredient.getId())
                     .name(findIngredient.getName())
-                    .ingredientImage(findIngredient.getImg())
+                    .ingredientImage(findIngredient.getIngredientImage())
                     .dayprice(0)
                     .build();
         }
@@ -192,7 +192,7 @@ public class IngredientService {
         return IngredientsSearchResponseDto.builder()
                 .id(findIngredient.getId())
                 .name(findIngredient.getName())
-                .ingredientImage(findIngredient.getImg())
+                .ingredientImage(findIngredient.getIngredientImage())
                 .dayprice(findTopDayIngredientPrice.getPrice())
                 .build();
     }
@@ -401,7 +401,7 @@ public class IngredientService {
             return new IngredientPopularResponseDto(
                     ingredientId,
                     ingredient.getName(),
-                    ingredient.getImg(),
+                    ingredient.getIngredientImage(),
                     price,
                     likeCount
             );
