@@ -84,4 +84,26 @@ public class RecipeRecommendController {
         RecipeRecommendResponseWrapperDto responseWrapper = new RecipeRecommendResponseWrapperDto(message, recommendedRecipes);
         return ResponseEntity.status(HttpStatus.OK).body(responseWrapper);
     }
+
+    // 계절별 레시피 추천
+    @GetMapping("/recommend/season")
+    public ResponseEntity<RecipeRecommendResponseWrapperDto> getSeasonRecommendations() {
+        // 고정된 recipe_id 목록
+        List<Long> recipeIds = List.of(1L, 12L, 14L, 15L, 16L, 17L, 18L, 20L, 21L,
+                24L, 25L, 26L, 27L, 28L, 29L, 30L, 32L, 33L,
+                34L, 37L, 38L, 39L, 40L, 41L, 43L, 44L, 45L,
+                47L, 50L, 51L);
+
+        // 해당 레시피 ID 목록을 기반으로 레시피 가져오기
+        List<RecipeRecommendResponseDto> recommendedRecipes = recipeRecommendService.getRecipesByIds(recipeIds);
+
+        // 메시지 설정
+        String message = "가을에 맞는 레시피 추천해드릴게요!";
+
+        // 결과를 RecipeRecommendResponseWrapperDto로 감싸서 반환
+        RecipeRecommendResponseWrapperDto responseWrapper = new RecipeRecommendResponseWrapperDto(message, recommendedRecipes);
+        return ResponseEntity.status(HttpStatus.OK).body(responseWrapper);
+    }
+
+
 }
