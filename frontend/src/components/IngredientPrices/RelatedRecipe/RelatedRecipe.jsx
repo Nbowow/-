@@ -53,7 +53,7 @@ export const RelatedRecipe = ({ like }) => {
 
 const TitleLayout = styled.div``;
 const TitleWrapper = styled.div`
-    display: flex;
+    ${flexStartStyle}
     width: 100%;
 `;
 const IngredientLabel = styled.div`
@@ -63,9 +63,7 @@ const IngredientLabel = styled.div`
     margin-right: 0.3rem;
 `;
 const IngredientWrapper = styled.div`
-    width: 100%;
     text-align: center;
-    margin-left: 2rem;
     ${flexStartStyle}
 `;
 const Ingredient = styled.div`
