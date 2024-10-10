@@ -25,7 +25,6 @@ const Ingredient = () => {
     const [likeIngredients, setLikeIngredients] = useState([]);
     const [searchTerm, setSearchTerm] = useState("");
     const handleLike = (ingredient) => {
-        if (!isLoggedIn) return;
         const isLiked = likeIngredients.find((i) => i.id === ingredient.id);
         setLikeIngredients((prev) =>
             isLiked
@@ -33,6 +32,7 @@ const Ingredient = () => {
                 : [...prev, ingredient],
         );
 
+        if (!isLoggedIn) return;
         if (isLiked) {
             deleteLikeIngredient(ingredient.id);
         } else {
