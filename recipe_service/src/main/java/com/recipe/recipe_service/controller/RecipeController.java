@@ -142,9 +142,13 @@ public class RecipeController {
     // 레시피 카테고리 별 검색
     @GetMapping("/category")
     public ResponseEntity<?> searchCategory(
-            @RequestParam("commonCode") String commonCode) {
+            @RequestParam(value = "B", required = false) String codeB,
+            @RequestParam(value = "C", required = false) String codeC,
+            @RequestParam(value = "D", required = false) String codeD,
+            @RequestParam(value = "E", required = false) String codeE) {
 
-        List<RecipeCategoryResponseDto> recipes = recipeService.searchRecipeByCategory(commonCode);
+        // 각 코드에 해당하는 레시피 검색
+        List<RecipeCategoryResponseDto> recipes = recipeService.searchRecipeByCategory(codeB, codeC, codeD, codeE);
 
         return ResponseEntity.status(HttpStatus.OK).body(recipes);
 

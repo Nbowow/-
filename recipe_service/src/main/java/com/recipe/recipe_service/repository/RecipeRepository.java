@@ -45,15 +45,16 @@ public interface RecipeRepository extends JpaRepository<Recipe, Long> {
     @Query("SELECT r FROM Recipe r ORDER BY r.likeCount DESC")
     List<Recipe> findTopByOrderByLikeCountDesc(Pageable pageable);
 
-    // type 필드에서 commonCode로 검색
-    List<Recipe> findByType(String type);
-
-    // situation 필드에서 commonCode로 검색
-    List<Recipe> findBySituation(String situation);
-
-    // ingredients 필드에서 commonCode로 검색
-    List<Recipe> findByIngredients(String ingredients);
-
-    // method 필드에서 commonCode로 검색
-    List<Recipe> findByMethod(String method);
+    // 카테고리 별 검색
+    @Query("SELECT r FROM Recipe r WHERE " +
+            "(:codeB IS NULL OR r.type = :codeB) AND " +
+            "(:codeC IS NULL OR r.situation = :codeC) AND " +
+            "(:codeD IS NULL OR r.ingredients = :codeD) AND " +
+            "(:codeE IS NULL OR r.method = :codeE)")
+    List<Recipe> findRecipesByCategory(
+            @Param("codeB") String codeB,
+            @Param("codeC") String codeC,
+            @Param("codeD") String codeD,
+            @Param("codeE") String codeE
+    );
 }

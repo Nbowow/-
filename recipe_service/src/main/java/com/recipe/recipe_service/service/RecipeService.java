@@ -398,30 +398,10 @@ public class RecipeService {
         recipeCommentsRepository.deleteById(commentId);
     }
 
-    public List<RecipeCategoryResponseDto> searchRecipeByCategory(String commonCode) {
+    public List<RecipeCategoryResponseDto> searchRecipeByCategory(String codeB, String codeC, String codeD, String codeE) {
 
-        String categoryPrefix = commonCode.substring(0, 1); // 첫 번째 문자를 추출 (B, C, D, E)
-        String code = commonCode; // 전체 공통코드를 사용
-
-        List<Recipe> foundRecipes;
-
-        // 공통 코드의 첫 글자를 기준으로 어떤 컬럼에서 검색할지 결정
-        switch (categoryPrefix) {
-            case "B":
-                foundRecipes = recipeRepository.findByType(code);
-                break;
-            case "C":
-                foundRecipes = recipeRepository.findBySituation(code);
-                break;
-            case "D":
-                foundRecipes = recipeRepository.findByIngredients(code);
-                break;
-            case "E":
-                foundRecipes = recipeRepository.findByMethod(code);
-                break;
-            default:
-                throw new IllegalArgumentException("Invalid common code prefix");
-        }
+        // 필터링을 위한 쿼리 작성 - 필요 시 각 필드가 존재할 때만 필터링
+        List<Recipe> foundRecipes = recipeRepository.findRecipesByCategory(codeB, codeC, codeD, codeE);
 
         // 검색된 레시피를 DTO로 변환하여 반환
         return foundRecipes.stream()
