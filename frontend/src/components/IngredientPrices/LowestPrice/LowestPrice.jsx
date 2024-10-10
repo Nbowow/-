@@ -13,18 +13,22 @@ const LowestPrice = ({ data }) => {
         window.open(data.link);
     };
     return (
-        <S.Wrapper>
-            <S.Img src={data.image} alt="lowest price" />
-            <S.Title>{formattedTitle} </S.Title>
-            <S.Price>{data.lprice}원</S.Price>
-            <Button
-                text="구매"
-                type="small"
-                width="10%"
-                height="2rem"
-                onClick={() => handleClick()}
-            />
-        </S.Wrapper>
+        <>
+            {data && (
+                <S.Wrapper>
+                    <S.Img src={data.image} alt="lowest price" />
+                    <S.Title>{formattedTitle} </S.Title>
+                    <S.Price>{data.lprice}원</S.Price>
+                    <Button
+                        text="구매"
+                        type="small"
+                        width="10%"
+                        height="2rem"
+                        onClick={() => handleClick()}
+                    />
+                </S.Wrapper>
+            )}
+        </>
     );
 };
 

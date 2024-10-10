@@ -22,14 +22,11 @@ import { useNavigate } from "react-router-dom";
 const IntroCard = ({ recipe }) => {
     const placeholderImage = "/images/placeholder-img.jpg";
     const navigate = useNavigate();
-
     return (
         <S.IntroCard onClick={() => navigate(`/recipe/${recipe.recipeId}`)}>
             <S.Thumnail
                 src={recipe.image || placeholderImage}
-                onError={(e) =>
-                    (e.target.src = e.target.src = placeholderImage)
-                }
+                onError={(e) => (e.target.src = placeholderImage)}
             />
             <S.TextArea>
                 <S.Title>{recipe.title}</S.Title>
