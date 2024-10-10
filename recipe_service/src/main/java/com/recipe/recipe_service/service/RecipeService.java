@@ -203,42 +203,44 @@ public class RecipeService {
                 .build();
 
     }
-    public List<RecipeDetailsResponseDto> searchRecipe(String keyword) {
+    
+    // 레시피 검색
+    public Page<RecipeDetailsResponseDto> searchRecipe(String keyword, Pageable pageable) {
 
-        List<Recipe> recipes = recipeRepository.searchByKeyword(keyword);
+        // 필터링을 위한 쿼리 작성
+        Page<Recipe> recipePage = recipeRepository.searchByKeyword(keyword, pageable);
 
-        // Recipe -> ResponseRecipe로 변환
-        return recipes.stream()
-                .map(recipe -> {
-                    // Feign Client를 통해 유저 정보를 가져오기
-                    UserSimpleResponseDto userInfo = userServiceClient.getUserInfo(recipe.getUserId());
+        // 검색된 레시피를 DTO로 변환하여 반환 (페이징 결과로 변환)
+        return recipePage.map(recipe -> {
 
-                    // 유저 정보를 포함한 DTO로 변환
-                    return RecipeDetailsResponseDto.builder()
-                            .id(recipe.getId())
-                            .title(recipe.getTitle())
-                            .name(recipe.getName())
-                            .intro(recipe.getIntro())
-                            .image(recipe.getImage())
-                            .viewCount(recipe.getViewCount())
-                            .servings(recipe.getServings())
-                            .time(recipe.getTime())
-                            .level(recipe.getLevel())
-                            .cookingTools(recipe.getCookingTools())
-                            .type(recipe.getType())
-                            .situation(recipe.getSituation())
-                            .ingredients(recipe.getIngredients())
-                            .method(recipe.getMethod())
-                            .userId(recipe.getUserId())
-                            .nickname(userInfo.getNickname()) // 유저의 닉네임 설정
-                            .profileImage(userInfo.getProfileImage()) // 유저의 프로필 이미지 설정
-                            .summary(userInfo.getSummary()) // 유저의 요약 정보 설정
-                            .likeCount(recipe.getLikeCount())
-                            .scrapCount(recipe.getScrapCount())
-                            .commentCount(recipe.getCommentCount())
-                            .build();
-                })
-                .toList();
+            // 유저 정보 조회
+            UserSimpleResponseDto userInfo = userServiceClient.getUserInfo(recipe.getUserId());
+
+            // 유저 정보를 포함한 DTO로 변환
+            return RecipeDetailsResponseDto.builder()
+                    .id(recipe.getId())
+                    .title(recipe.getTitle())
+                    .name(recipe.getName())
+                    .intro(recipe.getIntro())
+                    .image(recipe.getImage())
+                    .viewCount(recipe.getViewCount())
+                    .servings(recipe.getServings())
+                    .time(recipe.getTime())
+                    .level(recipe.getLevel())
+                    .cookingTools(recipe.getCookingTools())
+                    .type(recipe.getType())
+                    .situation(recipe.getSituation())
+                    .ingredients(recipe.getIngredients())
+                    .method(recipe.getMethod())
+                    .userId(recipe.getUserId())
+                    .nickname(userInfo.getNickname()) // 유저의 닉네임 설정
+                    .profileImage(userInfo.getProfileImage()) // 유저의 프로필 이미지 설정
+                    .summary(userInfo.getSummary()) // 유저의 요약 정보 설정
+                    .likeCount(recipe.getLikeCount())
+                    .scrapCount(recipe.getScrapCount())
+                    .commentCount(recipe.getCommentCount())
+                    .build();
+        });
     }
 
     @Transactional

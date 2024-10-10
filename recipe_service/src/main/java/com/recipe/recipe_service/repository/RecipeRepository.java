@@ -19,10 +19,8 @@ public interface RecipeRepository extends JpaRepository<Recipe, Long> {
 
     Optional<Recipe> findById(Long recipeId);
 
-    @Query("SELECT r FROM Recipe r WHERE " +
-            "LOWER(r.title) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
-            "OR LOWER(r.name) LIKE LOWER(CONCAT('%', :keyword, '%')) ")
-    List<Recipe> searchByKeyword(String keyword);
+    @Query("SELECT r FROM Recipe r WHERE r.title LIKE %:keyword% OR r.ingredients LIKE %:keyword%")
+    Page<Recipe> searchByKeyword(@Param("keyword") String keyword, Pageable pageable);
 
     void deleteById(Long recipeId);
 
