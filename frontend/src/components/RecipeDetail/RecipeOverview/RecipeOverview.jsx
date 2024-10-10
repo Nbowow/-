@@ -8,7 +8,7 @@ function RecipeOverview({ recipe }) {
         { icon: "🔥", label: "난이도", detail: recipe.level },
         {
             icon: "🏋️‍♂️",
-            label: "예상 칼로리",
+            label: "예상 칼로리 (100g)",
             detail: recipe.calorie ? `${recipe.calorie}Kal` : null,
         },
         {

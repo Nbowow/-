@@ -81,9 +81,10 @@ const Ingredient = () => {
                     <>
                         {searchTerm !== searchResult.name && (
                             <S.TermWrapper>
-                                잘못된 검색어 <S.Term>{searchTerm} </S.Term>
-                                에서 <S.Term>{searchResult.name}</S.Term>
-                                (으)로 교정하여 검색 결과를 제공합니다.
+                                <S.Term>{searchResult.name}</S.Term>을(를)
+                                찾으세요? 잘못된 검색어
+                                <S.Term>{searchTerm} </S.Term>로 교정하여 검색
+                                결과를 제공합니다.
                             </S.TermWrapper>
                         )}
                         <SearchResult

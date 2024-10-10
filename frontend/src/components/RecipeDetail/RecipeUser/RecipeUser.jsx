@@ -12,7 +12,6 @@ function RecipeUser({ user }) {
     const [flag, setFlag] = useState(false);
     const me = useUserStore((state) => state.user);
     const navigate = useNavigate();
-
     const handleFollow = async () => {
         if (!flag) {
             await followUser(user.id);
@@ -53,13 +52,15 @@ function RecipeUser({ user }) {
                     <S.UserHome onClick={() => navigate(`/user/${user.id}`)}>
                         {"🏠"}
                     </S.UserHome>
-                    <Button
-                        width={"4rem"}
-                        height={"1.5rem"}
-                        text={flag ? "팔로잉" : "팔로우"}
-                        onClick={handleFollow}
-                        type={"small"}
-                    />
+                    {me && me.id !== user.id && (
+                        <Button
+                            width={"4rem"}
+                            height={"1.5rem"}
+                            text={flag ? "팔로잉" : "팔로우"}
+                            onClick={handleFollow}
+                            type={"small"}
+                        />
+                    )}
                 </S.UserInfo>
                 <S.UserTalk>{user.summary}</S.UserTalk>
             </S.UserDetails>
