@@ -3,7 +3,7 @@ import * as S from "./Review.styled";
 import ReviewModalButton from "./ReviewModal/ReviewModalButton";
 import ReviewOverview from "./ReviewOverview/ReviewOverview";
 import ReviewRating from "./ReviewRating/ReviewRating";
-import EmptyPlaceHolder from "../EmptyPlaceHolder/EmptyPlaceHolder";
+import EmptyPlaceHolder from "../EmptyPlaceholder/EmptyPlaceHolder";
 import PropTypes from "prop-types";
 import ReviewRegistButton from "./ReviewRegist/ReviewRegistButton";
 import { useReview } from "../../hooks/useRecipe";
