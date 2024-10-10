@@ -156,7 +156,13 @@ public class RecipeController {
         // 각 코드에 해당하는 레시피 검색 (페이징 적용)
         Page<RecipeCategoryResponseDto> recipePage = recipeService.searchRecipeByCategory(codeB, codeC, codeD, codeE, pageable);
 
-        return ResponseEntity.status(HttpStatus.OK).body(recipePage);
+        // Wrapper DTO로 전체 개수 및 페이지 정보를 함께 반환
+        RecipeCategoryResponseWrapperDto responseWrapper = RecipeCategoryResponseWrapperDto.builder()
+                .recipes(recipePage.getContent())  // 레시피 목록
+                .totalElements(recipePage.getTotalElements())  // 전체 레시피 수
+                .build();
+
+        return ResponseEntity.status(HttpStatus.OK).body(responseWrapper);
 
     }
     
