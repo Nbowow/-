@@ -28,6 +28,6 @@ const ReviewRegistButton = ({ id }) => {
     );
 };
 ReviewRegistButton.propTypes = {
-    id: PropTypes.string.isRequired,
+    id: PropTypes.number.isRequired,
 };
 export default ReviewRegistButton;
