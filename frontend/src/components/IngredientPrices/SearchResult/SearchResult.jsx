@@ -30,6 +30,14 @@ const SearchResult = ({ result, onLike, like }) => {
                             <S.Label>
                                 <S.Name>{result.name}</S.Name>
                             </S.Label>
+
+                            {result.dayprice !== 0 && (
+                                <S.Label>
+                                    <S.Price>{result.dayprice}원</S.Price>
+                                    <S.Unit>(100g)</S.Unit>
+                                </S.Label>
+                            )}
+
                             <Button
                                 text="자세히 보기"
                                 onClick={() => handleClick()}
