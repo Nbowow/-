@@ -8,6 +8,8 @@ import YearlyPriceChart from "../YearlyPriceChart/YearlyPriceChart";
 import LowestPrices from "../LowestPrice/LowestPrices";
 
 const SearchResult = ({ result, onLike, like }) => {
+    const placeholderImage = "/images/placeholder-img.jpg";
+
     const [showInfo, setShowInfo] = useState(false);
     const [priceHistory, setPriceHistory] = useState();
     const handleClick = async () => {
@@ -22,7 +24,7 @@ const SearchResult = ({ result, onLike, like }) => {
                     <S.ResultWrapper>
                         <S.ResultInfo>
                             <S.Img
-                                src={result.ingredientImage}
+                                src={result.ingredientImage || placeholderImage}
                                 alt="ingredient"
                             />
                             <S.Label>
