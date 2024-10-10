@@ -2,9 +2,14 @@ import PropTypes from "prop-types";
 import { Rating } from "react-simple-star-rating";
 import * as S from "./ReviewOverview.styled";
 const ReviewOverview = ({ review, onClick, isSelected }) => {
+    const placeholderImage = "/images/placeholder-img.jpg";
+
     return (
         <S.ReviewOverviewWrapper onClick={onClick} $isSelected={isSelected}>
-            <S.ReviewImg src={review.imgUrl} alt="리뷰 이미지" />
+            <S.ReviewImg
+                src={review.reviewImage || placeholderImage}
+                alt="리뷰 이미지"
+            />
             <S.ReviewOverviewRight>
                 <Rating
                     initialValue={review.rating}
@@ -22,7 +27,7 @@ const ReviewOverview = ({ review, onClick, isSelected }) => {
 };
 ReviewOverview.propTypes = {
     review: PropTypes.shape({
-        imgUrl: PropTypes.string.isRequired,
+        reviewImage: PropTypes.string.isRequired,
         rating: PropTypes.number.isRequired,
         title: PropTypes.string.isRequired,
         content: PropTypes.string.isRequired,

@@ -63,24 +63,6 @@ export const getRecipe = async (id) => {
     return response.data;
 };
 
-export const getReviews = async (id) => {
-    // const response = await axiosInstance.get("/recipe/review", {
-    //     params: { id },
-    // });
-
-    const response = [
-        {
-            id: 1,
-            rating: 5,
-            title: "맛있어용",
-            content: "굿굿굿굿",
-            imgUrl: "https://cdn.pixabay.com/photo/2021/07/19/16/04/pizza-6478478_1280.jpg",
-        },
-    ];
-
-    return response;
-};
-
 export const postRecipeLike = async (id) => {
     const response = await axiosInstance.post(
         "/recipe/like",
@@ -122,5 +104,22 @@ export const patchRecipeUnScrap = async (id) => {
             params: { id },
         },
     );
+    return response.data;
+};
+
+export const getReviews = async (id) => {
+    const response = await axiosInstance.get("/recipe/review", {
+        params: { id },
+    });
+    return response.data;
+};
+
+export const postReview = async (formData, id) => {
+    const response = await axiosInstance.post("/recipe/review", formData, {
+        params: { id },
+        headers: {
+            "Content-Type": "multipart/form-data",
+        },
+    });
     return response.data;
 };

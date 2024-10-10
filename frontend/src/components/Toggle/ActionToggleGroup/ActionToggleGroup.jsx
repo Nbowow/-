@@ -5,10 +5,11 @@ import ActionToggleCounter from "../ActionToggleCounter/ActionToggleCounter";
 import InteractionToggle from "../InteractionToggle/InteractionToggle";
 import { useEffect, useState } from "react";
 
-import { useUserStore } from "../../../store/userStore";
+import { useAuthStore } from "../../../store/userStore";
 import {
     useUpdateLike,
     useUpdateScrap,
+    useUpdateUnLike,
     useUpdateUnScrap,
     useUserLikes,
     useUserScraps,
@@ -22,34 +23,25 @@ const ActionToggleGroup = ({ recipe }) => {
     const [scrapCount, setScrapCount] = useState(0);
     const [commentCount, setCommentCount] = useState(0);
 
-    const isLoggedIn = useUserStore((state) => state.isLoggedIn);
-
+    const { isLoggedIn } = useAuthStore();
     const { isLoading: isUserLoading, data: likes } = useUserLikes();
     const { isLoading: isRecipeLoading, data: scraps } = useUserScraps();
 
     useEffect(() => {
-        if (isLoggedIn) {
+        if (isLoggedIn && !isUserLoading && !isRecipeLoading) {
             setIsLike(likes.some((i) => i.id === recipe.id));
             setIsScrap(scraps.some((i) => i.id === recipe.id));
         }
-        if (!isUserLoading && !isRecipeLoading) {
-            setLikeCount(recipe.likeCount ?? 0);
-            setScrapCount(recipe.scrapCount ?? 0);
-            setCommentCount(recipe.commentCount ?? 0);
-        }
-    }, [
-        isLoggedIn,
-        likes,
-        scraps,
-        recipe,
-        isUserLoading,
-        isRecipeLoading,
-        isLike,
-        isScrap,
-    ]);
+    }, [isLoggedIn, isUserLoading, isRecipeLoading, likes, recipe.id, scraps]);
+
+    useEffect(() => {
+        setLikeCount(recipe.likeCount ?? 0);
+        setScrapCount(recipe.scrapCount ?? 0);
+        setCommentCount(recipe.commentCount ?? 0);
+    }, [recipe]);
 
     const { mutate: updateLike } = useUpdateLike();
-    const { mutate: updateUnLike } = useUpdateUnScrap();
+    const { mutate: updateUnLike } = useUpdateUnLike();
     const { mutate: updateScrap } = useUpdateScrap();
     const { mutate: updateUnScrap } = useUpdateUnScrap();
 

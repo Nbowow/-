@@ -1,12 +1,11 @@
 import PropTypes from "prop-types";
 import * as S from "./FollowingModal.styled";
 import { useState } from "react";
-import UserProfileImage from "../UserProfileImage/UserProfileImage";
-import { useNavigate } from "react-router-dom";
+import { FixedSizeList as List } from "react-window";
+import FollowingItem from "./FollowingItem";
 
 const FollowingModal = ({ isOpen, onClose, followers, followings }) => {
     const [activeTab, setActiveTab] = useState(0);
-    const navigate = useNavigate();
 
     if (!isOpen) return null;
 
@@ -19,6 +18,16 @@ const FollowingModal = ({ isOpen, onClose, followers, followings }) => {
             default:
                 return [];
         }
+    };
+
+    // eslint-disable-next-line react/prop-types
+    const Row = ({ index, style }) => {
+        const member = getActiveList()[index];
+        return (
+            <div style={style}>
+                <FollowingItem member={member} />
+            </div>
+        );
     };
 
     return (
@@ -41,20 +50,14 @@ const FollowingModal = ({ isOpen, onClose, followers, followings }) => {
                 </S.TabButtons>
 
                 <S.UserList>
-                    {getActiveList().map((item, index) => (
-                        <S.UserListItem key={index}>
-                            <UserProfileImage
-                                imageUrl={item.profileImage}
-                                size="42px"
-                            />
-                            <S.UserNickname
-                                onClick={() => navigate(`/user/${item.id}`)}
-                            >
-                                {item.nickname}
-                            </S.UserNickname>
-                            <S.FollowButton>팔로잉</S.FollowButton>
-                        </S.UserListItem>
-                    ))}
+                    <List
+                        height={300}
+                        itemCount={getActiveList().length}
+                        itemSize={64}
+                        width={"100%"}
+                    >
+                        {Row}
+                    </List>
                 </S.UserList>
             </S.ModalContent>
         </S.ModalWrapper>

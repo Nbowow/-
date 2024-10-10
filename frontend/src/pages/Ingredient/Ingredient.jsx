@@ -15,7 +15,7 @@ import {
 
 import { useEffect, useState } from "react";
 import HotWeekIngredients from "../../components/IngredientPrices/HotIngredient/HotWeekIngredients";
-import { useUserStore } from "../../store/userStore";
+import { useAuthStore } from "../../store/userStore";
 import PriceSlider from "../../components/IngredientPrices/LivePriceTracker/PriceSlider";
 
 const Ingredient = () => {
@@ -36,7 +36,7 @@ const Ingredient = () => {
         }
     };
 
-    const isLoggedIn = useUserStore((state) => state.isLoggedIn);
+    const { isLoggedIn } = useAuthStore();
     useEffect(() => {
         if (!isLoggedIn) return;
         const fetchLikeIngredients = async () => {
