@@ -50,4 +50,18 @@ public class RecipeRecommendService {
                         .build())
                 .toList();
     }
+
+    // 주어진 ID 몰골게 해당하는 레시피 가져오기
+    public List<RecipeRecommendResponseDto> getRecipesByIds(List<Long> recipeIds) {
+        List<Recipe> recipes = recipeRepository.findAllById(recipeIds);
+
+        return recipes.stream()
+                .map(recipe -> RecipeRecommendResponseDto.builder()
+                        .recipeId(recipe.getId())
+                        .title(recipe.getTitle())
+                        .image(recipe.getImage())
+                        .intro(recipe.getIntro())
+                        .build())
+                .toList();
+    }
 }
