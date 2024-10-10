@@ -25,11 +25,15 @@ const Ingredient = () => {
     const [likeIngredients, setLikeIngredients] = useState([]);
     const [searchTerm, setSearchTerm] = useState("");
     const handleLike = (ingredient) => {
+        const data = {
+            ...ingredient,
+            price: ingredient.dayprice,
+        };
         const isLiked = likeIngredients.find((i) => i.id === ingredient.id);
         setLikeIngredients((prev) =>
             isLiked
                 ? prev.filter((el) => el.id !== ingredient.id)
-                : [...prev, ingredient],
+                : [...prev, data],
         );
 
         if (!isLoggedIn) return;
