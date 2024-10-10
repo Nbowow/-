@@ -46,7 +46,7 @@ export const getIngredientPrices = async (id) => {
 
 export const getIngredientLowPrices = async (word) => {
     const response = await axiosInstance.get("/ingredient/low", {
-        params: { query: word, start: 1, display: 2, sort: "sim" },
+        params: { query: word, start: 1, display: 3, sort: "sim" },
     });
     return response.data;
 };

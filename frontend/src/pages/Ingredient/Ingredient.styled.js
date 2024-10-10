@@ -24,7 +24,23 @@ export const Container = styled.div`
     margin-bottom: 3rem;
     flex-direction: column;
 `;
-
+export const Separator = styled.hr`
+    border: none;
+    height: 0.1rem;
+    width: 70%;
+    background-image: linear-gradient(
+        to right,
+        rgba(0, 0, 0, 0),
+        rgba(0, 0, 0, 0.1),
+        rgba(0, 0, 0, 0)
+    );
+    margin-bottom: 2rem;
+`;
+export const Term = styled.span`
+    font-family: ${({ theme }) => theme.fontWeight.bold};
+    color: ${({ theme }) => theme.color.point.red};
+    margin: 0 0.5rem;
+`;
 export const IngredientLikeSection = styled.div`
     width: 70%;
     border-radius: ${({ theme }) => theme.borderRadius.medium};
@@ -37,4 +53,11 @@ export const Title = styled.div`
     width: 100%;
     margin: 1rem;
     font-size: ${({ theme }) => theme.fontSize.h3};
+`;
+
+export const TermWrapper = styled.div`
+    ${flexCenterStyle}
+    width: 60%;
+    padding: ${({ theme }) => theme.spacing.large};
+    height: auto;
 `;

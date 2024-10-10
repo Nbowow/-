@@ -14,6 +14,7 @@ const IngredientOverview = ({ like, onLike }) => {
     const [rowIdx, setRowIdx] = useState(0);
     const [priceHistory, setPriceHistory] = useState(null);
     const [name, setName] = useState(null);
+    const [tabs, setTabs] = useState([]);
 
     useEffect(() => {
         if (like.length === 0) return;
@@ -25,29 +26,62 @@ const IngredientOverview = ({ like, onLike }) => {
         fetchIngredientPrices();
     }, [rowIdx, like]);
 
+    useEffect(() => {
+        setTabs([
+            {
+                label: "물가동향",
+                content: (
+                    <>
+                        {priceHistory && (
+                            <YearlyPriceChart priceHistory={priceHistory} />
+                        )}
+                    </>
+                ),
+            },
+            {
+                label: "최저가",
+                content: (
+                    <>
+                        <LowestPrices name={name} />
+                    </>
+                ),
+            },
+        ]);
+    }, [priceHistory, name]);
+
+    useEffect(() => {
+        setTabs([
+            {
+                label: "물가동향",
+                content: (
+                    <>
+                        {priceHistory && (
+                            <YearlyPriceChart priceHistory={priceHistory} />
+                        )}
+                    </>
+                ),
+            },
+            {
+                label: "최저가",
+                content: (
+                    <>
+                        <LowestPrices name={name} />
+                    </>
+                ),
+            },
+        ]);
+    }, [priceHistory, name]);
+
     const clickHandler = (idx) => {
         setRowIdx(idx);
     };
-    const tabs = [
-        {
-            label: "물가동향",
-            content: (
-                <>
-                    {priceHistory && (
-                        <YearlyPriceChart priceHistory={priceHistory} />
-                    )}
-                </>
-            ),
-        },
-        {
-            label: "최저가",
-            content: (
-                <>
-                    <LowestPrices name={name} />
-                </>
-            ),
-        },
-    ];
+
+    const handleLike = (ingredient) => {
+        if (rowIdx !== null && like[rowIdx].id === ingredient.id) {
+            setRowIdx(0);
+        }
+        onLike(ingredient);
+    };
 
     return (
         <>
@@ -59,7 +93,7 @@ const IngredientOverview = ({ like, onLike }) => {
                             <LikeIngredient
                                 onClick={clickHandler}
                                 ingredients={like}
-                                onLike={onLike}
+                                onLike={handleLike}
                             />
                             <S.TabWrapper>
                                 <Tab tabs={tabs} />
@@ -67,10 +101,7 @@ const IngredientOverview = ({ like, onLike }) => {
                         </S.Wrapper>
                     </S.IngredientLikeSection>
                     <S.RelatedRecipeWrapper>
-                        <Title title={"관련 레시피"} />
-                        <S.RelatedRecipe>
-                            <RelatedRecipe like={like} />
-                        </S.RelatedRecipe>
+                        <RelatedRecipe like={like} />
                     </S.RelatedRecipeWrapper>
                 </>
             ) : (

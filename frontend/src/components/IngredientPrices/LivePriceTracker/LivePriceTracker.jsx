@@ -1,27 +1,9 @@
 import PropTypes from "prop-types";
 import * as S from "./LivePriceTracker.styled";
-import Chart from "../../Chart/Chart";
-import {
-    smallLineConfig,
-    smallLineOptions,
-} from "../../../util/get-chart-config";
 
 const LivePriceTracker = ({ ingredient }) => {
-    const options = smallLineOptions();
-
-    const config = smallLineConfig("#8EC96D");
-    const labels = ["1", "2", "3", "4", "6", "7"];
-    const data = [10, 20, 0, 40, 10, 20, 30];
     return (
         <S.Wrapper>
-            <S.ChartWrapper>
-                <Chart
-                    config={config}
-                    labels={labels}
-                    data={data}
-                    options={options}
-                />
-            </S.ChartWrapper>
             <S.IngredientInfo>
                 <S.IngredientInfoLayout>
                     <S.IngredientName>{ingredient.name}</S.IngredientName>

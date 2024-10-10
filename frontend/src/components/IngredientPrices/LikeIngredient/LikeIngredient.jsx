@@ -1,18 +1,43 @@
 import PropTypes from "prop-types";
 import * as S from "./LikeIngredient.styled";
+import { useState } from "react";
 const IngredientLike = ({ ingredients, onClick, onLike }) => {
+    const [selectedIndex, setSelectedIndex] = useState(0);
     const placeholderImage = "/images/placeholder-img.jpg";
 
+    const handleClick = (idx) => {
+        setSelectedIndex(idx);
+        onClick(idx);
+    };
+
+    const handleRemove = (event, ingredient) => {
+        event.stopPropagation();
+        onLike(ingredient);
+        if (
+            selectedIndex !== null &&
+            ingredients[selectedIndex].id === ingredient.id
+        ) {
+            setSelectedIndex(null);
+        }
+    };
     return (
         <S.Wrapper>
             {ingredients.map((ingredient, idx) => {
                 return (
-                    <S.Info onClick={() => onClick(idx)} key={ingredient.id}>
-                        <S.Img src={ingredient.img || placeholderImage} />
-                        <S.Name>{ingredient.name}</S.Name>
-                        <S.Remove onClick={() => onLike(ingredient)}>
-                            삭제
+                    <S.Info
+                        onClick={() => handleClick(idx)}
+                        key={ingredient.id}
+                        isSelected={selectedIndex === idx}
+                    >
+                        <S.Remove
+                            onClick={(event) => handleRemove(event, ingredient)}
+                        >
+                            ✖
                         </S.Remove>
+                        <S.Img
+                            src={ingredient.ingredientImage || placeholderImage}
+                        />
+                        <S.Name>{ingredient.name}</S.Name>
                     </S.Info>
                 );
             })}
