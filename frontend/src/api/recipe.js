@@ -127,3 +127,8 @@ export const fetchRecommendCommon = async () => {
     const response = await axiosInstance.get("/recipe/recommend/common");
     return response.data;
 };
+
+export const fetchRecommendSeason = async () => {
+    const response = await axiosInstance.get("/recipe/recommend/season");
+    return response.data;
+};
