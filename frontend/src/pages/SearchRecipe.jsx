@@ -9,13 +9,6 @@ import RecipeCardList from "../components/CardList/RecipeCardList";
 import { fetchRecipes, searchRecipes } from "../api/recipe";
 import SearchBar from "../components/SearchBar/SearchBar";
 
-const PopularRecipe = styled.h2`
-    font-family: "SUITEXTRABOLD";
-    padding: 20px;
-    margin-left: 50px;
-    font-size: ${({ theme }) => theme.fontSize.h3};
-`;
-
 const Emoji = styled.span`
     font-family: "tossface";
 `;
@@ -39,9 +32,6 @@ const NoResultSearch = styled.p`
     padding: 20px;
     cursor: pointer;
     color: blue;
-    / &:hover {
-        text-decoration: underline;
-    }
 `;
 
 const SearchRecipe = () => {
@@ -65,10 +55,11 @@ const SearchRecipe = () => {
     } = useSearchResultStore();
 
     const recipesPerPage = 20;
-    const [recipes, setRecipes] = useState([]); // 초기값은 배열로 설정
-    const [errorMessage, setErrorMessage] = useState(null); // 에러 메시지 상태 추가
+    const [recipes, setRecipes] = useState([]);
+    const [errorMessage, setErrorMessage] = useState(null);
+    const [totalCount, setTotalCount] = useState(0); // 총 레시피 수 상태 추가
+    const keyword = query.get("keyword") || ""; // 검색 키워드 변수 추가
 
-    // URL 파라미터로부터 상태 초기화 및 레시피 로드
     useEffect(() => {
         const type = query.get("type") || "B_0001";
         const situation = query.get("situation") || "C_0001";
@@ -76,7 +67,6 @@ const SearchRecipe = () => {
         const method = query.get("method") || "E_0001";
         const sort = query.get("sort") || "최신순";
         const page = parseInt(query.get("page")) || 0;
-        const keyword = query.get("keyword") || "";
 
         setSelectedType(type);
         setSelectedSituation(situation);
@@ -85,7 +75,6 @@ const SearchRecipe = () => {
         setSortOrder(sort);
         setCurrentPage(page);
 
-        // 레시피 데이터 로드
         const loadRecipes = async () => {
             let data;
             if (keyword) {
@@ -94,8 +83,9 @@ const SearchRecipe = () => {
                 data = await fetchRecipes(page, recipesPerPage);
             }
 
-            if (Array.isArray(data)) {
-                setRecipes(data);
+            if (data && Array.isArray(data.recipeList)) {
+                setRecipes(data.recipeList);
+                setTotalCount(data.count); // 총 레시피 수 설정
                 setErrorMessage(null);
             } else {
                 const message = data;
@@ -108,29 +98,22 @@ const SearchRecipe = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [location.search]);
 
-    // 레시피 필터링 로직
-    const filteredRecipes = Array.isArray(recipes)
-        ? recipes.filter((recipe) => {
-              return (
-                  (!selectedType ||
-                      selectedType === "B_0001" ||
-                      recipe.type === selectedType) &&
-                  (!selectedSituation ||
-                      selectedSituation === "C_0001" ||
-                      recipe.situation === selectedSituation) &&
-                  (!selectedIngredients ||
-                      selectedIngredients === "D_0001" ||
-                      recipe.ingredients.includes(selectedIngredients)) &&
-                  (!selectedMethod ||
-                      selectedMethod === "E_0001" ||
-                      recipe.method === selectedMethod)
-              );
-          })
-        : []; // recipes가 배열이 아닐 경우 빈 배열로 설정
-
-    const popularRecipes = [...recipes]
-        .sort((a, b) => b.likeCount - a.likeCount)
-        .slice(0, 4);
+    const filteredRecipes = recipes.filter((recipe) => {
+        return (
+            (!selectedType ||
+                selectedType === "B_0001" ||
+                recipe.type === selectedType) &&
+            (!selectedSituation ||
+                selectedSituation === "C_0001" ||
+                recipe.situation === selectedSituation) &&
+            (!selectedIngredients ||
+                selectedIngredients === "D_0001" ||
+                recipe.ingredients.includes(selectedIngredients)) &&
+            (!selectedMethod ||
+                selectedMethod === "E_0001" ||
+                recipe.method === selectedMethod)
+        );
+    });
 
     const handleNoResultClick = () => {
         if (errorMessage) {
@@ -165,22 +148,16 @@ const SearchRecipe = () => {
                     <NoResult>
                         혹시 이걸 찾으시나요?
                         <NoResultSearch onClick={handleNoResultClick}>
-                            {errorMessage && <div>{errorMessage}</div>}{" "}
-                            {/* 에러 메시지 출력 */}
+                            {errorMessage && <div>{errorMessage}</div>}
                         </NoResultSearch>
                     </NoResult>
                 </NoResultContainer>
             ) : (
                 <div>
-                    <PopularRecipe>
-                        <Emoji>🔥</Emoji> 인기 레시피
-                    </PopularRecipe>
-                    <RecipeCardList recipes={popularRecipes} />
-
                     <Category
                         onTypeSelect={(type) => {
                             setSelectedType(type);
-                            setCurrentPage(0); // 필터 변경 시 첫 페이지로
+                            setCurrentPage(0);
                         }}
                         onSituationSelect={(situation) => {
                             setSelectedSituation(situation);
@@ -206,11 +183,9 @@ const SearchRecipe = () => {
 
                     <RecipeCardList recipes={filteredRecipes} />
 
-                    {Math.ceil(filteredRecipes.length / recipesPerPage) > 1 && (
+                    {Math.ceil(totalCount / recipesPerPage) > 1 && (
                         <Pagination
-                            pageCount={Math.ceil(
-                                filteredRecipes.length / recipesPerPage,
-                            )}
+                            pageCount={Math.ceil(totalCount / recipesPerPage)} // 총 페이지 수
                             onPageChange={({ selected }) =>
                                 setCurrentPage(selected)
                             }

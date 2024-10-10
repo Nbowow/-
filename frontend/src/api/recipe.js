@@ -17,6 +17,7 @@ export const searchRecipes = async (searchTerm) => {
     );
     return response.data;
 };
+
 // 레시피 등록
 export const postRecipe = async (formData) => {
     const response = await axiosInstance.post("/recipe", formData, {

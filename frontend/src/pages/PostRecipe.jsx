@@ -91,64 +91,74 @@ const PostRecipe = () => {
         getCategories();
     }, []);
 
+    const handleConfirm = async () => {
+        const success = await handleSubmit(); // 레시피 등록 요청
+
+        if (success) {
+            // 성공적으로 등록되었을 경우 네비게이트
+            navigate("/recipe");
+        }
+    };
+
     const handleSubmit = async () => {
         const formData = new FormData();
 
-        // 기본 레시피 정보 추가
-        formData.append("title", recipeFormData.title);
-        formData.append("name", recipeFormData.title);
-        formData.append("intro", recipeFormData.intro);
-        formData.append("servings", recipeFormData.servings);
-        formData.append("time", recipeFormData.time);
-        formData.append("level", recipeFormData.level);
-        formData.append("type", recipeFormData.type);
-        formData.append("situation", recipeFormData.situation);
-        formData.append("ingredients", recipeFormData.ingredients);
-        formData.append("method", recipeFormData.method);
-
-        // 대표 이미지 추가
+        // 레시피 이미지 추가
         if (recipeFormData.image) {
-            formData.append("image", recipeFormData.image);
+            formData.append("recipeImage", recipeFormData.image);
         }
 
-        // 재료 그룹 추가
-        materialGroups.forEach((group, groupIndex) => {
-            formData.append(`materialGroups[${groupIndex}].name`, group.name);
-            group.materials.forEach((material, materialIndex) => {
-                formData.append(
-                    `materialGroups[${groupIndex}].materials[${materialIndex}].name`,
-                    material.name,
-                );
-                formData.append(
-                    `materialGroups[${groupIndex}].materials[${materialIndex}].amount`,
-                    material.amount,
-                );
-                formData.append(
-                    `materialGroups[${groupIndex}].materials[${materialIndex}].unit`,
-                    material.unit,
-                );
-            });
+        // 조리 순서 이미지 추가
+        orderSteps.forEach((step) => {
+            if (step.image) {
+                formData.append("orderImages", step.image);
+            }
         });
 
-        // 조리 순서 추가
-        orderSteps.forEach((step, index) => {
-            if (step.image) {
-                formData.append(`recipeOrders[${index}].image`, step.image);
-            }
-            formData.append(`recipeOrders[${index}].content`, step.content);
-            formData.append(`recipeOrders[${index}].orderNum`, index + 1);
-        });
+        // 레시피 데이터 추가
+        const recipeData = {
+            title: recipeFormData.title,
+            name: recipeFormData.name,
+            intro: recipeFormData.intro,
+            servings: recipeFormData.servings,
+            time: recipeFormData.time,
+            level: recipeFormData.level,
+            type: recipeFormData.type,
+            situation: recipeFormData.situation,
+            ingredients: recipeFormData.ingredients,
+            method: recipeFormData.method,
+            recipeMaterials: materialGroups.map((group) => ({
+                materialName: group.name,
+                materialAmount: group.materials.map((m) => m.amount).join(", "),
+                materialUnit: group.materials.map((m) => m.unit).join(", "),
+                materialSubtitle: group.materials
+                    .map((m) => m.subtitle)
+                    .join(", "),
+            })),
+            recipeOrders: orderSteps.map((step, index) => ({
+                orderNum: index + 1,
+                orderContent: step.content,
+            })),
+        };
+
+        formData.append(
+            "recipe",
+            new Blob([JSON.stringify(recipeData)], {
+                type: "application/json",
+            }),
+        );
 
         try {
-            const response = await postRecipe(formData);
+            const response = await postRecipe(formData); // API 호출
+
             if (response) {
                 setModalMessage(
                     <>
-                        <Emoji>🍳</Emoji>레시피가 등록되었습니다!
+                        <Emoji>🍳</Emoji>레시피를 등록하시겠습니까?
                     </>,
                 );
                 setIsModalOpen(true);
-                navigate("/recipe");
+                return true; // 성공적으로 등록된 경우 true 반환
             }
             // eslint-disable-next-line no-unused-vars
         } catch (error) {
@@ -160,16 +170,13 @@ const PostRecipe = () => {
             setIsError(true);
             setIsModalOpen(true);
         }
+
+        return false;
     };
 
     const closeModal = () => {
         setIsModalOpen(false);
-        setIsError(false); // 모달 닫을 때 에러 상태 초기화
-    };
-
-    const handleConfirm = async () => {
-        // 확인 버튼 클릭 시 레시피 등록 요청
-        await handleSubmit();
+        setIsError(false);
     };
 
     return (
@@ -178,7 +185,7 @@ const PostRecipe = () => {
                 <PostModal
                     message={modalMessage}
                     onClose={closeModal}
-                    onConfirm={handleConfirm} // 성공 시 확인 버튼
+                    onConfirm={handleConfirm}
                     isError={isError}
                 />
             )}
