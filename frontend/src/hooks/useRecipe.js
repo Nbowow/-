@@ -2,7 +2,9 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
     fetchRecommend,
     fetchRecommendCommon,
+    getComments,
     getReviews,
+    postComment,
     postReview,
 } from "../api/recipe";
 
@@ -36,5 +38,24 @@ export const useRecommendCommon = () => {
     return useQuery({
         queryKey: ["recommendCommon"],
         queryFn: fetchRecommendCommon,
+    });
+};
+
+export const useComment = (id) => {
+    return useQuery({
+        queryKey: [`comment${id}`],
+        queryFn: () => getComments(id),
+        staleTime: 0,
+        refetchOnMount: true,
+    });
+};
+
+export const useUpdateComment = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: ({ id, content }) => postComment(id, content),
+        onSuccess: (data, variables) => {
+            queryClient.invalidateQueries([`comment${variables.id}`]);
+        },
     });
 };

@@ -1,32 +1,19 @@
-import { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import Comment from "./Comment";
 import CommentInput from "./CommentInput";
 import * as S from "./Comment.styled";
-import { getComments, postComment } from "../../api/recipe";
+import { useComment } from "../../hooks/useRecipe";
 function Comments({ id }) {
-    const [comments, setComments] = useState([]);
+    const { data: comments = [], isLoading } = useComment(id);
 
-    const addComment = async (newComment) => {
-        setComments((prevComments) => [...prevComments, newComment]);
-        await postComment(id, newComment.content);
-    };
-
-    useEffect(() => {
-        const fetchComment = async () => {
-            const data = await getComments(id);
-            setComments(data);
-        };
-        fetchComment(id);
-    }, [id]);
-
+    if (isLoading) return <div></div>;
     return (
         <>
             <S.CommentTitle>댓글 {comments.length}개</S.CommentTitle>
             <S.CommentInputWrapper>
-                <CommentInput addFunc={addComment} />
+                <CommentInput id={id} />
             </S.CommentInputWrapper>
-            {comments && (
+            {!isLoading && comments.length > 0 && (
                 <>
                     {comments.map((comment) => (
                         <S.CommentsWrapper key={comment.id}>
