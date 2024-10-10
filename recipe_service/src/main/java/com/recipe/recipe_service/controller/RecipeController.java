@@ -12,6 +12,8 @@ import com.recipe.recipe_service.global.config.LevenshteinDistance;
 import com.recipe.recipe_service.repository.RecipeRepository;
 import com.recipe.recipe_service.data.dto.user.response.UserAllergyResponseDto;
 import com.recipe.recipe_service.service.RecipeService;
+import java.util.HashMap;
+import java.util.Map;
 import com.recipe.recipe_service.service.S3Uploader;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -91,7 +93,7 @@ public class RecipeController {
 
     // 레시피 전체 조회
     @GetMapping("")
-    public ResponseEntity<List<RecipeDetailsResponseDto>> getAllRecipes(
+    public ResponseEntity<?> getAllRecipes(
             @RequestParam("pageSize") int pageSize,
             @RequestParam("pageNumber") int pageNumber) {
 
@@ -99,7 +101,12 @@ public class RecipeController {
         // pageNumber가 1부터 시작한다고 가정하고 0부터 시작하도록 맞춤
         List<RecipeDetailsResponseDto> recipeList = recipeService.getAllRecipes(pageNumber - 1, pageSize);
 
-        return ResponseEntity.status(HttpStatus.OK).body(recipeList);
+        Long totalRecipesCount = recipeRepository.count();
+
+        // PagedResponseDto에 레시피 목록과 총 개수를 담아 반환
+        PagedResponseDto<RecipeDetailsResponseDto> response = new PagedResponseDto<>(recipeList, totalRecipesCount);
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
 
     }
 
@@ -125,10 +132,13 @@ public class RecipeController {
             String correctedWord = searchTypo(keyword); // 오타 수정 API 호출
             return ResponseEntity.status(HttpStatus.OK).body(correctedWord);
         }
+        Map<String, Object> response = new HashMap<>();
+        response.put("recipeList", recipeList);
+        response.put("count", recipeList.size());
 
-        return ResponseEntity.status(HttpStatus.OK).body(recipeList);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
-
+    
     // 특정 사용자가 만든 레시피 조회
     @GetMapping("/user/{userId}")
     public ResponseEntity<List<UserRecipeRegistResponseDto>> getUserRecipes(@PathVariable("userId") Long userId) {
