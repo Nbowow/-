@@ -56,6 +56,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/users/refresh-token").permitAll()
                         .requestMatchers("/oauth2/authorization/naver").permitAll()
                         .requestMatchers("/api/v1/users/common").permitAll()
+                        .requestMatchers("/api/v1/user/**").permitAll()
                         .anyRequest().authenticated()
 
                 )
