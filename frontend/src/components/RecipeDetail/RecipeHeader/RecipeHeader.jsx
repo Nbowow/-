@@ -20,22 +20,24 @@ function RecipeHeader({ recipe }) {
 
     return (
         <S.RecipeHeaderContainer>
+            <S.TagWrapper>
+                {tags && (
+                    <>
+                        <Tag tag={tags[recipe.type]} />
+                        <Tag tag={tags[recipe.situation]} />
+                        <Tag tag={tags[recipe.ingredients]} />
+                        <Tag tag={tags[recipe.method]} />
+                    </>
+                )}
+            </S.TagWrapper>
             <S.TopSection>
                 <S.Title>{recipe.title}</S.Title>
-                <S.TagWrapper>
-                    {tags && (
-                        <>
-                            <Tag tag={tags[recipe.type]} />
-                            <Tag tag={tags[recipe.situation]} />
-                            <Tag tag={tags[recipe.ingredients]} />
-                            <Tag tag={tags[recipe.method]} />
-                        </>
-                    )}
-                </S.TagWrapper>
+
                 <S.RecipeStats>
                     <ActionToggleGroup recipe={recipe} />
                 </S.RecipeStats>
             </S.TopSection>
+
             <S.RecipeDescription>{recipe.intro}</S.RecipeDescription>
         </S.RecipeHeaderContainer>
     );

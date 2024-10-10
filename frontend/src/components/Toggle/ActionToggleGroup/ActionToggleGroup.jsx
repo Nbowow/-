@@ -14,6 +14,7 @@ import {
     useUserLikes,
     useUserScraps,
 } from "../../../hooks/useUser";
+import { useComment } from "../../../hooks/useRecipe";
 
 const ActionToggleGroup = ({ recipe }) => {
     const [isLike, setIsLike] = useState(false);
@@ -21,11 +22,13 @@ const ActionToggleGroup = ({ recipe }) => {
 
     const [likeCount, setLikeCount] = useState(0);
     const [scrapCount, setScrapCount] = useState(0);
-    const [commentCount, setCommentCount] = useState(0);
 
     const { isLoggedIn } = useAuthStore();
     const { isLoading: isUserLoading, data: likes } = useUserLikes();
     const { isLoading: isRecipeLoading, data: scraps } = useUserScraps();
+    const { isLoading: isCommentLoading, data: comments } = useComment(
+        recipe.id,
+    );
 
     useEffect(() => {
         if (isLoggedIn && !isUserLoading && !isRecipeLoading) {
@@ -37,7 +40,6 @@ const ActionToggleGroup = ({ recipe }) => {
     useEffect(() => {
         setLikeCount(recipe.likeCount ?? 0);
         setScrapCount(recipe.scrapCount ?? 0);
-        setCommentCount(recipe.commentCount ?? 0);
     }, [recipe]);
 
     const { mutate: updateLike } = useUpdateLike();
@@ -45,7 +47,8 @@ const ActionToggleGroup = ({ recipe }) => {
     const { mutate: updateScrap } = useUpdateScrap();
     const { mutate: updateUnScrap } = useUpdateUnScrap();
 
-    const handleLike = async () => {
+    const handleLike = async (event) => {
+        event.stopPropagation();
         if (!isLoggedIn) return;
         if (isLike) {
             updateUnLike(recipe.id);
@@ -57,7 +60,8 @@ const ActionToggleGroup = ({ recipe }) => {
         setIsLike(!isLike);
     };
 
-    const handleScrap = async () => {
+    const handleScrap = async (event) => {
+        event.stopPropagation();
         if (!isLoggedIn) return;
         if (isScrap) {
             updateUnScrap(recipe.id);
@@ -75,7 +79,7 @@ const ActionToggleGroup = ({ recipe }) => {
                 type={"heart"}
                 isActive={isLike}
                 size="22px"
-                onClick={() => handleLike()}
+                onClick={(event) => handleLike(event)}
             />
         );
     };
@@ -86,7 +90,7 @@ const ActionToggleGroup = ({ recipe }) => {
                 type={"bookmark"}
                 isActive={isScrap}
                 size="22px"
-                onClick={() => handleScrap()}
+                onClick={(event) => handleScrap(event)}
             />
         );
     };
@@ -99,7 +103,12 @@ const ActionToggleGroup = ({ recipe }) => {
         <S.ActionToggleGroup>
             <ActionToggleCounter Toggle={LikeToggle} count={likeCount} />
             <ActionToggleCounter Toggle={ScrapToggle} count={scrapCount} />
-            <ActionToggleCounter Toggle={CommentIcon} count={commentCount} />
+            {!isCommentLoading && (
+                <ActionToggleCounter
+                    Toggle={CommentIcon}
+                    count={comments.length}
+                />
+            )}
         </S.ActionToggleGroup>
     );
 };

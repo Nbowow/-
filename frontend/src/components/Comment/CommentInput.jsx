@@ -1,24 +1,46 @@
 import PropTypes from "prop-types";
 import * as S from "./Comment.styled";
-import { useUserStore } from "../../store/userStore";
+import { useAuthStore } from "../../store/userStore";
 import { useRef } from "react";
-function CommentInput({ addFunc }) {
-    const { isLoading } = useUserStore();
-    const user = useUserStore((state) => state.user);
+import { useNavigate } from "react-router-dom";
+import styled from "styled-components";
+import { Slide, ToastContainer, toast } from "react-toastify";
+import useUser from "../../hooks/useUser";
+import { useUpdateComment } from "../../hooks/useRecipe";
+import Button from "../Button/Button";
+function CommentInput({ id }) {
     const inputRef = useRef(null);
+    const navigate = useNavigate();
+
+    const CustomToastContainer = styled(ToastContainer)`
+        .Toastify__toast {
+            font-family: "SUITMedium";
+            font-size: 15px;
+            letter-spacing: 0.02rem;
+        }
+    `;
+
+    const { isLoading } = useUser();
+    const { isLoggedIn } = useAuthStore.getState();
+
+    const { mutate: updateComment } = useUpdateComment();
 
     if (isLoading) return <div></div>;
-
     const submitComment = () => {
-        const input = inputRef.current.value.trim();
-        if (!input || !user) return;
-        const comment = {
-            nickname: user.nickname,
-            content: input,
-            profileImage: user.profileImage,
-            createdDate: new Date().toISOString(),
-        };
-        addFunc(comment);
+        if (!isLoggedIn) {
+            toast.error("로그인이 필요해요.", {
+                position: "top-center",
+                transition: Slide,
+                autoClose: 2000,
+                onClose: () => {
+                    navigate("/login");
+                },
+            });
+        }
+        const content = inputRef.current.value.trim();
+
+        if (!content) return;
+        updateComment({ id, content });
         inputRef.current.value = "";
     };
 
@@ -37,13 +59,14 @@ function CommentInput({ addFunc }) {
                 ref={inputRef}
                 onKeyDown={handleKeyPress}
             />
-            <S.SubmitButton onClick={submitComment}>등록</S.SubmitButton>
+            <Button onClick={() => submitComment()} text="등록" />
+            <CustomToastContainer stacked />
         </S.TextAreaWrapper>
     );
 }
 
 CommentInput.propTypes = {
-    addFunc: PropTypes.func.isRequired,
+    id: PropTypes.number.isRequired,
 };
 
 export default CommentInput;

@@ -3,7 +3,9 @@ import {
     fetchRecommend,
     fetchRecommendCommon,
     fetchRecommendSeason,
+    getComments,
     getReviews,
+    postComment,
     postReview,
 } from "../api/recipe";
 
@@ -44,5 +46,24 @@ export const useRecommendSeason = () => {
     return useQuery({
         queryKey: ["recommendSeason"],
         queryFn: fetchRecommendSeason,
+    });
+};
+
+export const useComment = (id) => {
+    return useQuery({
+        queryKey: [`comment${id}`],
+        queryFn: () => getComments(id),
+        staleTime: 0,
+        refetchOnMount: true,
+    });
+};
+
+export const useUpdateComment = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: ({ id, content }) => postComment(id, content),
+        onSuccess: (data, variables) => {
+            queryClient.invalidateQueries([`comment${variables.id}`]);
+        },
     });
 };

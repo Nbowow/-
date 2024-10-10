@@ -13,6 +13,7 @@ function RecipeIngredient({ ingredients }) {
                     <S.Ingredient key={index}>
                         <S.IngredientName>{item.materialName}</S.IngredientName>
                         <S.IngredientAmount>{item.amount}</S.IngredientAmount>
+                        <S.IngredientAmount>{item.unit}</S.IngredientAmount>
                     </S.Ingredient>
                 ))}
             </S.IngredientColumn>
@@ -21,6 +22,7 @@ function RecipeIngredient({ ingredients }) {
                     <S.Ingredient key={index}>
                         <S.IngredientName>{item.materialName}</S.IngredientName>
                         <S.IngredientAmount>{item.amount}</S.IngredientAmount>
+                        <S.IngredientAmount>{item.unit}</S.IngredientAmount>
                     </S.Ingredient>
                 ))}
             </S.IngredientColumn>

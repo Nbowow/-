@@ -23,18 +23,18 @@ export const Name = styled.div`
 
 export const Img = styled.img`
     border-radius: ${({ theme }) => theme.borderRadius.small};
-    height: 4rem;
+    height: 3rem;
     width: 70%;
     margin: ${({ theme }) => theme.spacing.medium} 0;
 `;
 export const Info = styled.div`
     ${flexBetweenStyle}
     flex-direction: column;
-    width: 7rem;
+    width: 6rem;
     background-color: ${({ theme, isSelected }) =>
-        isSelected ? theme.color.point.green : theme.color.point.lightGreen};
+        isSelected ? theme.color.point.lightYellow : "#FFF9E6"};
     border-radius: ${({ theme }) => theme.borderRadius.small};
-    margin: ${({ theme }) => theme.spacing.small};
+    margin: ${({ theme }) => theme.spacing.large};
     padding: ${({ theme }) => theme.spacing.large};
     cursor: pointer;
     transition:
@@ -48,7 +48,7 @@ export const Info = styled.div`
         isSelected &&
         `
         transform: scale(1.05); 
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); 
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); 
     `}
 `;
 export const Remove = styled.div`
@@ -56,5 +56,6 @@ export const Remove = styled.div`
     text-align: right;
     cursor: pointer;
     opacity: 0.7;
+    font-size: ${({ theme }) => theme.fontSize.subText};
     font-family: "TossFace";
 `;
