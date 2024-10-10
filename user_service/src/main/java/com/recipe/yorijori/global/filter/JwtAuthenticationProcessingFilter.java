@@ -33,7 +33,7 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
     private static final String NO_CHECK_URL6 = "/api/v1/users/common";
     private static final String NO_CHECK_URL7 = "/api/v1/users/simple";
     private static final String NO_CHECK_URL8 = "/api/v1/users/rank";
-    private static final String NO_CHECK_URL9 = "/api/v1/user/";
+    private static final String NO_CHECK_URL9 = "/api/v1/users/user";
     private final JwtService jwtService;
     private final UserRepository userRepository;
 
