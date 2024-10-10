@@ -8,13 +8,26 @@ import useUser, {
     useUserReceipe,
     useUserScraps,
 } from "../../hooks/useUser";
-import { useUserStore } from "../../store/userStore";
+import { useUserStore, useAuthStore } from "../../store/userStore";
 import { useNavigate } from "react-router-dom";
+import { ToastContainer, toast, Slide } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import styled from "styled-components";
+import { useEffect } from "react";
+
+const CustomToastContainer = styled(ToastContainer)`
+    .Toastify__toast {
+        font-family: "SUITMedium";
+        font-size: 15px;
+        letter-spacing: 0.02rem;
+    }
+`;
 
 const MyPage = () => {
     const navigate = useNavigate();
     const { isLoading: isUserLoading } = useUser();
     const { isLoading: isRecipeLoading } = useUserReceipe();
+    const { isLoggedIn } = useAuthStore.getState();
 
     const { data: likes } = useUserLikes();
     const { data: scraps } = useUserScraps();
@@ -22,6 +35,18 @@ const MyPage = () => {
     const user = useUserStore((state) => state.user);
     const recipes = useUserStore((state) => state.recipes);
 
+    useEffect(() => {
+        if (!isLoggedIn) {
+            toast.error("로그인이 필요해요.", {
+                position: "top-center",
+                transition: Slide,
+                autoClose: 1000,
+                onClose: () => {
+                    navigate("/login");
+                },
+            });
+        }
+    }, [isLoggedIn, navigate]);
     if (isUserLoading || isRecipeLoading) return <div></div>;
 
     const tabs = [
@@ -52,6 +77,7 @@ const MyPage = () => {
                 <UserProfileLevel score={user.score} />
             </div>
             <Tab tabs={tabs} />
+            <CustomToastContainer />
         </S.MyPage>
     );
 };

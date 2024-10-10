@@ -3,17 +3,8 @@ import * as S from "./ModifyUserInfoForm.styled";
 import PropTypes from "prop-types";
 import { useUpdateUser } from "../../../hooks/useUser";
 import { useState } from "react";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import styled from "styled-components";
-
-const CustomToastContainer = styled(ToastContainer)`
-    .Toastify__toast {
-        font-family: "SUITMedium";
-        font-size: 15px;
-        letter-spacing: 0.02rem;
-    }
-`;
 
 const ModifyUserInfoForm = ({ user }) => {
     const [nickname, setNickname] = useState(user.nickname);
@@ -60,7 +51,6 @@ const ModifyUserInfoForm = ({ user }) => {
                 height="38px"
                 onClick={onClickButton}
             />
-            <CustomToastContainer theme="light" stacked />
         </S.ModifyUserInfoForm>
     );
 };
