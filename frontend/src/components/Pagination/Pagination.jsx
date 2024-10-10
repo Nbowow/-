@@ -41,6 +41,28 @@ const Pagination = ({ pageCount, onPageChange, currentPage }) => {
         }
     };
 
+    const renderPageButtons = () => {
+        const buttons = [];
+
+        const startPage = Math.max(0, currentPage - 2);
+        const endPage = Math.min(pageCount - 1, currentPage + 2);
+
+        for (let i = startPage; i <= endPage; i++) {
+            buttons.push(
+                <PageButton
+                    key={i}
+                    onClick={() => handlePageClick(i)}
+                    disabled={currentPage === i}
+                    $active={currentPage === i}
+                >
+                    {i + 1}
+                </PageButton>,
+            );
+        }
+
+        return buttons;
+    };
+
     return (
         <PaginationContainer>
             <PageButton2 onClick={handleFirstPage} disabled={currentPage === 0}>
@@ -49,16 +71,7 @@ const Pagination = ({ pageCount, onPageChange, currentPage }) => {
             <PageButton2 onClick={handlePrevPage} disabled={currentPage === 0}>
                 <FaAngleLeft />
             </PageButton2>
-            {Array.from({ length: pageCount }, (_, index) => (
-                <PageButton
-                    key={index}
-                    onClick={() => handlePageClick(index)}
-                    disabled={currentPage === index}
-                    $active={currentPage === index}
-                >
-                    {index + 1}
-                </PageButton>
-            ))}
+            {renderPageButtons()}
             <PageButton2
                 onClick={handleNextPage}
                 disabled={currentPage === pageCount - 1}

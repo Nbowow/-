@@ -20,6 +20,7 @@ import {
     ImagePreview,
     ImageContainer2,
 } from "./OrderForm.styled";
+import VectorImage from "/src/img/Vector.png";
 
 const OrderForm = ({ orderSteps, setOrderSteps }) => {
     const [activeStep, setActiveStep] = useState(0);
@@ -110,7 +111,7 @@ const OrderForm = ({ orderSteps, setOrderSteps }) => {
                                 />
                                 <ButtonContainer>
                                     <img
-                                        src="/src/img/Vector.png"
+                                        src={VectorImage}
                                         alt="업로드 아이콘"
                                     />
                                     <Text>조리사진 등록</Text>

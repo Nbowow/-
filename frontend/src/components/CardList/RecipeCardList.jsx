@@ -5,21 +5,22 @@ import { useNavigate } from "react-router-dom";
 
 const RecipeCardList = ({ recipes, showProfile }) => {
     const navigate = useNavigate();
-
     const handleCardClick = (id) => {
         navigate(`/recipe/${id}`);
     };
 
     return (
         <S.CardList>
-            {recipes.map((recipe) => (
-                <RecipeCard
-                    key={recipe.id}
-                    showProfile={showProfile}
-                    recipe={recipe}
-                    onClick={() => handleCardClick(recipe.id)}
-                />
-            ))}
+            {recipes.map((recipe) => {
+                return (
+                    <RecipeCard
+                        key={recipe.id}
+                        showProfile={showProfile}
+                        recipe={recipe}
+                        onClick={handleCardClick}
+                    />
+                );
+            })}
         </S.CardList>
     );
 };

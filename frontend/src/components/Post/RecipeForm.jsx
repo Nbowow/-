@@ -21,6 +21,7 @@ import {
     Text,
     ImageContainer,
 } from "./RecipeForm.styled";
+import VectorImage from "/src/img/Vector.png";
 
 const CATEGORY_TYPES = {
     TYPE: "종류",
@@ -106,7 +107,7 @@ const RecipeForm = ({ recipeData, setRecipeData, categories }) => {
                                 style={{ display: "none" }}
                             />
                             <ButtonContainer>
-                                <img src="/src/img/Vector.png" alt="" />
+                                <img src={VectorImage} alt="" />
                                 <Text>대표사진 등록</Text>
                             </ButtonContainer>
                         </ImageUploadButton>

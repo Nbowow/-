@@ -3,11 +3,11 @@ import UserProfileImage from "../../UserProfile/UserProfileImage/UserProfileImag
 import * as S from "./RecipeCard.styled";
 import PropTypes from "prop-types";
 
-const RecipeCard = ({ recipe, showProfile }) => {
+const RecipeCard = ({ recipe, showProfile, onClick }) => {
     const placeholderImage = "/images/placeholder-img.jpg";
 
     return (
-        <S.RecipeCard>
+        <S.RecipeCard onClick={() => onClick(recipe.id)}>
             <S.Thumnail
                 src={recipe.image || placeholderImage}
                 onError={(e) =>
@@ -35,12 +35,14 @@ const RecipeCard = ({ recipe, showProfile }) => {
 RecipeCard.propTypes = {
     recipe: PropTypes.shape({
         image: PropTypes.string,
+        id: PropTypes.number.isRequired,
         title: PropTypes.string.isRequired,
         intro: PropTypes.string,
         profileImage: PropTypes.string,
         nickname: PropTypes.string,
     }).isRequired,
     showProfile: PropTypes.bool.isRequired,
+    onClick: PropTypes.func.isRequired,
 };
 
 export default RecipeCard;
