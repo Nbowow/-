@@ -450,7 +450,10 @@ public class IngredientService {
         return ingredientRepository.findByIds(ingredientList)
                 .stream().map(ingredient -> {
                     Pageable pageable = PageRequest.of(0, 1);
-                    int price = dayPriceRepository.findRecentDays(ingredient.getId(), LocalDateTime.now(), pageable).get(0).getPrice();
+                    List<DayPrice> recentDays = dayPriceRepository.findRecentDays(ingredient.getId(), LocalDateTime.now(), pageable);
+
+                    int price = recentDays.isEmpty() ? 0 : recentDays.get(0).getPrice();
+                    
                     return new IngredientUserLikeDto(
                             ingredient.getId(),
                             ingredient.getName(),
