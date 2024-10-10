@@ -392,7 +392,7 @@ public class IngredientService {
 
         boolean isAlreadyLiked = userLikeMaterialsRepository.existsByUserIdAndIngredientId(userId, ingredientId);
         if (isAlreadyLiked) {
-                throw new AlreadyLikedException();
+            throw new AlreadyLikedException();
         }
         UserLikeMaterials newLike = UserLikeMaterials.builder()
                 .userId(userId)
@@ -408,9 +408,26 @@ public class IngredientService {
         userLikeMaterialsRepository.deleteByUserIdAndIngredientId(userId, ingredientId);
     }
 
-    public List<Ingredient> findUserLikeIngredients(Long userId) {
+    public List<IngredientUserLikeDto> findUserLikeIngredients(Long userId) {
         List<Long> ingredientList = userLikeMaterialsRepository.findIngredientIdsByUserId(userId);
-        return ingredientRepository.findByIds(ingredientList);
+
+        return ingredientRepository.findByIds(ingredientList)
+                .stream().map(ingredient -> {
+                    Pageable pageable = PageRequest.of(0, 1);
+                    List<DayPrice> recentDays = dayPriceRepository.findRecentDays(ingredient.getId(), LocalDateTime.now(), pageable);
+
+                    int price = recentDays.isEmpty() ? 0 : recentDays.get(0).getPrice();
+                    
+                    return new IngredientUserLikeDto(
+                            ingredient.getId(),
+                            ingredient.getName(),
+                            ingredient.isPriceStatus(),
+                            ingredient.getIngredientImage(),
+                            ingredient.getAllergyNum(),
+                            price
+                    );
+                })
+                .collect(Collectors.toList());
     }
 
     public Ingredient addIngredient(String name) {
