@@ -121,25 +121,24 @@ public class RecipeController {
         return ResponseEntity.status(HttpStatus.OK).body(recipe);
     }
 
-    // 레시피 검색
     @GetMapping("/search")
     public ResponseEntity<?> searchRecipe(
         @RequestParam("keyword") String keyword,
         @RequestParam(value = "pageNumber") int pageNumber,
         @RequestParam(value = "pageSize") int pageSize) {
 
-        // Pageable 객체 생성
-        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        // Pageable 객체 생성 (pageNumber는 0부터 시작해야 하므로 -1 처리)
+        Pageable pageable = PageRequest.of(pageNumber - 1, pageSize);
 
         Page<RecipeDetailsResponseDto> recipeList = recipeService.searchRecipe(keyword, pageable);
 
-        // 검색 결과가 없거나 페이지에 해당하는 레시피가 없을 경우, 오타 수정 로직 호출
-        if (recipeList.isEmpty() || recipeList.getTotalElements() <= (pageNumber * pageSize)) {
+        // 검색 결과가 없을 경우, 오타 수정 로직 호출
+        if (recipeList.isEmpty()) {
             String correctedWord = searchTypo(keyword); // 오타 수정 API 호출
             return ResponseEntity.status(HttpStatus.OK).body(correctedWord);
         }
 
-        // Wrapper 객체로 결과 반환
+        // 검색된 레시피가 pageSize보다 적더라도 결과 반환
         RecipeSearchResponseWrapperDto responseWrapper = RecipeSearchResponseWrapperDto.builder()
             .recipes(recipeList.getContent())  // 검색된 레시피 목록
             .totalCount(recipeList.getTotalElements())  // 전체 레시피 개수
@@ -147,6 +146,7 @@ public class RecipeController {
 
         return ResponseEntity.status(HttpStatus.OK).body(responseWrapper);
     }
+
 
 
     // 레시피 카테고리 별 검색
