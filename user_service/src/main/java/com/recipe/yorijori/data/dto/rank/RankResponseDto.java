@@ -4,6 +4,7 @@ import lombok.Data;
 
 @Data
 public class RankResponseDto {
+    private Long rank;
     private String nickname;
     private String image;
     private Long score;

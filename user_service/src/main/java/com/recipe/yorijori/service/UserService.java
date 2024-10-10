@@ -24,7 +24,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 @Service
@@ -191,12 +193,21 @@ public class UserService {
     public List<RankResponseDto> getUserRank() {
 
         // Fetch all users
-        List<User> users = userRepository.findAll();
+        List<User> users = userRepository.findAll().stream()
+                .sorted(Comparator.comparing(User::getScore).reversed()) // 점수를 기준으로 내림차순 정렬
+                .toList();
+
+        // 인덱스를 관리하는 AtomicInteger 선언
+        AtomicInteger index = new AtomicInteger(1);
 
         // Convert each user to RankResponseDto and return the list
         return users.stream()
                 .map(user -> {
                     RankResponseDto rankResponseDto = new RankResponseDto();
+
+                    // AtomicInteger를 사용하여 순위 설정 후 증가
+                    rankResponseDto.setRank((long) index.getAndIncrement());
+
                     rankResponseDto.setNickname(user.getNickname());
                     rankResponseDto.setImage(user.getProfileImage());
                     rankResponseDto.setScore(user.getScore());
