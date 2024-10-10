@@ -2,7 +2,7 @@ import styled from "styled-components";
 import { flexCenterStyle } from "../../styles/common";
 
 export const Content = styled.div`
-    font-size: ${({ theme }) => theme.fontSize.h3};
+    font-size: ${({ theme }) => theme.fontSize.h4};
     margin-top: ${({ theme }) => theme.spacing.large};
     font-family: ${({ theme }) => theme.fontWeight.bold};
 `;
@@ -15,7 +15,7 @@ export const Recommend = styled.div`
 `;
 export const Emoji = styled.div`
     font-family: "TossFace";
-    font-size: 6rem;
+    font-size: 5rem;
     margin-bottom: ${({ theme }) => theme.spacing.large};
 `;
 export const Wrapper = styled.div`
