@@ -2,7 +2,7 @@ import PropTypes from "prop-types";
 import UserProfileImage from "../../UserProfile/UserProfileImage/UserProfileImage";
 import { Rating } from "react-simple-star-rating";
 import * as S from "./ReviewDetail.styled";
-const ReviewDetail = ({ review, recipe }) => {
+const ReviewDetail = ({ review, recipe, totalRating }) => {
     return (
         <S.Wrapper>
             <S.FlexLayout>
@@ -16,9 +16,7 @@ const ReviewDetail = ({ review, recipe }) => {
                             iconsCount={1}
                             size={25}
                         />
-                        <S.RecipeTotalRating>
-                            {/* {recipe.totalRating} */}
-                        </S.RecipeTotalRating>
+                        <S.RecipeTotalRating>{totalRating}</S.RecipeTotalRating>
                     </S.FlexCenter>
                 </S.FlexInside>
             </S.FlexLayout>
@@ -66,5 +64,6 @@ ReviewDetail.propTypes = {
         totalRating: PropTypes.number.isRequired,
         name: PropTypes.string.isRequired,
     }).isRequired,
+    totalRating: PropTypes.number.isRequired,
 };
 export default ReviewDetail;

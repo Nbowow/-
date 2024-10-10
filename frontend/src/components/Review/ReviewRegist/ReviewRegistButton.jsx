@@ -1,6 +1,5 @@
 import { useState } from "react";
 import Modal from "../../Modal/Modal";
-import Button from "../../Button/Button";
 import ReviewRegist from "./ReviewRegist";
 import PropTypes from "prop-types";
 
@@ -17,13 +16,7 @@ const ReviewRegistButton = ({ id }) => {
 
     return (
         <>
-            <Button
-                width="6rem"
-                height="2rem"
-                type="small"
-                onClick={onClick}
-                text="리뷰 등록하기"
-            />
+            <div onClick={onClick}>리뷰 등록</div>
 
             {isModalOpen && (
                 <Modal

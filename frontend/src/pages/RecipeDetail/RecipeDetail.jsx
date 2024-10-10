@@ -9,7 +9,6 @@ import Comments from "../../components/Comment/Comments";
 import Review from "../../components/Review/Review";
 import * as S from "./RecipeDetail.styled";
 import { getRecipe } from "../../api/recipe";
-import ReviewRegistButton from "../../components/Review/ReviewRegist/ReviewRegistButton";
 
 const RecipeDetail = () => {
     const [recipe, setRecipe] = useState(null);
@@ -31,11 +30,9 @@ const RecipeDetail = () => {
                     <RecipeHeader recipe={recipe} />
                     <RecipeInfo recipe={recipe} />
                 </S.InfoSection>
-
                 <S.StepSection>
                     <RecipeStep recipe={recipe.recipeOrders} />
                 </S.StepSection>
-
                 <S.UserSection>
                     <RecipeUser
                         user={{
@@ -46,10 +43,7 @@ const RecipeDetail = () => {
                         }}
                     />
                 </S.UserSection>
-
                 <Review recipe={recipe} />
-                <ReviewRegistButton id={id} />
-
                 <S.CommentSection>
                     <Comments id={id} />
                 </S.CommentSection>
