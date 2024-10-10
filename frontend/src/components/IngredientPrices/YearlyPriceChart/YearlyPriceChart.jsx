@@ -14,9 +14,9 @@ const YearlyPriceChart = ({ priceHistory }) => {
         priceHistory.dayPrice.map((item) => item.price),
     ];
     const labels = [
-        priceHistory.monthPrice.map((item) => item.date),
-        priceHistory.weekPrice.map((item) => item.date),
-        priceHistory.dayPrice.map((item) => item.date),
+        priceHistory.monthPrice.map((item) => item.day),
+        priceHistory.weekPrice.map((item) => item.day),
+        priceHistory.dayPrice.map((item) => item.day),
     ];
 
     const yAxis = priceArr.map((priceData) => {
@@ -32,6 +32,7 @@ const YearlyPriceChart = ({ priceHistory }) => {
     const handleClick = (status) => {
         setViewType(status);
     };
+
     const config = lineConfig("#2DB400");
     const tag = ["월간", "주간", "일간"];
     return (

@@ -1,13 +1,20 @@
 import styled from "styled-components";
-import { flexAroundStyle, flexStartStyle } from "../../../styles/common";
+import { flexAlignStartStyle, flexBetweenStyle } from "../../../styles/common";
 
 export const Wrapper = styled.div`
-    ${flexStartStyle}
-    width: 30%;
-    height: auto;
-    flex-direction: column;
-    background-color: ${({ theme }) => theme.color.gray.lighter};
-    border-radius: ${({ theme }) => theme.borderRadius.medium};
+    ${flexAlignStartStyle}
+    width: 50%;
+    height: 20rem;
+    flex-wrap: wrap;
+    overflow-y: auto;
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    ::-webkit-scrollbar {
+        display: none;
+    }
+    scrollbar-width: none;
+    -ms-overflow-style: none;
 `;
 export const Name = styled.div`
     font-size: ${({ theme }) => theme.fontSize.h4};
@@ -15,13 +22,34 @@ export const Name = styled.div`
 `;
 
 export const Img = styled.img`
-    border-radius: ${({ theme }) => theme.borderRadius.large};
-    height: 3rem;
-    width: 25%;
-    padding: ${({ theme }) => theme.spacing.large};
+    border-radius: ${({ theme }) => theme.borderRadius.small};
+    height: 4rem;
+    margin: ${({ theme }) => theme.spacing.medium} 0;
 `;
 export const Info = styled.div`
-    ${flexAroundStyle}
-    width: 80%;
+    ${flexBetweenStyle}
+    flex-direction: column;
+    width: 8rem;
+    background-color: ${({ theme, isSelected }) =>
+        isSelected ? theme.color.point.green : theme.color.point.lightGreen};
+    border-radius: ${({ theme }) => theme.borderRadius.small};
+    margin: ${({ theme }) => theme.spacing.small};
+    padding: ${({ theme }) => theme.spacing.large};
+    &:hover {
+        transform: scale(1.05);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+    ${({ isSelected }) =>
+        isSelected &&
+        `
+        transform: scale(1.05); 
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); 
+    `}
 `;
-export const Remove = styled.div``;
+export const Remove = styled.div`
+    width: 100%;
+    text-align: right;
+    cursor: pointer;
+    opacity: 0.7;
+    font-family: "TossFace";
+`;

@@ -19,9 +19,13 @@ import { useAuthStore } from "../../store/userStore";
 import PriceSlider from "../../components/IngredientPrices/LivePriceTracker/PriceSlider";
 
 const Ingredient = () => {
+    const { isLoggedIn } = useAuthStore();
+
     const [searchResult, setSearchResult] = useState(null);
     const [likeIngredients, setLikeIngredients] = useState([]);
+    const [searchTerm, setSearchTerm] = useState("");
     const handleLike = (ingredient) => {
+        if (!isLoggedIn) return;
         const isLiked = likeIngredients.find((i) => i.id === ingredient.id);
         setLikeIngredients((prev) =>
             isLiked
@@ -36,7 +40,6 @@ const Ingredient = () => {
         }
     };
 
-    const { isLoggedIn } = useAuthStore();
     useEffect(() => {
         if (!isLoggedIn) return;
         const fetchLikeIngredients = async () => {
@@ -46,9 +49,10 @@ const Ingredient = () => {
         fetchLikeIngredients();
     }, [isLoggedIn]);
 
-    const handleSearch = async (searchTerm) => {
-        const result = await getSearchIngredient(searchTerm);
+    const handleSearch = async (term) => {
+        const result = await getSearchIngredient(term);
         setSearchResult(result);
+        setSearchTerm(term);
     };
 
     return (
@@ -64,13 +68,23 @@ const Ingredient = () => {
                     onSubmit={(term) => handleSearch(term)}
                 />
                 {searchResult ? (
-                    <SearchResult
-                        onLike={handleLike}
-                        result={searchResult}
-                        like={likeIngredients.find(
-                            (i) => i.id === searchResult.id,
+                    <>
+                        {searchTerm !== searchResult.name && (
+                            <S.TermWrapper>
+                                잘못된 검색어 <S.Term>{searchTerm} </S.Term>
+                                에서 <S.Term>{searchResult.name}</S.Term>
+                                (으)로 교정하여 검색 결과를 제공합니다.
+                            </S.TermWrapper>
                         )}
-                    />
+                        <SearchResult
+                            onLike={handleLike}
+                            result={searchResult}
+                            like={likeIngredients.find(
+                                (i) => i.id === searchResult.id,
+                            )}
+                        />
+                        <S.Separator />
+                    </>
                 ) : null}
                 <IngredientOverview
                     like={likeIngredients}

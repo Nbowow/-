@@ -17,9 +17,12 @@ export const Wrapper = styled.div`
 `;
 export const Img = styled.img`
     width: 13%;
+    height: 3.5rem;
     border-radius: ${({ theme }) => theme.borderRadius.medium};
 `;
 
 export const LowestPriceWrapper = styled.div`
-    width: 50%;
+    width: 100%;
+    height: 15rem;
+    padding: 0.5rem 0;
 `;
