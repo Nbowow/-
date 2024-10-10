@@ -26,7 +26,7 @@ public class Ingredient {
     private boolean priceStatus = false;
 
     @Column(name = "material_img")
-    private String img;
+    private String ingredientImage;
 
     @Column(name = "material_allergy_num")
     private String allergyNum;

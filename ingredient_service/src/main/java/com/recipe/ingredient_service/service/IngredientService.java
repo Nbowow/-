@@ -436,7 +436,7 @@ public class IngredientService {
     public Ingredient addIngredient(String name) {
         Ingredient ingredient = Ingredient.builder()
                 .name(name)
-                .img("")
+                .ingredientImage("")
                 .allergyNum("")
                 .priceStatus(true)
                 .build();
