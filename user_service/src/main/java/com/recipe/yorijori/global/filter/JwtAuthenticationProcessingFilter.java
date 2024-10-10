@@ -34,6 +34,7 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
     private static final String NO_CHECK_URL7 = "/api/v1/users/simple";
     private static final String NO_CHECK_URL8 = "/api/v1/users/rank";
     private static final String NO_CHECK_URL9 = "/api/v1/users/user";
+    private static final String NO_CHECK_URL10 = "/api/v1/users/recipe/other";
     private final JwtService jwtService;
     private final UserRepository userRepository;
 
@@ -46,7 +47,7 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
                 request.getRequestURI().equals(NO_CHECK_URL3) || request.getRequestURI().equals(NO_CHECK_URL4) ||
                 request.getRequestURI().equals(NO_CHECK_URL5) || request.getRequestURI().equals(NO_CHECK_URL6) ||
                 request.getRequestURI().startsWith(NO_CHECK_URL7) || request.getRequestURI().equals(NO_CHECK_URL8) ||
-                request.getRequestURI().startsWith(NO_CHECK_URL9)) {
+                request.getRequestURI().startsWith(NO_CHECK_URL9) || request.getRequestURI().startsWith(NO_CHECK_URL10)) {
             log.info("No check URL : {}", request.getRequestURI());
             filterChain.doFilter(request, response);
             return;

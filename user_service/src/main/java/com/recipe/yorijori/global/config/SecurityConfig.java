@@ -57,6 +57,7 @@ public class SecurityConfig {
                         .requestMatchers("/oauth2/authorization/naver").permitAll()
                         .requestMatchers("/api/v1/users/common").permitAll()
                         .requestMatchers("/api/v1/users/user/**").permitAll()
+                        .requestMatchers("/api/v1/users/recipe/other/**").permitAll()
                         .anyRequest().authenticated()
 
                 )
