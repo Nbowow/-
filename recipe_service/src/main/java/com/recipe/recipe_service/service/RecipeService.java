@@ -203,36 +203,42 @@ public class RecipeService {
                 .build();
 
     }
-
     public List<RecipeDetailsResponseDto> searchRecipe(String keyword) {
 
         List<Recipe> recipes = recipeRepository.searchByKeyword(keyword);
 
-
         // Recipe -> ResponseRecipe로 변환
         return recipes.stream()
-                .map(recipe -> RecipeDetailsResponseDto.builder()
-                        .id(recipe.getId())
-                        .title(recipe.getTitle())
-                        .name(recipe.getName())
-                        .intro(recipe.getIntro())
-                        .image(recipe.getImage())
-                        .viewCount(recipe.getViewCount())
-                        .servings(recipe.getServings())
-                        .time(recipe.getTime())
-                        .level(recipe.getLevel())
-                        .cookingTools(recipe.getCookingTools())
-                        .type(recipe.getType())
-                        .situation(recipe.getSituation())
-                        .ingredients(recipe.getIngredients())
-                        .method(recipe.getMethod())
-                        .userId(recipe.getUserId())
-                        .likeCount(recipe.getLikeCount())
-                        .scrapCount(recipe.getScrapCount())
-                        .commentCount(recipe.getCommentCount())
-                        .build())
-                .toList();
+                .map(recipe -> {
+                    // Feign Client를 통해 유저 정보를 가져오기
+                    UserSimpleResponseDto userInfo = userServiceClient.getUserInfo(recipe.getUserId());
 
+                    // 유저 정보를 포함한 DTO로 변환
+                    return RecipeDetailsResponseDto.builder()
+                            .id(recipe.getId())
+                            .title(recipe.getTitle())
+                            .name(recipe.getName())
+                            .intro(recipe.getIntro())
+                            .image(recipe.getImage())
+                            .viewCount(recipe.getViewCount())
+                            .servings(recipe.getServings())
+                            .time(recipe.getTime())
+                            .level(recipe.getLevel())
+                            .cookingTools(recipe.getCookingTools())
+                            .type(recipe.getType())
+                            .situation(recipe.getSituation())
+                            .ingredients(recipe.getIngredients())
+                            .method(recipe.getMethod())
+                            .userId(recipe.getUserId())
+                            .nickname(userInfo.getNickname()) // 유저의 닉네임 설정
+                            .profileImage(userInfo.getProfileImage()) // 유저의 프로필 이미지 설정
+                            .summary(userInfo.getSummary()) // 유저의 요약 정보 설정
+                            .likeCount(recipe.getLikeCount())
+                            .scrapCount(recipe.getScrapCount())
+                            .commentCount(recipe.getCommentCount())
+                            .build();
+                })
+                .toList();
     }
 
     @Transactional

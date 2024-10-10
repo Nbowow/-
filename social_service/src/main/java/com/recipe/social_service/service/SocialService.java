@@ -3,6 +3,7 @@ package com.recipe.social_service.service;
 import com.recipe.social_service.data.domain.Follow;
 import com.recipe.social_service.global.exception.FollowAlreadyExistsException;
 import com.recipe.social_service.global.exception.FollowNotFoundException;
+import com.recipe.social_service.global.exception.SameFollowException;
 import com.recipe.social_service.repository.SocialRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -33,6 +34,10 @@ public class SocialService {
             throw new FollowAlreadyExistsException();
         }
 
+        if (followerId.equals(followingId)) {
+            throw new SameFollowException();
+        }
+
         Follow follow = Follow.builder()
                 .followerId(followerId)
                 .followingId(followingId)
@@ -46,6 +51,10 @@ public class SocialService {
         Follow follow = socialRepository.findByFollowerIdAndFollowingId(followerId, followingId);
         if (follow == null) {
             throw new FollowNotFoundException();
+        }
+
+        if (followerId.equals(followingId)) {
+            throw new SameFollowException();
         }
         socialRepository.delete(follow);
     }
