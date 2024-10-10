@@ -400,23 +400,23 @@ public class RecipeService {
 
     public List<RecipeCategoryResponseDto> searchRecipeByCategory(String commonCode) {
 
-        String categoryPrefix = commonCode.substring(0, 1); // 첫 번째 문자를 추출 (A, B, C, D)
+        String categoryPrefix = commonCode.substring(0, 1); // 첫 번째 문자를 추출 (B, C, D, E)
         String code = commonCode; // 전체 공통코드를 사용
 
         List<Recipe> foundRecipes;
 
         // 공통 코드의 첫 글자를 기준으로 어떤 컬럼에서 검색할지 결정
         switch (categoryPrefix) {
-            case "A":
+            case "B":
                 foundRecipes = recipeRepository.findByType(code);
                 break;
-            case "B":
+            case "C":
                 foundRecipes = recipeRepository.findBySituation(code);
                 break;
-            case "C":
+            case "D":
                 foundRecipes = recipeRepository.findByIngredients(code);
                 break;
-            case "D":
+            case "E":
                 foundRecipes = recipeRepository.findByMethod(code);
                 break;
             default:
