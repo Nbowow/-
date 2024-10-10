@@ -16,7 +16,7 @@ public interface UserLikeMaterialsRepository extends JpaRepository<UserLikeMater
 
     @Query("SELECT u.ingredientId, COUNT(u.ingredientId) AS cnt " +
             "FROM UserLikeMaterials u " +
-            "WHERE u.date >= :startDate " +
+            "WHERE u.date >= :startDate AND u.ingredientId BETWEEN 1 AND 101" +
             "GROUP BY u.ingredientId " +
             "ORDER BY cnt DESC")
     List<Object[]> findTop3LikedIngredients(@Param("startDate") LocalDateTime startDate, Pageable pageable);
