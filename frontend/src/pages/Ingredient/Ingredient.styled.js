@@ -39,7 +39,7 @@ export const Separator = styled.hr`
 export const Term = styled.span`
     font-family: ${({ theme }) => theme.fontWeight.bold};
     color: ${({ theme }) => theme.color.point.red};
-    margin: 0 0.5rem;
+    margin: 0 0.2rem 0 0.3rem;
 `;
 export const IngredientLikeSection = styled.div`
     width: 70%;

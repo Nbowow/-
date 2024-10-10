@@ -3,7 +3,7 @@ import * as S from "./Review.styled";
 import ReviewModalButton from "./ReviewModal/ReviewModalButton";
 import ReviewOverview from "./ReviewOverview/ReviewOverview";
 import ReviewRating from "./ReviewRating/ReviewRating";
-
+import EmptyPlaceHolder from "../EmptyPlaceHolder/EmptyPlaceHolder";
 import PropTypes from "prop-types";
 import ReviewRegistButton from "./ReviewRegist/ReviewRegistButton";
 import { useReview } from "../../hooks/useRecipe";
@@ -24,11 +24,11 @@ const Review = ({ recipe }) => {
 
     return (
         <S.ReviewSection>
-            {!isLoading ? (
+            {!isLoading && reviews.length > 0 ? (
                 <>
                     <S.ReviewSectionTop>
                         <S.ReviewTitle>리뷰 {reviews.length}개</S.ReviewTitle>
-                        <ReviewModalButton reviews={reviews} recipe={recipe} />
+                        <ReviewRegistButton />
                     </S.ReviewSectionTop>
                     <S.ReviewSectionBottom>
                         <ReviewRating rating={rating} />
@@ -36,11 +36,18 @@ const Review = ({ recipe }) => {
                             <ReviewOverview key={index} review={review} />
                         ))}
                     </S.ReviewSectionBottom>
+                    <S.ReviewRegistButtonWrapper>
+                        <ReviewModalButton reviews={reviews} recipe={recipe} />
+                    </S.ReviewRegistButtonWrapper>
                 </>
             ) : (
                 <S.NoReviewsMessage>
-                    아직 등록된 리뷰가 없습니다.
-                    <ReviewRegistButton recipe={recipe} />
+                    <EmptyPlaceHolder
+                        button={<ReviewRegistButton recipe={recipe} />}
+                        content="등록된 리뷰가 없습니다."
+                        height={"15rem"}
+                        width={"100%"}
+                    />
                 </S.NoReviewsMessage>
             )}
         </S.ReviewSection>
