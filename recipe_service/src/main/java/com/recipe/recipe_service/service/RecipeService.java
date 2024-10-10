@@ -453,6 +453,7 @@ public class RecipeService {
                             .commentCount(recipe.getCommentCount())
                             .build();
                 })
+                .limit(100)
                 .toList();
 
     }
