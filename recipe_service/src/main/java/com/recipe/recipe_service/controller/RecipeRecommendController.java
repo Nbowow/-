@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -30,10 +29,16 @@ public class RecipeRecommendController {
     private final IngredientServiceClient ingredientServiceClient;
 
     // 레시피 추천(모든 유저)
-//    @GetMapping("/recommend/common")
-//    public ResponseEntity<?> getRecommendations() {
-//
-//    }
+    @GetMapping("/recommend/common")
+    public ResponseEntity<?> getRecommendations() {
+        // 조회수 기준으로 레시피 20개 추천
+        List<RecipeRecommendResponseDto> recommendedRecipes = recipeRecommendService.getPopularRecipes(20);
+
+        // 결과를 RecipeRecommendResponseWrapperDto로 감싸서 반환
+        String message = "오늘은 이러한 요리 만들어 보는건 어떠신가요?";
+        RecipeRecommendResponseWrapperDto responseWrapper = new RecipeRecommendResponseWrapperDto(message, recommendedRecipes);
+        return ResponseEntity.status(HttpStatus.OK).body(responseWrapper);
+    }
 
     // 사용자 알러지, 선호재료 기반 레시피 추천 (로그인한 사람만)
     @GetMapping("/recommend")
