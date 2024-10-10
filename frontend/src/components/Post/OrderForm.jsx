@@ -1,5 +1,5 @@
 import { useState } from "react";
-import PropTypes from "prop-types"; // PropTypes 추가
+import PropTypes from "prop-types";
 import {
     Container,
     Title,
@@ -19,6 +19,7 @@ import {
     RemoveButton,
     ImagePreview,
     ImageContainer2,
+    RemoveButton2,
 } from "./OrderForm.styled";
 import VectorImage from "/src/img/Vector.png";
 
@@ -44,7 +45,6 @@ const OrderForm = ({ orderSteps, setOrderSteps }) => {
         }
     };
 
-    // 조리 설명 변경
     const handleContentChange = (event) => {
         const newSteps = [...orderSteps];
         newSteps[activeStep].content = event.target.value;
@@ -58,6 +58,16 @@ const OrderForm = ({ orderSteps, setOrderSteps }) => {
         setOrderSteps(newSteps);
     };
 
+    const handleRemoveStep = (index) => {
+        const newSteps = [...orderSteps];
+        newSteps.splice(index, 1);
+        setOrderSteps(newSteps);
+        // Adjust activeStep if necessary
+        if (activeStep >= newSteps.length) {
+            setActiveStep(newSteps.length - 1);
+        }
+    };
+
     return (
         <Container>
             <TitleContainer>
@@ -69,13 +79,22 @@ const OrderForm = ({ orderSteps, setOrderSteps }) => {
             <FormLayout>
                 <StepList>
                     {orderSteps.map((_, index) => (
-                        <StepButton
-                            key={index}
-                            active={activeStep === index}
-                            onClick={() => setActiveStep(index)}
-                        >
-                            STEP {index + 1}
-                        </StepButton>
+                        <div key={index} style={{ position: "relative" }}>
+                            <StepButton
+                                active={activeStep === index}
+                                onClick={() => setActiveStep(index)}
+                            >
+                                STEP {index + 1}
+                                {index > 0 && ( // 첫 번째 항목이 아닐 때만 삭제 버튼 표시
+                                    <RemoveButton2
+                                        onClick={() => handleRemoveStep(index)}
+                                        title="삭제"
+                                    >
+                                        X
+                                    </RemoveButton2>
+                                )}
+                            </StepButton>
+                        </div>
                     ))}
                     <StepButton onClick={handleAddStep}>+</StepButton>
                 </StepList>
@@ -87,7 +106,7 @@ const OrderForm = ({ orderSteps, setOrderSteps }) => {
                                 <ImagePreview
                                     src={URL.createObjectURL(
                                         orderSteps[activeStep].image,
-                                    )} // 임시 URL 생성
+                                    )}
                                     alt="조리 과정"
                                 />
                                 <RemoveButton onClick={handleImageRemove}>

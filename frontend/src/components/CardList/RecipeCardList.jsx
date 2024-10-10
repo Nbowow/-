@@ -3,12 +3,12 @@ import RecipeCard from "../Card/RecipeCard/RecipeCard";
 import PropTypes from "prop-types";
 import { useNavigate } from "react-router-dom";
 
-const RecipeCardList = ({ recipes, showProfile }) => {
+const RecipeCardList = ({ recipes }) => {
     const navigate = useNavigate();
     const handleCardClick = (id) => {
         navigate(`/recipe/${id}`);
     };
-
+    const showProfile = true;
     return (
         <S.CardList>
             {recipes.map((recipe) => {

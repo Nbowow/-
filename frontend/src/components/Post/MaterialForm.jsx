@@ -11,6 +11,7 @@ import {
     InputContainer,
     AddGroupButton,
     ButtonContainer,
+    RemoveButton,
 } from "./MaterialForm.styled";
 
 const MaterialForm = ({ materialGroups, setMaterialGroups }) => {
@@ -35,11 +36,23 @@ const MaterialForm = ({ materialGroups, setMaterialGroups }) => {
         setMaterialGroups(newMaterialGroups);
     };
 
+    const handleRemoveMaterial = (groupIndex, materialIndex) => {
+        const newMaterialGroups = [...materialGroups];
+        newMaterialGroups[groupIndex].materials.splice(materialIndex, 1);
+        setMaterialGroups(newMaterialGroups);
+    };
+
     const handleAddGroup = () => {
         setMaterialGroups([
             ...materialGroups,
             { name: "재료", materials: [{ name: "", amount: "", unit: "" }] },
         ]);
+    };
+
+    const handleRemoveGroup = (groupIndex) => {
+        const newMaterialGroups = [...materialGroups];
+        newMaterialGroups.splice(groupIndex, 1);
+        setMaterialGroups(newMaterialGroups);
     };
 
     return (
@@ -53,7 +66,7 @@ const MaterialForm = ({ materialGroups, setMaterialGroups }) => {
                     <GroupContainer key={groupIndex}>
                         <GroupLabel
                             type="text"
-                            placeholder="재료"
+                            placeholder="묶음 이름"
                             value={group.name}
                             onChange={(e) =>
                                 handleChange(
@@ -64,6 +77,14 @@ const MaterialForm = ({ materialGroups, setMaterialGroups }) => {
                                 )
                             }
                         />
+                        {groupIndex > 0 && (
+                            <RemoveButton
+                                type="button"
+                                onClick={() => handleRemoveGroup(groupIndex)}
+                            >
+                                X
+                            </RemoveButton>
+                        )}
                         {group.materials.map((material, materialIndex) => (
                             <InputContainer key={materialIndex}>
                                 <InputField
@@ -105,6 +126,19 @@ const MaterialForm = ({ materialGroups, setMaterialGroups }) => {
                                         )
                                     }
                                 />
+                                {materialIndex > 0 && (
+                                    <RemoveButton
+                                        type="button"
+                                        onClick={() =>
+                                            handleRemoveMaterial(
+                                                groupIndex,
+                                                materialIndex,
+                                            )
+                                        }
+                                    >
+                                        X
+                                    </RemoveButton>
+                                )}
                             </InputContainer>
                         ))}
                         <ButtonContainer>
@@ -126,6 +160,7 @@ const MaterialForm = ({ materialGroups, setMaterialGroups }) => {
         </Container>
     );
 };
+
 MaterialForm.propTypes = {
     materialGroups: PropTypes.arrayOf(
         PropTypes.shape({
@@ -141,4 +176,5 @@ MaterialForm.propTypes = {
     ).isRequired,
     setMaterialGroups: PropTypes.func.isRequired,
 };
+
 export default MaterialForm;

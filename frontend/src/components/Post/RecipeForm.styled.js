@@ -84,6 +84,19 @@ export const Select = styled.select`
     font-size: ${({ theme }) => theme.fontSize.text};
     font-family: "SUITREGULAR";
     color: ${({ theme }) => theme.color.gray.light};
+
+    option {
+        color: black;
+    }
+
+    &:focus {
+        outline: none;
+        border-color: #aaa;
+    }
+
+    &:hover {
+        border-color: #aaa;
+    }
 `;
 
 export const CategoryGroup = styled.div`

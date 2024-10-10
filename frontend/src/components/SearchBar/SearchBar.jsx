@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef, useCallback } from "react";
+import { useEffect, useState, useRef, useCallback, useMemo } from "react";
 import PropTypes from "prop-types";
 import useSearchHistoryStore from "../../store/searchHistoryStore";
 import * as S from "./SearchBar.styled";
@@ -9,25 +9,38 @@ const SearchBar = ({
     boldPlacehold,
     grayPlacehold,
     onSubmit,
+    value,
 }) => {
-    const [searchTerm, setSearchTerm] = useState("");
+    const [searchTerm, setSearchTerm] = useState(value || ""); // 초기값 설정
     const [showDropDown, setShowDropDown] = useState(false);
+    const [highlightedIndex, setHighlightedIndex] = useState(-1); // 현재 선택된 인덱스
     const { getSearchTerm, addSearchTerm, removeSearchTerm } =
         useSearchHistoryStore();
 
     const searchBarRef = useRef(null);
-    const searchHistory = purpose ? getSearchTerm(userId, purpose) : [];
+
+    const searchHistory = useMemo(() => {
+        return purpose ? getSearchTerm(userId, purpose) : [];
+    }, [userId, purpose, getSearchTerm]);
 
     useEffect(() => {
-        document.addEventListener("mousedown", handleOutsideClose);
-        return () =>
-            document.removeEventListener("mousedown", handleOutsideClose);
-    }, []);
+        setSearchTerm(value); // 부모 컴포넌트에서 검색어가 바뀌면 상태 업데이트
+    }, [value]);
 
-    const handleOutsideClose = (e) => {
-        if (searchBarRef.current && !searchBarRef.current.contains(e.target))
-            setShowDropDown(false);
-    };
+    useEffect(() => {
+        const handleOutsideClick = (e) => {
+            if (
+                searchBarRef.current &&
+                !searchBarRef.current.contains(e.target)
+            ) {
+                setShowDropDown(false);
+            }
+        };
+
+        document.addEventListener("mousedown", handleOutsideClick);
+        return () =>
+            document.removeEventListener("mousedown", handleOutsideClick);
+    }, []);
 
     const onClickSearchBar = () => {
         setShowDropDown(true);
@@ -36,6 +49,7 @@ const SearchBar = ({
     const onChangeInput = (e) => {
         setSearchTerm(e.target.value);
         setShowDropDown(true);
+        setHighlightedIndex(-1); // 입력 시 선택된 인덱스 초기화
     };
 
     const handleSearchSubmit = useCallback(
@@ -50,7 +64,7 @@ const SearchBar = ({
             }
         },
         [userId, purpose, onSubmit, addSearchTerm],
-    ); // addSearchTerm 추가
+    );
 
     const onClickHistory = (term) => {
         handleSearchSubmit(term);
@@ -60,10 +74,22 @@ const SearchBar = ({
         (e) => {
             if (e.key === "Enter") {
                 e.preventDefault();
-                handleSearchSubmit(searchTerm);
+                if (highlightedIndex >= 0) {
+                    handleSearchSubmit(searchHistory[highlightedIndex]);
+                } else {
+                    handleSearchSubmit(searchTerm);
+                }
+            } else if (e.key === "ArrowDown") {
+                e.preventDefault();
+                setHighlightedIndex((prevIndex) =>
+                    Math.min(prevIndex + 1, searchHistory.length - 1),
+                );
+            } else if (e.key === "ArrowUp") {
+                e.preventDefault();
+                setHighlightedIndex((prevIndex) => Math.max(prevIndex - 1, -1));
             }
         },
-        [searchTerm, handleSearchSubmit],
+        [searchTerm, highlightedIndex, searchHistory, handleSearchSubmit],
     );
 
     const Placeholder = () => {
@@ -102,6 +128,12 @@ const SearchBar = ({
                             <S.History
                                 key={index}
                                 onClick={() => onClickHistory(term)}
+                                style={{
+                                    backgroundColor:
+                                        highlightedIndex === index
+                                            ? "#f0f0f0"
+                                            : "transparent", // 선택된 항목 하이라이트
+                                }}
                             >
                                 <S.HistoryText>{term}</S.HistoryText>
                                 <S.DeleteButton
@@ -131,6 +163,7 @@ SearchBar.propTypes = {
     boldPlacehold: PropTypes.string,
     grayPlacehold: PropTypes.string,
     onSubmit: PropTypes.func.isRequired,
+    value: PropTypes.string,
 };
 
 export default SearchBar;
