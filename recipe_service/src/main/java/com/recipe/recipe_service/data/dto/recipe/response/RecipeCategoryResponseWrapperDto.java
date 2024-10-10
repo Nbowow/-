@@ -9,5 +9,5 @@ import java.util.List;
 @Builder
 public class RecipeCategoryResponseWrapperDto {
     private List<RecipeCategoryResponseDto> recipes; // 레시피 목록
-    private long totalElements; // 전체 레시피 개수
+    private long totalCount; // 전체 레시피 개수
 }

@@ -159,7 +159,7 @@ public class RecipeController {
         // Wrapper DTO로 전체 개수 및 페이지 정보를 함께 반환
         RecipeCategoryResponseWrapperDto responseWrapper = RecipeCategoryResponseWrapperDto.builder()
                 .recipes(recipePage.getContent())  // 레시피 목록
-                .totalElements(recipePage.getTotalElements())  // 전체 레시피 수
+                .totalCount(recipePage.getTotalElements())  // 전체 레시피 수
                 .build();
 
         return ResponseEntity.status(HttpStatus.OK).body(responseWrapper);
