@@ -397,38 +397,6 @@ public class RecipeService {
         recipeCommentsRepository.deleteById(commentId);
     }
 
-    public List<RecipeRecommendResponseDto> getRecipesByIngredients(List<Long> ingredientIds) {
-
-        long minMatchCount = ingredientIds.size() >= 3 ? 3 : 1;
-
-        // 조건에 맞는 레시피 조회
-        List<Recipe> recipes = recipeRepository.findRecipesByIngredients(ingredientIds, minMatchCount);
-
-        return recipes.stream()
-                .map(recipe -> RecipeRecommendResponseDto.builder()
-                        .recipeId(recipe.getId())
-                        .title(recipe.getTitle())
-                        .image(recipe.getImage())
-                        .intro(recipe.getIntro())
-                        .build())
-                .toList();
-    }
-
-    // 좋아요를 많이 받은 레시피 순으로 조회
-    public List<RecipeRecommendResponseDto> getPopularRecipes(int limit) {
-        Pageable pageable = PageRequest.of(0, limit); // limit 개수만큼 상위 레시피 조회
-        List<Recipe> popularRecipes = recipeRepository.findTopByOrderByLikeCountDesc(pageable);
-
-        return popularRecipes.stream()
-                .map(recipe -> RecipeRecommendResponseDto.builder()
-                        .recipeId(recipe.getId())
-                        .title(recipe.getTitle())
-                        .image(recipe.getImage())
-                        .intro(recipe.getIntro())
-                        .build())
-                .toList();
-    }
-
     // 성능 너~무 안좋음
 //    public List<RecipeRecommendResponseDto> getRecipesByIngredients(List<Long> ingredientIds) {
 //
