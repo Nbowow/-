@@ -17,6 +17,7 @@ import java.util.Map;
 import com.recipe.recipe_service.service.S3Uploader;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -145,12 +146,17 @@ public class RecipeController {
             @RequestParam(value = "B", required = false) String codeB,
             @RequestParam(value = "C", required = false) String codeC,
             @RequestParam(value = "D", required = false) String codeD,
-            @RequestParam(value = "E", required = false) String codeE) {
+            @RequestParam(value = "E", required = false) String codeE,
+            @RequestParam(value = "pageNumber") int pageNumber,
+            @RequestParam(value = "pageSize") int pageSize) {
 
-        // 각 코드에 해당하는 레시피 검색
-        List<RecipeCategoryResponseDto> recipes = recipeService.searchRecipeByCategory(codeB, codeC, codeD, codeE);
+        // Pageable 객체 생성
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
 
-        return ResponseEntity.status(HttpStatus.OK).body(recipes);
+        // 각 코드에 해당하는 레시피 검색 (페이징 적용)
+        Page<RecipeCategoryResponseDto> recipePage = recipeService.searchRecipeByCategory(codeB, codeC, codeD, codeE, pageable);
+
+        return ResponseEntity.status(HttpStatus.OK).body(recipePage);
 
     }
     

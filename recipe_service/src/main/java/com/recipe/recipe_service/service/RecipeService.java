@@ -413,43 +413,40 @@ public class RecipeService {
         recipeCommentsRepository.deleteById(commentId);
     }
 
-    public List<RecipeCategoryResponseDto> searchRecipeByCategory(String codeB, String codeC, String codeD, String codeE) {
+    public Page<RecipeCategoryResponseDto> searchRecipeByCategory(String codeB, String codeC, String codeD, String codeE, Pageable pageable) {
 
         // 필터링을 위한 쿼리 작성 - 필요 시 각 필드가 존재할 때만 필터링
-        List<Recipe> foundRecipes = recipeRepository.findRecipesByCategory(codeB, codeC, codeD, codeE);
+        Page<Recipe> foundRecipes = recipeRepository.findRecipesByCategory(codeB, codeC, codeD, codeE, pageable);
 
-        // 검색된 레시피를 DTO로 변환하여 반환
-        return foundRecipes.stream()
-                .map(recipe -> {
+        // 검색된 레시피를 DTO로 변환하여 반환 (페이징 결과로 변환)
+        return foundRecipes.map(recipe -> {
 
-                    // 유저 정보 조회
-                    UserSimpleResponseDto userInfo = userServiceClient.getUserInfo(recipe.getUserId());
+            // 유저 정보 조회
+            UserSimpleResponseDto userInfo = userServiceClient.getUserInfo(recipe.getUserId());
 
-                    return RecipeCategoryResponseDto.builder()
-                            .id(recipe.getId())
-                            .title(recipe.getTitle())
-                            .name(recipe.getName())
-                            .intro(recipe.getIntro())
-                            .image(recipe.getImage())
-                            .viewCount(recipe.getViewCount())
-                            .servings(recipe.getServings())
-                            .time(recipe.getTime())
-                            .level(recipe.getLevel())
-                            .cookingTools(recipe.getCookingTools())
-                            .type(recipe.getType())
-                            .situation(recipe.getSituation())
-                            .ingredients(recipe.getIngredients())
-                            .method(recipe.getMethod())
-                            .userId(recipe.getUserId())
-                            .nickname(userInfo.getNickname())
-                            .profileImage(userInfo.getProfileImage())
-                            .likeCount(recipe.getLikeCount())
-                            .scrapCount(recipe.getScrapCount())
-                            .commentCount(recipe.getCommentCount())
-                            .build();
-                })
-                .limit(100)
-                .toList();
+            return RecipeCategoryResponseDto.builder()
+                    .id(recipe.getId())
+                    .title(recipe.getTitle())
+                    .name(recipe.getName())
+                    .intro(recipe.getIntro())
+                    .image(recipe.getImage())
+                    .viewCount(recipe.getViewCount())
+                    .servings(recipe.getServings())
+                    .time(recipe.getTime())
+                    .level(recipe.getLevel())
+                    .cookingTools(recipe.getCookingTools())
+                    .type(recipe.getType())
+                    .situation(recipe.getSituation())
+                    .ingredients(recipe.getIngredients())
+                    .method(recipe.getMethod())
+                    .userId(recipe.getUserId())
+                    .nickname(userInfo.getNickname())
+                    .profileImage(userInfo.getProfileImage())
+                    .likeCount(recipe.getLikeCount())
+                    .scrapCount(recipe.getScrapCount())
+                    .commentCount(recipe.getCommentCount())
+                    .build();
+        });
 
     }
 
