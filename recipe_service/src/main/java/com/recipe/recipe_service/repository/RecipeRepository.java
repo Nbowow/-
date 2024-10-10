@@ -33,4 +33,15 @@ public interface RecipeRepository extends JpaRepository<Recipe, Long> {
 
     @Query("SELECT r.name FROM Recipe r WHERE LOWER(r.name) LIKE LOWER(CONCAT('%', :keyword, '%'))")
     List<String> findRecipeNamesByKeyword(@Param("keyword") String keyword, Pageable pageable);
+
+    @Query("SELECT r FROM Recipe r JOIN RecipeMaterials rm ON r.id = rm.recipeId " +
+            "WHERE rm.materialId IN :ingredientIds " +
+            "GROUP BY r.id " +
+            "HAVING COUNT(rm.materialId) >= :minMatchCount")
+    List<Recipe> findRecipesByIngredients(
+            @Param("ingredientIds") List<Long> ingredientIds,
+            @Param("minMatchCount") long minMatchCount);
+
+    @Query("SELECT r FROM Recipe r ORDER BY r.likeCount DESC")
+    List<Recipe> findTopByOrderByLikeCountDesc(Pageable pageable);
 }

@@ -6,10 +6,14 @@ import com.recipe.recipe_service.data.domain.Recipe;
 import com.recipe.recipe_service.data.dto.ingredient.response.IngredientLikeResponseDto;
 import com.recipe.recipe_service.data.dto.recipe.request.RecipeRegisterRequestDto;
 import com.recipe.recipe_service.data.dto.recipe.response.*;
+import com.recipe.recipe_service.data.dto.recommend.response.RecipeRecommendResponseDto;
+import com.recipe.recipe_service.data.dto.recommend.response.RecipeRecommendResponseWrapperDto;
 import com.recipe.recipe_service.global.config.LevenshteinDistance;
 import com.recipe.recipe_service.repository.RecipeRepository;
 import com.recipe.recipe_service.data.dto.user.response.UserAllergyResponseDto;
 import com.recipe.recipe_service.service.RecipeService;
+import java.util.HashMap;
+import java.util.Map;
 import com.recipe.recipe_service.service.S3Uploader;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -89,7 +93,7 @@ public class RecipeController {
 
     // 레시피 전체 조회
     @GetMapping("")
-    public ResponseEntity<List<RecipeDetailsResponseDto>> getAllRecipes(
+    public ResponseEntity<?> getAllRecipes(
             @RequestParam("pageSize") int pageSize,
             @RequestParam("pageNumber") int pageNumber) {
 
@@ -97,7 +101,12 @@ public class RecipeController {
         // pageNumber가 1부터 시작한다고 가정하고 0부터 시작하도록 맞춤
         List<RecipeDetailsResponseDto> recipeList = recipeService.getAllRecipes(pageNumber - 1, pageSize);
 
-        return ResponseEntity.status(HttpStatus.OK).body(recipeList);
+        Long totalRecipesCount = recipeRepository.count();
+
+        // PagedResponseDto에 레시피 목록과 총 개수를 담아 반환
+        PagedResponseDto<RecipeDetailsResponseDto> response = new PagedResponseDto<>(recipeList, totalRecipesCount);
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
 
     }
 
@@ -123,10 +132,13 @@ public class RecipeController {
             String correctedWord = searchTypo(keyword); // 오타 수정 API 호출
             return ResponseEntity.status(HttpStatus.OK).body(correctedWord);
         }
+        Map<String, Object> response = new HashMap<>();
+        response.put("recipeList", recipeList);
+        response.put("count", recipeList.size());
 
-        return ResponseEntity.status(HttpStatus.OK).body(recipeList);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
-
+    
     // 특정 사용자가 만든 레시피 조회
     @GetMapping("/user/{userId}")
     public ResponseEntity<List<UserRecipeRegistResponseDto>> getUserRecipes(@PathVariable("userId") Long userId) {
@@ -146,33 +158,6 @@ public class RecipeController {
     public ResponseEntity<List<UserRecipeScrapResponseDto>> getUserScrapRecipes(@PathVariable("userId") Long userId) {
         List<UserRecipeScrapResponseDto> userScrapRecipes = recipeService.getUserScrapRecipes(userId);
         return ResponseEntity.status(HttpStatus.OK).body(userScrapRecipes);
-    }
-
-
-    // 사용자 알러지 기반 레시피 추천
-    @GetMapping("/recommend")
-    public ResponseEntity<List<RecipeRecommendResponseDto>> getUserRecommendations(
-            @RequestHeader("Authorization") String authorization) {
-
-        Long userId = userServiceClient.getUserId(authorization);
-
-        // 1. 사용자 알러지 정보 조회
-        List<UserAllergyResponseDto> userAllergies = userServiceClient.getUserAllergies(authorization).getBody();
-
-        // 2. 사용자 선호 재료 조회
-        List<IngredientLikeResponseDto> likedIngredients = ingredientServiceClient.findUserLikeIngredientList(authorization).getBody();
-
-        // 알러지에 해당하는 재료는 제외한 재료 목록 생성
-        List<Long> safeIngredientIds = likedIngredients.stream()
-                .filter(likedIngredient ->
-                        userAllergies.stream().noneMatch(allergy -> allergy.getCommonCodeNum().equals(likedIngredient.getAllergyNum())))
-                .map(IngredientLikeResponseDto::getId)
-                .collect(Collectors.toList());
-        
-        // 사용자 선호 재료 기반 레시피 추천
-        List<RecipeRecommendResponseDto> recommendedRecipes = recipeService.getRecipesByIngredients(safeIngredientIds);
-
-        return ResponseEntity.status(HttpStatus.OK).body(recommendedRecipes);
     }
 
     @PostMapping("/list")
@@ -236,6 +221,5 @@ public class RecipeController {
         return ResponseEntity.status(HttpStatus.OK).body(recipeSuggestions);
     }
 
-    // 날씨 기반 레시피 추천
 
 }

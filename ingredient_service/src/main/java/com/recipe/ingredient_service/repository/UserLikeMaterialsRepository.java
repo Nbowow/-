@@ -29,4 +29,6 @@ public interface UserLikeMaterialsRepository extends JpaRepository<UserLikeMater
     @Query("SELECT u.ingredientId FROM UserLikeMaterials u WHERE u.userId = :userId")
     List<Long> findIngredientIdsByUserId(@Param("userId") Long userId);
 
+    boolean existsByUserIdAndIngredientId(Long userId, Long ingredientId);
+
 }

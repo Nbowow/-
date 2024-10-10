@@ -1,4 +1,4 @@
-package com.recipe.recipe_service.data.dto.recipe.response;
+package com.recipe.recipe_service.data.dto.recommend.response;
 
 import lombok.Builder;
 import lombok.Data;

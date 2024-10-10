@@ -1,6 +1,5 @@
 package com.recipe.recipe_service.controller;
 
-import com.recipe.recipe_service.data.dto.recipe.response.RecipeRecommendResponseDto;
 import com.recipe.recipe_service.data.dto.review.request.RecipeReviewRequestDto;
 import com.recipe.recipe_service.data.dto.review.response.RecipeReviewResponseDto;
 import com.recipe.recipe_service.service.RecipeReviewService;
