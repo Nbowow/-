@@ -24,17 +24,22 @@ export const Name = styled.div`
 export const Img = styled.img`
     border-radius: ${({ theme }) => theme.borderRadius.small};
     height: 4rem;
+    width: 70%;
     margin: ${({ theme }) => theme.spacing.medium} 0;
 `;
 export const Info = styled.div`
     ${flexBetweenStyle}
     flex-direction: column;
-    width: 8rem;
+    width: 7rem;
     background-color: ${({ theme, isSelected }) =>
         isSelected ? theme.color.point.green : theme.color.point.lightGreen};
     border-radius: ${({ theme }) => theme.borderRadius.small};
     margin: ${({ theme }) => theme.spacing.small};
     padding: ${({ theme }) => theme.spacing.large};
+    cursor: pointer;
+    transition:
+        transform 1s ease,
+        box-shadow 1s ease;
     &:hover {
         transform: scale(1.05);
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
