@@ -208,6 +208,7 @@ public class UserService {
                     // AtomicInteger를 사용하여 순위 설정 후 증가
                     rankResponseDto.setRank((long) index.getAndIncrement());
 
+                    rankResponseDto.setUserId(user.getUserId());
                     rankResponseDto.setNickname(user.getNickname());
                     rankResponseDto.setImage(user.getProfileImage());
                     rankResponseDto.setScore(user.getScore());
