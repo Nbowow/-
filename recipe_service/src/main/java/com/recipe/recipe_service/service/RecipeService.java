@@ -398,43 +398,61 @@ public class RecipeService {
         recipeCommentsRepository.deleteById(commentId);
     }
 
-    // 성능 너~무 안좋음
-//    public List<RecipeRecommendResponseDto> getRecipesByIngredients(List<Long> ingredientIds) {
-//
-//        // 1. 모든 레시피 조회
-//        List<Recipe> recipes = recipeRepository.findAll();
-//
-//        // 2. 재료 개수에 따라 다른 조건으로 필터링
-//        List<Recipe> filteredRecipes = recipes.stream()
-//                .filter(recipe -> {
-//                    // recipematerials 테이블에서 해당 레시피의 재료 목록 가져오기
-//                    List<Long> recipeIngredientIds = recipeMaterialsRepository.findByRecipeId(recipe.getId()).stream()
-//                            .map(RecipeMaterials::getMaterialId)
-//                            .toList();
-//
-//                    // 사용자의 선호 재료와 레시피 재료가 몇 개 일치하는지 계산
-//                    long matchCount = ingredientIds.stream()
-//                            .filter(recipeIngredientIds::contains)
-//                            .count();
-//
-//                    // 만약 재료가 3개 이상이면 3개가 일치
-//                    if (ingredientIds.size() >= 3) {
-//                        return matchCount >= 3;
-//                    } else {
-//                        return matchCount >= 1; // 선호 재료가 1~2개인 경우 최소 1개라도 일치하면 추천
-//                    }
-//                })
-//                .toList();
-//
-//        // 3. 필터링된 레시피를 DTO로 변환
-//        return filteredRecipes.stream()
-//                .map(recipe -> RecipeRecommendResponseDto.builder()
-//                        .recipeId(recipe.getId())
-//                        .title(recipe.getTitle())
-//                        .image(recipe.getImage())
-//                        .intro(recipe.getIntro())
-//                        .build())
-//                .toList();
-//    }
+    public List<RecipeDetailsResponseDto> searchRecipeByCategory(String commonCode) {
+
+        String categoryPrefix = commonCode.substring(0, 1); // 첫 번째 문자를 추출 (A, B, C, D)
+        String code = commonCode; // 전체 공통코드를 사용
+
+        List<Recipe> foundRecipes;
+
+        // 공통 코드의 첫 글자를 기준으로 어떤 컬럼에서 검색할지 결정
+        switch (categoryPrefix) {
+            case "A":
+                foundRecipes = recipeRepository.findByType(code);
+                break;
+            case "B":
+                foundRecipes = recipeRepository.findBySituation(code);
+                break;
+            case "C":
+                foundRecipes = recipeRepository.findByIngredients(code);
+                break;
+            case "D":
+                foundRecipes = recipeRepository.findByMethod(code);
+                break;
+            default:
+                throw new IllegalArgumentException("Invalid common code prefix");
+        }
+
+        // 검색된 레시피를 DTO로 변환하여 반환
+        return foundRecipes.stream()
+                .map(recipe -> RecipeDetailsResponseDto.builder()
+                        .id(recipe.getId())
+                        .title(recipe.getTitle())
+                        .name(recipe.getName())
+                        .intro(recipe.getIntro())
+                        .image(recipe.getImage())
+                        .viewCount(recipe.getViewCount())
+                        .servings(recipe.getServings())
+                        .time(recipe.getTime())
+                        .level(recipe.getLevel())
+                        .cookingTools(recipe.getCookingTools())
+                        .type(recipe.getType())
+                        .situation(recipe.getSituation())
+                        .ingredients(recipe.getIngredients())
+                        .method(recipe.getMethod())
+                        .userId(recipe.getUserId())
+                        .nickname("닉네임") // 외부 서비스로부터 추가 정보 가져올 필요 있음
+                        .profileImage("프로필 이미지")
+                        .likeCount(recipe.getLikeCount())
+                        .scrapCount(recipe.getScrapCount())
+                        .commentCount(recipe.getCommentCount())
+                        .calorie(recipe.getKcal())
+                        .price(null) // 추가 정보 처리
+                        .materials(null) // 재료 정보는 필요에 따라 추가
+                        .recipeOrders(null) // 요리 순서는 필요에 따라 추가
+                        .build())
+                .toList();
+
+    }
 
 }

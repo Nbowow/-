@@ -138,6 +138,17 @@ public class RecipeController {
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
+
+    // 레시피 카테고리 별 검색
+    @GetMapping("/category")
+    public ResponseEntity<?> searchCategory(
+            @RequestParam("commonCode") String commonCode) {
+
+        List<RecipeDetailsResponseDto> recipes = recipeService.searchRecipeByCategory(commonCode);
+
+        return ResponseEntity.status(HttpStatus.OK).body(recipes);
+
+    }
     
     // 특정 사용자가 만든 레시피 조회
     @GetMapping("/user/{userId}")
