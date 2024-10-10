@@ -21,7 +21,8 @@ const SearchRecipe = () => {
     const [loading, setLoading] = useState(true);
 
     const keyword = query.get("keyword") || "";
-    const currentPage = parseInt(query.get("page")) || 0;
+    // page 쿼리 파라미터가 없으면 1을 기본값으로 사용
+    const currentPage = Math.max(1, parseInt(query.get("page") || "1"));
 
     useEffect(() => {
         const loadRecipes = async () => {
@@ -29,7 +30,7 @@ const SearchRecipe = () => {
             try {
                 const data = await searchRecipes(
                     keyword,
-                    currentPage,
+                    currentPage, // API에 그대로 currentPage 전달
                     recipesPerPage,
                 );
 
@@ -52,7 +53,7 @@ const SearchRecipe = () => {
     }, [keyword, currentPage, setCurrentPage]);
 
     const handleSearch = (term) => {
-        navigate(`/search?keyword=${encodeURIComponent(term)}&page=0`);
+        navigate(`/search?keyword=${encodeURIComponent(term)}&page=1`);
     };
 
     return (
@@ -63,7 +64,7 @@ const SearchRecipe = () => {
                 boldPlacehold="레시피 검색"
                 grayPlacehold="키워드를 입력하세요"
                 onSubmit={handleSearch}
-                value={keyword} // 검색어를 SearchBar에 전달
+                value={keyword}
             />
 
             {loading ? (
@@ -96,10 +97,10 @@ const SearchRecipe = () => {
                             pageCount={Math.ceil(totalCount / recipesPerPage)}
                             onPageChange={({ selected }) => {
                                 navigate(
-                                    `/search?keyword=${encodeURIComponent(keyword)}&page=${selected}`,
+                                    `/search?keyword=${encodeURIComponent(keyword)}&page=${selected + 1}`,
                                 );
                             }}
-                            currentPage={currentPage}
+                            currentPage={currentPage - 1} // Pagination 컴포넌트는 0-based index를 사용하므로 1을 빼줍니다
                         />
                     )}
                 </>

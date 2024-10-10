@@ -18,7 +18,7 @@ const CATEGORY_TYPES = {
 
 const RegisterButton = styled.button`
     display: block;
-    width: 20%;
+    width: 150px;
     padding: 15px;
     background-color: #4caf50;
     color: white;
@@ -27,7 +27,7 @@ const RegisterButton = styled.button`
     cursor: pointer;
     transition: background-color 0.3s;
     font-family: "SUITSEMIBOLD";
-    font-size: 20px;
+    font-size: ${({ theme }) => theme.fontSize.text};
     &:hover {
         background-color: #45a049;
     }
@@ -408,6 +408,7 @@ const PostRecipe = () => {
                     setOrderSteps={setOrderSteps}
                 />
             </FormSection>
+            <Hr />
             <ButtonContainer>
                 <RegisterButton onClick={handleRegister}>등록</RegisterButton>
             </ButtonContainer>

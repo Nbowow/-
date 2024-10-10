@@ -19,7 +19,7 @@ const Recipe = () => {
     const situation = searchParams.get("C") || "";
     const ingredients = searchParams.get("D") || "";
     const method = searchParams.get("E") || "";
-    const currentPage = parseInt(searchParams.get("page") || "0", 10);
+    const currentPage = parseInt(searchParams.get("page") || "1", 10);
 
     const handleSearchSubmit = (term) => {
         navigate(`/search?keyword=${encodeURIComponent(term)}`);
@@ -27,7 +27,6 @@ const Recipe = () => {
 
     const updateFilters = (key, value) => {
         const newSearchParams = new URLSearchParams(searchParams);
-
         if (
             !value ||
             value === "B_0001" ||
@@ -39,15 +38,13 @@ const Recipe = () => {
         } else {
             newSearchParams.set(key, value);
         }
-
-        // 필터를 변경할 때 페이지를 초기화
-        newSearchParams.set("page", "0");
+        newSearchParams.set("page", "1");
         setSearchParams(newSearchParams);
     };
 
     const handlePageChange = (selected) => {
         const newSearchParams = new URLSearchParams(searchParams);
-        newSearchParams.set("page", selected.toString());
+        newSearchParams.set("page", (selected + 1).toString());
         setSearchParams(newSearchParams);
         window.scrollTo(0, 0);
     };
@@ -59,10 +56,10 @@ const Recipe = () => {
                 let response;
                 const hasFilters = type || situation || ingredients || method;
 
+                // currentPage를 그대로 전달 (1부터 시작하는 페이지 번호)
                 if (!hasFilters) {
                     response = await fetchRecipes(currentPage, recipesPerPage);
                 } else {
-                    // 페이지 번호와 페이지 사이즈를 전달
                     response = await filterRecipes(
                         type,
                         situation,
@@ -73,10 +70,9 @@ const Recipe = () => {
                     );
                 }
 
-                // totalCount를 API 응답에서 설정
                 setRecipes({
-                    data: response.data || [], // data가 없을 경우 빈 배열
-                    totalCount: response.totalCount || 0, // totalCount를 API 응답에서 설정
+                    data: response.data || [],
+                    totalCount: response.totalCount || 0,
                 });
             } finally {
                 setLoading(false);
@@ -86,12 +82,16 @@ const Recipe = () => {
         loadRecipes();
     }, [type, situation, ingredients, method, currentPage]);
 
-    // 인기 레시피 계산
     const popularRecipes = [...recipes.data]
         .sort((a, b) => b.likeCount - a.likeCount)
-        .slice(0, 4); // 상위 4개의 인기 레시피
+        .slice(0, 4);
 
-    const pageCount = Math.ceil(recipes.totalCount / recipesPerPage);
+    // 수정된 페이지 수 계산 로직
+    const totalCount = recipes.totalCount;
+    const pageCount =
+        totalCount === 0
+            ? 0
+            : Math.floor((totalCount - 1) / recipesPerPage) + 1;
 
     return (
         <S.Container>
@@ -123,7 +123,7 @@ const Recipe = () => {
                     />
                     <RecipeCardSkeleton />
                 </>
-            ) : recipes.data.length === 0 ? ( // 레시피가 없을 경우
+            ) : recipes.data.length === 0 ? (
                 <div>
                     <Category
                         onTypeSelect={(value) => updateFilters("B", value)}
@@ -140,7 +140,7 @@ const Recipe = () => {
                     <S.NoResultContainer>
                         <S.NoResult>
                             <S.Emoji>😥</S.Emoji>
-                            검색 결과가 없습니다.
+                            해당 된 레시피가 없습니다.
                         </S.NoResult>
                     </S.NoResultContainer>
                 </div>
@@ -166,13 +166,13 @@ const Recipe = () => {
                         selectedMethod={method}
                     />
                     <RecipeCardList recipes={recipes.data} showProfile={true} />
-                    {pageCount > 1 && (
+                    {pageCount > 0 && (
                         <Pagination
                             pageCount={pageCount}
                             onPageChange={({ selected }) =>
                                 handlePageChange(selected)
                             }
-                            currentPage={currentPage}
+                            currentPage={currentPage - 1}
                         />
                     )}
                 </>

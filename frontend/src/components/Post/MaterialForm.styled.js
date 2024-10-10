@@ -1,7 +1,7 @@
 import styled from "styled-components";
 
 export const Container = styled.div`
-    max-width: 1200px;
+    max-width: 1000px;
     margin: 0 auto;
     padding: 20px;
 `;
@@ -12,14 +12,14 @@ export const TitleContainer = styled.div`
 `;
 
 export const Title = styled.h1`
-    font-size: ${({ theme }) => theme.fontSize.h1};
+    font-size: ${({ theme }) => theme.fontSize.h3};
     color: #333;
     margin-bottom: 10px;
     font-family: "SUITEXTRABOLD";
 `;
 
 export const SubTitle = styled.p`
-    font-size: 22px;
+    font-size: ${({ theme }) => theme.fontSize.subText};
     color: #888;
     font-family: "SUITSEMIBOLD";
 `;
@@ -41,7 +41,7 @@ export const InputField = styled.input`
     margin-right: 10px;
     border: 1px solid #e0e0e0;
     border-radius: 4px;
-    font-size: ${({ theme }) => theme.fontSize.text};
+    font-size: ${({ theme }) => theme.fontSize.subText};
     font-family: "SUITRegular";
     background-color: #f2f2f2;
 
@@ -77,7 +77,7 @@ export const AddButton = styled.button`
     border: solid 1px ${({ theme }) => theme.color.gray.light};
     border-radius: 20px;
     cursor: pointer;
-    font-size: 16px;
+    font-size: ${({ theme }) => theme.fontSize.subText};
     font-family: "SUITSEMIBOLD";
     width: 20%;
     margin-top: 10px;

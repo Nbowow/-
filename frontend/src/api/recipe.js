@@ -3,7 +3,6 @@ import axiosInstance from "./axios";
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export const fetchRecipes = async (pageNumber, pageSize) => {
-    pageNumber += 1;
     const response = await axios.get(
         `${BASE_URL}/recipe?pageSize=${pageSize}&pageNumber=${pageNumber}`,
     );
@@ -12,12 +11,11 @@ export const fetchRecipes = async (pageNumber, pageSize) => {
 
 export const searchRecipes = async (searchTerm, pageNumber, pageSize) => {
     const response = await axios.get(
-        `${BASE_URL}/recipe/search?keyword=${searchTerm}&pageNumber=${pageNumber + 1}&pageSize=${pageSize}`,
+        `${BASE_URL}/recipe/search?keyword=${searchTerm}&pageNumber=${pageNumber}&pageSize=${pageSize}`,
     );
 
     return response.data;
 };
-
 export const filterRecipes = async (
     type,
     situation,
@@ -41,9 +39,9 @@ export const filterRecipes = async (
         params.append("E", method);
     }
 
-    // 페이지 정보 추가
-    params.append("pageNumber", pageNumber + 1); // API에서 1부터 시작하므로 +1
-    params.append("pageSize", pageSize); // 페이지 사이즈
+    // pageNumber는 이미 올바른 값으로 전달됨을 가정
+    params.append("pageNumber", pageNumber);
+    params.append("pageSize", pageSize);
 
     const response = await axios.get(
         `${BASE_URL}/recipe/category?${params.toString()}`,
