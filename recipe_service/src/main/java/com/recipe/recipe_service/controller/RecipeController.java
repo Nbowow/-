@@ -144,7 +144,7 @@ public class RecipeController {
     public ResponseEntity<?> searchCategory(
             @RequestParam("commonCode") String commonCode) {
 
-        List<RecipeDetailsResponseDto> recipes = recipeService.searchRecipeByCategory(commonCode);
+        List<RecipeCategoryResponseDto> recipes = recipeService.searchRecipeByCategory(commonCode);
 
         return ResponseEntity.status(HttpStatus.OK).body(recipes);
 

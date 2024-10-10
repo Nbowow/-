@@ -398,7 +398,7 @@ public class RecipeService {
         recipeCommentsRepository.deleteById(commentId);
     }
 
-    public List<RecipeDetailsResponseDto> searchRecipeByCategory(String commonCode) {
+    public List<RecipeCategoryResponseDto> searchRecipeByCategory(String commonCode) {
 
         String categoryPrefix = commonCode.substring(0, 1); // 첫 번째 문자를 추출 (A, B, C, D)
         String code = commonCode; // 전체 공통코드를 사용
@@ -425,32 +425,34 @@ public class RecipeService {
 
         // 검색된 레시피를 DTO로 변환하여 반환
         return foundRecipes.stream()
-                .map(recipe -> RecipeDetailsResponseDto.builder()
-                        .id(recipe.getId())
-                        .title(recipe.getTitle())
-                        .name(recipe.getName())
-                        .intro(recipe.getIntro())
-                        .image(recipe.getImage())
-                        .viewCount(recipe.getViewCount())
-                        .servings(recipe.getServings())
-                        .time(recipe.getTime())
-                        .level(recipe.getLevel())
-                        .cookingTools(recipe.getCookingTools())
-                        .type(recipe.getType())
-                        .situation(recipe.getSituation())
-                        .ingredients(recipe.getIngredients())
-                        .method(recipe.getMethod())
-                        .userId(recipe.getUserId())
-                        .nickname("닉네임") // 외부 서비스로부터 추가 정보 가져올 필요 있음
-                        .profileImage("프로필 이미지")
-                        .likeCount(recipe.getLikeCount())
-                        .scrapCount(recipe.getScrapCount())
-                        .commentCount(recipe.getCommentCount())
-                        .calorie(recipe.getKcal())
-                        .price(null) // 추가 정보 처리
-                        .materials(null) // 재료 정보는 필요에 따라 추가
-                        .recipeOrders(null) // 요리 순서는 필요에 따라 추가
-                        .build())
+                .map(recipe -> {
+
+                    // 유저 정보 조회
+                    UserSimpleResponseDto userInfo = userServiceClient.getUserInfo(recipe.getUserId());
+
+                    return RecipeCategoryResponseDto.builder()
+                            .id(recipe.getId())
+                            .title(recipe.getTitle())
+                            .name(recipe.getName())
+                            .intro(recipe.getIntro())
+                            .image(recipe.getImage())
+                            .viewCount(recipe.getViewCount())
+                            .servings(recipe.getServings())
+                            .time(recipe.getTime())
+                            .level(recipe.getLevel())
+                            .cookingTools(recipe.getCookingTools())
+                            .type(recipe.getType())
+                            .situation(recipe.getSituation())
+                            .ingredients(recipe.getIngredients())
+                            .method(recipe.getMethod())
+                            .userId(recipe.getUserId())
+                            .nickname(userInfo.getNickname())
+                            .profileImage(userInfo.getProfileImage())
+                            .likeCount(recipe.getLikeCount())
+                            .scrapCount(recipe.getScrapCount())
+                            .commentCount(recipe.getCommentCount())
+                            .build();
+                })
                 .toList();
 
     }
