@@ -65,14 +65,14 @@ public class RecipeRecommendController {
             message = "사용자 선호 재료를 기반으로 레시피를 추천했어요";
 
             // 레시피가 8개 미만일 경우 인기순으로 채우기
-            if (recommendedRecipes.size() < 8) {
-                List<RecipeRecommendResponseDto> popularRecipes = recipeRecommendService.getPopularRecipes(8 - recommendedRecipes.size());
+            if (recommendedRecipes.size() < 20) {
+                List<RecipeRecommendResponseDto> popularRecipes = recipeRecommendService.getPopularRecipes(20 - recommendedRecipes.size());
                 recommendedRecipes.addAll(popularRecipes);
             }
         } else {
             // 레시피가 4개 미만일 경우 가장 인기가 많은 레시피 추천
             message = "가장 인기가 많은 레시피를 추천했어요";
-            recommendedRecipes = recipeRecommendService.getPopularRecipes(8);
+            recommendedRecipes = recipeRecommendService.getPopularRecipes(20);
         }
 
         // 결과를 RecipeRecommendResponseWrapperDto로 감싸서 반환

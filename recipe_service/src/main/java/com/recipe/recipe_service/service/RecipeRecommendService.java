@@ -32,7 +32,7 @@ public class RecipeRecommendService {
                         .image(recipe.getImage())
                         .intro(recipe.getIntro())
                         .build())
-                .limit(8)
+                .limit(20)
                 .toList();
     }
 
