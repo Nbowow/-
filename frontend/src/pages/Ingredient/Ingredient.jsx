@@ -27,7 +27,7 @@ const Ingredient = () => {
     const handleLike = (ingredient) => {
         const data = {
             ...ingredient,
-            price: ingredient.dayprice,
+            price: ingredient?.price || ingredient?.dayprice,
         };
         const isLiked = likeIngredients.find((i) => i.id === ingredient.id);
         setLikeIngredients((prev) =>

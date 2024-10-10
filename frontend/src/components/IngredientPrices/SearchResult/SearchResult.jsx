@@ -1,5 +1,5 @@
 import PropTypes from "prop-types";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { getIngredientPrices } from "../../../api/ingredientApi";
 import InteractionToggle from "../../Toggle/InteractionToggle/InteractionToggle";
 import Button from "../../Button/Button";
@@ -13,10 +13,16 @@ const SearchResult = ({ result, onLike, like }) => {
     const [showInfo, setShowInfo] = useState(false);
     const [priceHistory, setPriceHistory] = useState();
     const handleClick = async () => {
-        const data = await getIngredientPrices(result.id);
-        setPriceHistory(data);
         setShowInfo((prev) => !prev);
     };
+    useEffect(() => {
+        const fetchData = async () => {
+            const data = await getIngredientPrices(result.id);
+            setPriceHistory(data);
+        };
+        fetchData();
+    }, [result]);
+
     return (
         <S.Wrapper>
             {result.name !== "Unknown" ? (
