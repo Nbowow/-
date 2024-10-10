@@ -313,9 +313,9 @@ const PostRecipe = () => {
             recipeMaterials: materialGroups.map((group) => ({
                 materialName: group.name,
                 materials: group.materials.map((m) => ({
-                    name: m.name,
-                    amount: m.amount,
-                    unit: m.unit,
+                    materialSubtitle: m.name,
+                    materialAmount: m.amount,
+                    materialUnit: m.unit,
                 })),
             })),
             recipeOrders: orderSteps.map((step, index) => ({
@@ -354,7 +354,6 @@ const PostRecipe = () => {
 
         return false;
     };
-
     // 모달 확인 버튼 처리 함수 수정
     const handleConfirm = () => {
         setIsModalOpen(false);
