@@ -27,6 +27,7 @@ export const ReviewOverviewRight = styled.div`
 
 export const ReviewOverviewWrapper = styled.div`
     ${flexCenterStyle}
+    width: 17rem;
     height: 8rem;
 
     border-radius: ${({ theme }) => theme.borderRadius.large};
