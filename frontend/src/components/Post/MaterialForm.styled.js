@@ -64,6 +64,7 @@ export const GroupLabel = styled(InputField)`
         color: ${({ theme }) => theme.color.gray.light};
     }
 `;
+
 export const ButtonContainer = styled.div`
     display: flex;
     justify-content: center;
@@ -88,13 +89,23 @@ export const AddButton = styled.button`
 
 export const AddGroupButton = styled(AddButton)`
     background-color: white;
-    /* border: 2px dashed #ccc; */
     color: #888;
     margin-top: 20px;
     color: black;
+
     &:hover {
         background-color: #f9f9f9;
     }
+`;
+
+export const RemoveButton = styled.button`
+    position: flex;
+    background: #aaaaaa;
+    border: none;
+    color: white;
+    cursor: pointer;
+    font-size: 16px;
+    height: 20px;
 `;
 
 export const FormLayout = styled.div`

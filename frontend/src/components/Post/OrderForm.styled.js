@@ -37,6 +37,7 @@ export const StepList = styled.div`
 `;
 
 export const StepButton = styled.button`
+    font-family: "SUITmedium";
     width: 100%;
     padding: 10px;
     margin-bottom: 10px;
@@ -181,4 +182,15 @@ export const RemoveButton = styled.button`
     color: white;
     cursor: pointer;
     font-size: 16px;
+`;
+export const RemoveButton2 = styled.button`
+    position: absolute;
+    top: 8px;
+    right: 5px;
+    background: transparent;
+    border: none;
+    color: white;
+    cursor: pointer;
+    font-size: 16px;
+    z-index: 1;
 `;

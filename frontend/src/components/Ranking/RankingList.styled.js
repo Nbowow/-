@@ -11,6 +11,12 @@ export const SearchContainer = styled.div`
     justify-content: center;
     align-items: center;
 `;
+export const Loader = styled.div`
+    font-size: 24px;
+    text-align: center;
+    margin-top: 20px;
+    font-family: "SUITSEMIBOLD";
+`;
 
 export const SearchInput = styled.input`
     margin-bottom: 20px;
@@ -25,9 +31,8 @@ export const SearchInput = styled.input`
         border: none;
     }
     &::placeholder {
-        font-family: "SUITmedium"; /* 원하는 폰트 패밀리로 변경 */
-        color: ${({ theme }) =>
-            theme.color.gray.dark}; /* 원하는 색상으로 변경 */
+        font-family: "SUITmedium";
+        color: ${({ theme }) => theme.color.gray.dark};
     }
 `;
 
@@ -89,7 +94,7 @@ export const UserNavi = styled.span`
     cursor: pointer;
 `;
 export const RankText = styled.span`
-    font-family: "SUITBOLD"; // 원하는 폰트 패밀리로 변경
-    font-size: 1.2em; // 원하는 폰트 크기로 변경
-    color: #000; // 원하는 색상으로 변경
+    font-family: "SUITBOLD";
+    font-size: 1.2em;
+    color: #000;
 `;

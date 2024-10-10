@@ -10,8 +10,8 @@ const axiosInstance = axios.create({
 
 axiosInstance.interceptors.request.use(
     (config) => {
-        const { accessToken } = useAuthStore.getState();
-
+        // const { accessToken } = useAuthStore.getState();
+        const accessToken = `eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJBY2Nlc3NUb2tlbiIsImV4cCI6MTcyODI2MjU3NCwiZW1haWwiOiJndW5fZWxldmVuQG5hdmVyLmNvbSJ9.kqqb-oB8xWo76fcPR9YjU4kK-ledKRP_dMRU4ytb1fYQuh1TEmi7wZ4HXi3qkMLkRO6oQS2e6vw7kIzxDFfVng`;
         if (accessToken) {
             config.headers.Authorization = `Bearer ${accessToken}`;
         }

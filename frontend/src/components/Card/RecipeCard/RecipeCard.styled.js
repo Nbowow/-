@@ -8,6 +8,7 @@ import {
     BaseTextArea,
 } from "../Card.styled";
 
+// 기존 카드 스타일
 export const RecipeCard = styled(BaseCard)`
     width: 279px;
 `;
@@ -39,4 +40,49 @@ export const Profile = styled.div`
     font-family: "SUITMedium";
     font-size: ${({ theme }) => theme.fontSize.text};
     align-items: center;
+`;
+
+// 스켈레톤 스타일 추가
+export const SkeletonCard = styled(RecipeCard)`
+    background-color: #e0e0e0;
+    animation: pulse 1.5s infinite;
+    border-radius: ${cardBorderRadius};
+
+    @keyframes pulse {
+        0% {
+            background-color: #e0e0e0;
+        }
+        50% {
+            background-color: #d0d0d0;
+        }
+        100% {
+            background-color: #e0e0e0;
+        }
+    }
+`;
+
+export const SkeletonThumbnail = styled(Thumnail)`
+    background-color: #e0e0e0;
+    height: 13.1rem;
+`;
+
+export const SkeletonTextArea = styled(TextArea)`
+    background-color: #e0e0e0;
+    height: 60px; /* 스켈레톤의 높이 */
+    margin: 10px 0;
+`;
+
+export const SkeletonTitle = styled(Title)`
+    background-color: #e0e0e0;
+    height: 20px; /* 스켈레톤의 높이 */
+    width: 70%; /* 스켈레톤의 너비 */
+`;
+
+// CardList 스타일
+export const CardList = styled.div`
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: center;
+    cursor: pointer;
 `;

@@ -2,43 +2,12 @@ import { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import Pagination from "../components/Pagination/Pagination";
 import SortSelector from "../components/SortSelector/SortSelector";
-import styled from "styled-components";
 import { useSearchResultStore } from "../store/recipeStore";
 import RecipeCardList from "../components/CardList/RecipeCardList";
 import { fetchRecipes, searchRecipes } from "../api/recipe";
 import SearchBar from "../components/SearchBar/SearchBar";
-
-const PopularRecipe = styled.h2`
-    font-family: "SUITEXTRABOLD";
-    padding: 20px;
-    margin-left: 50px;
-    font-size: ${({ theme }) => theme.fontSize.h3};
-`;
-
-const Emoji = styled.span`
-    font-family: "tossface";
-`;
-
-const NoResultContainer = styled.div`
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    height: 100vh;
-`;
-
-const NoResult = styled.h2`
-    font-family: "SUITEXTRABOLD";
-    padding: 20px;
-    display: flex;
-    align-items: center;
-`;
-
-const NoResultSearch = styled.p`
-    font-family: "SUITEXTRABOLD";
-    padding: 20px;
-    cursor: pointer;
-    color: blue;
-`;
+import * as S from "./SearchRecipe.styled";
+import RecipeCardSkeleton from "../components/SkeletonLoading/RecipeSkeleton";
 
 const SearchRecipe = () => {
     const navigate = useNavigate();
@@ -51,41 +20,48 @@ const SearchRecipe = () => {
     const recipesPerPage = 20;
     const [recipes, setRecipes] = useState([]);
     const [errorMessage, setErrorMessage] = useState(null);
-    const [totalCount, setTotalCount] = useState(0); // 총 레시피 수 상태 추가
-    const keyword = query.get("keyword") || ""; // 검색 키워드 변수 추가
+    const [totalCount, setTotalCount] = useState(0);
+    const [loading, setLoading] = useState(true);
+    const keyword = query.get("keyword") || "";
 
     useEffect(() => {
         const loadRecipes = async () => {
+            setLoading(true);
             let data;
             const page = parseInt(query.get("page")) || 0;
 
-            if (keyword) {
-                data = await searchRecipes(keyword);
-            } else {
-                data = await fetchRecipes(page, recipesPerPage);
-            }
+            try {
+                if (keyword) {
+                    data = await searchRecipes(keyword);
+                } else {
+                    data = await fetchRecipes(page, recipesPerPage);
+                }
 
-            if (data && Array.isArray(data.recipeList)) {
-                setRecipes(data.recipeList);
-                setTotalCount(data.count);
-                setErrorMessage(null);
-            } else {
-                const message = data;
-                setRecipes([]);
-                setErrorMessage(message);
+                if (data && Array.isArray(data.recipeList)) {
+                    setRecipes(data.recipeList);
+                    setTotalCount(data.count);
+                    setErrorMessage(null);
+                } else {
+                    const message = data;
+                    setRecipes([]);
+                    setErrorMessage(message);
+                }
+                // eslint-disable-next-line no-unused-vars
+            } catch (error) {
+                setErrorMessage("레시피를 불러오는데 실패했습니다.");
+            } finally {
+                setLoading(false);
             }
         };
 
         loadRecipes();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [location.search, keyword]);
+    }, [location.search, keyword, recipesPerPage]);
 
-    // 인기 레시피 로직
     const popularRecipes = [...recipes]
         .sort((a, b) => b.likeCount - a.likeCount)
         .slice(0, 4);
 
-    // 정렬 로직
     const sortedRecipes = [...recipes].sort((a, b) => {
         switch (sortOrder) {
             case "최신순":
@@ -110,48 +86,64 @@ const SearchRecipe = () => {
         }
     };
 
+    const handleSearch = (term) => {
+        setCurrentPage(0);
+        navigate(`/search?keyword=${encodeURIComponent(term)}&page=0`);
+    };
+
     return (
-        <div>
+        <S.Container>
             <SearchBar
                 userId="yourUserId"
                 purpose="recipeSearch"
                 boldPlacehold="레시피 검색"
                 grayPlacehold="키워드를 입력하세요"
-                onSubmit={(term) => {
-                    setCurrentPage(0); // 페이지를 0으로 설정
-                    navigate(`/search?keyword=${term}&page=0`); // 페이지를 0으로 설정
-                }}
+                onSubmit={handleSearch}
             />
 
-            {paginatedRecipes.length === 0 ? (
-                <NoResultContainer>
-                    <NoResult>
-                        <Emoji>😥</Emoji>
-                        검색 결과가 없습니다.
-                    </NoResult>
-                    <NoResult>
-                        혹시 이걸 찾으시나요?
-                        <NoResultSearch onClick={handleNoResultClick}>
-                            {errorMessage && <div>{errorMessage}</div>}
-                        </NoResultSearch>
-                    </NoResult>
-                </NoResultContainer>
+            {loading ? (
+                <RecipeCardSkeleton />
+            ) : paginatedRecipes.length === 0 ? (
+                <S.NoResultContainer>
+                    <S.NoResult>
+                        <S.Emoji>😥</S.Emoji>
+                        검색 결과가 없습니다
+                    </S.NoResult>
+                    {errorMessage && (
+                        <S.NoResult>
+                            혹시 이걸 찾으시나요?
+                            <S.NoResultSearch onClick={handleNoResultClick}>
+                                {errorMessage}
+                            </S.NoResultSearch>
+                        </S.NoResult>
+                    )}
+                </S.NoResultContainer>
             ) : (
-                <div>
-                    <PopularRecipe>
-                        <Emoji>🔥</Emoji> {keyword} 인기 레시피
-                    </PopularRecipe>
-                    <RecipeCardList recipes={popularRecipes} />
+                <>
+                    {keyword && (
+                        <>
+                            <S.PopularRecipe>
+                                <S.Emoji>🔥</S.Emoji> {keyword} 인기 레시피
+                            </S.PopularRecipe>
+                            <RecipeCardList
+                                recipes={popularRecipes}
+                                showProfile={true}
+                            />
+                        </>
+                    )}
 
                     <SortSelector
                         sortOrder={sortOrder}
                         onSortChange={(order) => {
                             setSortOrder(order);
-                            setCurrentPage(0); // 페이지를 0으로 리셋
+                            setCurrentPage(0);
                         }}
                     />
 
-                    <RecipeCardList recipes={paginatedRecipes} />
+                    <RecipeCardList
+                        recipes={paginatedRecipes}
+                        showProfile={true}
+                    />
 
                     {Math.ceil(totalCount / recipesPerPage) > 1 && (
                         <Pagination
@@ -159,15 +151,15 @@ const SearchRecipe = () => {
                             onPageChange={({ selected }) => {
                                 setCurrentPage(selected);
                                 navigate(
-                                    `/search?keyword=${keyword}&page=${selected}`,
+                                    `/search?keyword=${encodeURIComponent(keyword)}&page=${selected}`,
                                 );
                             }}
                             currentPage={currentPage}
                         />
                     )}
-                </div>
+                </>
             )}
-        </div>
+        </S.Container>
     );
 };
 

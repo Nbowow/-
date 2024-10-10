@@ -7,7 +7,6 @@ export const fetchRecipes = async (pageNumber, pageSize) => {
     const response = await axios.get(
         `${BASE_URL}/recipe?pageSize=${pageSize}&pageNumber=${pageNumber}`,
     );
-
     return response.data;
 };
 
@@ -16,6 +15,41 @@ export const searchRecipes = async (searchTerm) => {
         `${BASE_URL}/recipe/search?keyword=${searchTerm}`,
     );
     return response.data;
+};
+
+export const filterRecipes = async (
+    type,
+    situation,
+    ingredient,
+    method,
+    pageNumber,
+    pageSize,
+) => {
+    const params = new URLSearchParams();
+
+    if (type) {
+        params.append("B", type);
+    }
+    if (situation) {
+        params.append("C", situation);
+    }
+    if (ingredient) {
+        params.append("D", ingredient);
+    }
+    if (method) {
+        params.append("E", method);
+    }
+
+    // 페이지 정보 추가
+    params.append("pageNumber", pageNumber + 1); // API에서 1부터 시작하므로 +1
+    params.append("pageSize", pageSize); // 페이지 사이즈
+
+    const response = await axios.get(
+        `${BASE_URL}/recipe/category?${params.toString()}`,
+    );
+    const data = response.data.recipes;
+    const totalCount = response.data.totalCount;
+    return { data, totalCount };
 };
 
 // 레시피 등록
