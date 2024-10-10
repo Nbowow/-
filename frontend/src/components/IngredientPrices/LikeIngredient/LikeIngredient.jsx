@@ -22,25 +22,31 @@ const IngredientLike = ({ ingredients, onClick, onLike }) => {
     };
     return (
         <S.Wrapper>
-            {ingredients.map((ingredient, idx) => {
-                return (
-                    <S.Info
-                        onClick={() => handleClick(idx)}
-                        key={ingredient.id}
-                        isSelected={selectedIndex === idx}
-                    >
-                        <S.Remove
-                            onClick={(event) => handleRemove(event, ingredient)}
+            {ingredients &&
+                ingredients.map((ingredient, idx) => {
+                    return (
+                        <S.Info
+                            onClick={() => handleClick(idx)}
+                            key={ingredient.id}
+                            isSelected={selectedIndex === idx}
                         >
-                            ✖
-                        </S.Remove>
-                        <S.Img
-                            src={ingredient.ingredientImage || placeholderImage}
-                        />
-                        <S.Name>{ingredient.name}</S.Name>
-                    </S.Info>
-                );
-            })}
+                            <S.Remove
+                                onClick={(event) =>
+                                    handleRemove(event, ingredient)
+                                }
+                            >
+                                ✖
+                            </S.Remove>
+                            <S.Img
+                                src={
+                                    ingredient.ingredientImage ||
+                                    placeholderImage
+                                }
+                            />
+                            <S.Name>{ingredient.name}</S.Name>
+                        </S.Info>
+                    );
+                })}
         </S.Wrapper>
     );
 };
