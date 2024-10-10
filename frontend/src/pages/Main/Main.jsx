@@ -7,7 +7,11 @@ import * as S from "./Main.styled";
 import { useNavigate } from "react-router-dom";
 import FloatingButton from "../../components/Button/FloatingButton";
 import { useAuthStore } from "../../store/userStore";
-import { useRecommend, useRecommendCommon } from "../../hooks/useRecipe";
+import {
+    useRecommend,
+    useRecommendCommon,
+    useRecommendSeason,
+} from "../../hooks/useRecipe";
 
 const Main = () => {
     const navigate = useNavigate();
@@ -15,8 +19,10 @@ const Main = () => {
 
     const { data: common, isLoading: commonIsLoading } = useRecommendCommon();
     const { data: user, isLoading: recommendIsLoading } = useRecommend();
+    const { data: season, isLoading: seasonIsLoading } = useRecommendSeason();
 
-    if (commonIsLoading || recommendIsLoading) return <div></div>;
+    if (commonIsLoading || recommendIsLoading || seasonIsLoading)
+        return <div></div>;
 
     const recommendRecipes = isLoggedIn ? user : common;
 
@@ -42,6 +48,13 @@ const Main = () => {
                     message={recommendRecipes.message}
                     color={({ theme }) => theme.color.point.green}
                     data={recommendRecipes.recipes}
+                />
+            </div>
+            <div>
+                <CardSlider
+                    color={({ theme }) => theme.color.point.yellow}
+                    message={season.message}
+                    data={season.recipes}
                 />
             </div>
 

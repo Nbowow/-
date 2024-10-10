@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
     fetchRecommend,
     fetchRecommendCommon,
+    fetchRecommendSeason,
     getComments,
     getReviews,
     postComment,
@@ -38,6 +39,13 @@ export const useRecommendCommon = () => {
     return useQuery({
         queryKey: ["recommendCommon"],
         queryFn: fetchRecommendCommon,
+    });
+};
+
+export const useRecommendSeason = () => {
+    return useQuery({
+        queryKey: ["recommendSeason"],
+        queryFn: fetchRecommendSeason,
     });
 };
 
