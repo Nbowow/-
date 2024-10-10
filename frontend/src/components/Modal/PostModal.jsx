@@ -22,12 +22,6 @@ const PostModal = ({ message, onClose, onConfirm, isError }) => {
                             <CloseButton onClick={onConfirm} isError={false}>
                                 확인
                             </CloseButton>
-                            <CloseButton
-                                onClick={onClose}
-                                style={{ backgroundColor: "#AAAAAA" }}
-                            >
-                                취소
-                            </CloseButton>
                         </>
                     )}
                 </ButtonContainer>

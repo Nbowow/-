@@ -28,12 +28,6 @@ export const postRecipe = async (formData) => {
     return response.data;
 };
 
-// 레시피 수정
-export const patchRecipe = async (id, recipeData) => {
-    const response = await axiosInstance.patch(`/recipe/${id}`, recipeData);
-    return response.data;
-};
-
 //레시피 삭제
 export const deleteRecipe = async (id) => {
     const response = await axiosInstance.delete(`/recipe/${id}`);

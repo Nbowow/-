@@ -154,7 +154,7 @@ const PostRecipe = () => {
             if (response) {
                 setModalMessage(
                     <>
-                        <Emoji>🍳</Emoji>레시피를 등록하시겠습니까?
+                        <Emoji>🍳</Emoji>레시피가 등록되었습니다!
                     </>,
                 );
                 setIsModalOpen(true);
