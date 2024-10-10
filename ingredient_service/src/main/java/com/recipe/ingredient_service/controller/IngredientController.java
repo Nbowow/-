@@ -66,7 +66,7 @@ public class IngredientController {
         return ResponseEntity.status(HttpStatus.OK).body(ingredientService.findAllIngredientPriceData());
     }
 
-    @GetMapping
+    @GetMapping("")
     public ResponseEntity<IngredientPriceDetailsResponseDto> getIngredientAllDayPrice(@RequestParam("id") Long ingredientId) {
         return ResponseEntity.status(HttpStatus.OK).body(ingredientService.findAllDayIngredientPriceData(ingredientId));
     }
