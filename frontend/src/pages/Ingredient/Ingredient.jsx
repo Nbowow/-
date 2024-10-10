@@ -55,6 +55,16 @@ const Ingredient = () => {
         setSearchTerm(term);
     };
 
+    const handlePriceClick = async (term) => {
+        const result = await getSearchIngredient(term);
+        setSearchResult(result);
+        setSearchTerm(term);
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth",
+        });
+    };
+
     return (
         <>
             <S.Container>
@@ -102,7 +112,7 @@ const Ingredient = () => {
                     />
                     <S.Live>
                         <Title title={"실시간 물가 변동"} />
-                        <PriceSlider />
+                        <PriceSlider handleClick={handlePriceClick} />
                     </S.Live>
                 </S.RecommendSection>
             </S.Container>

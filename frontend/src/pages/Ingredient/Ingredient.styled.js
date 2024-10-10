@@ -8,7 +8,7 @@ export const RecommendSection = styled.div`
     border-radius: ${({ theme }) => theme.borderRadius.medium};
     padding: ${({ theme }) => theme.spacing.large};
     height: auto;
-    margin-top: 3rem;
+    margin-top: 2rem;
 `;
 
 export const Hot = styled.div`

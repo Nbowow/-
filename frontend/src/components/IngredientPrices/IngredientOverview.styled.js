@@ -16,7 +16,7 @@ export const IngredientLikeSection = styled.div`
     width: 70%;
     border-radius: ${({ theme }) => theme.borderRadius.medium};
     padding: ${({ theme }) => theme.spacing.large};
-    height: 25rem;
+    height: 22rem;
     animation: ${fadeIn} 1s ease-in-out;
 `;
 
@@ -27,7 +27,7 @@ export const Wrapper = styled.div`
 
 export const TabWrapper = styled.div`
     ${flexStartStyle}
-    width: 40%;
+    width: 50%;
     margin-top: -4rem;
 `;
 

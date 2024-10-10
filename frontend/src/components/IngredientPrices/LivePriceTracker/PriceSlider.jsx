@@ -1,6 +1,6 @@
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Autoplay, Pagination, Scrollbar } from "swiper/modules";
-
+import PropTypes from "prop-types";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
@@ -10,12 +10,19 @@ import LivePriceTracker from "./LivePriceTracker";
 import { useEffect, useState } from "react";
 import { getIngredientPriceChange } from "../../../api/ingredientApi";
 
-const PriceSlider = () => {
+const PriceSlider = ({ handleClick }) => {
+    const shuffleArray = (array) => {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+    };
     const [changePrice, setChangePrice] = useState(null);
     useEffect(() => {
         const fetchPrice = async () => {
             const data = await getIngredientPriceChange();
-            setChangePrice(data);
+            setChangePrice(shuffleArray(data));
         };
         fetchPrice();
     }, []);
@@ -40,7 +47,10 @@ const PriceSlider = () => {
                 >
                     {changePrice.map((ingredient, index) => (
                         <SwiperSlide key={index} style={{ height: "100%" }}>
-                            <LivePriceTracker ingredient={ingredient} />
+                            <LivePriceTracker
+                                ingredient={ingredient}
+                                handleClick={handleClick}
+                            />
                         </SwiperSlide>
                     ))}
                 </Swiper>
@@ -48,5 +58,8 @@ const PriceSlider = () => {
         </div>
     );
 };
-
+PriceSlider.propTypes = {
+    ingredient: PropTypes.object.isRequired,
+    handleClick: PropTypes.func.isRequired,
+};
 export default PriceSlider;
