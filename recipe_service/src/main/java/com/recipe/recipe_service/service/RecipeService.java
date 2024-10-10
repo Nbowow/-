@@ -269,6 +269,7 @@ public class RecipeService {
                         recipe.getScrapCount(),
                         recipe.getCommentCount()
                 ))
+                .limit(1000) // 레시피 1000개 조회 제한
                 .collect(Collectors.toList());
     }
 
