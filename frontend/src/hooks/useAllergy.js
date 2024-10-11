@@ -9,9 +9,10 @@ export const useAllergyList = () => {
     });
 };
 
-export const useUserAllergyList = () => {
+export const useUserAllergyList = (isLoggedIn) => {
     return useQuery({
         queryKey: ["userAllergyList"],
         queryFn: fetchUserAllergyList,
+        enabled: isLoggedIn,
     });
 };
