@@ -115,7 +115,7 @@ public class IngredientController {
     }
 
     @GetMapping("/like")
-    public ResponseEntity<List<Ingredient>> findUserLikeIngredientList(@RequestHeader("Authorization") String authorization) {
+    public ResponseEntity<List<IngredientUserLikeDto>> findUserLikeIngredientList(@RequestHeader("Authorization") String authorization) {
         Long userId = userServiceClient.getUserId(authorization);
         return ResponseEntity.status(HttpStatus.OK).body(ingredientService.findUserLikeIngredients(userId));
     }
