@@ -273,42 +273,28 @@ public class IngredientService {
         List<Object[]> monthlyAverages = dayPriceRepository.findMonthlyAveragePriceInPast(ingredientId, today);
 
         List<DayDto> monthlyAveragePriceList = new ArrayList<>();
+        Map<Integer, BigDecimal> monthPriceMap = new HashMap<>(); // 월별 가격 매핑
+
         if (monthlyAverages != null && !monthlyAverages.isEmpty()) {
-            AtomicReference<BigDecimal> closestMonthPrice = new AtomicReference<>(null);  // 최근 월간 데이터를 저장할 변수
-            for (int i = 0; i < 12; i++) {
-                final int currentMonthOffset = i;
-                DayDto monthPriceDto = monthlyAverages.stream()
-                        .map(result -> {
-                            int monthNum = (int) result[0];
-                            BigDecimal avgPrice = (BigDecimal) result[1];
-
-                            int currentMonthNum = today.getMonthValue();
-                            int monthsAgo = currentMonthNum - monthNum;
-
-                            if (monthsAgo < 0) {
-                                monthsAgo += 12; // 월간 데이터는 12개월 기준으로 처리
-                            }
-
-                            if (monthsAgo == currentMonthOffset && avgPrice != null && avgPrice.intValue() != 0) {
-                                closestMonthPrice.set(avgPrice);  // AtomicReference를 통해 최근 월간 데이터를 저장
-                            }
-
-                            return closestMonthPrice.get() != null ? new DayDto(currentMonthOffset + 1, closestMonthPrice.get().intValue()) : null;
-                        })
-                        .filter(Objects::nonNull)  // null이 아닌 값만 필터링
-                        .findFirst()
-                        .orElse(new DayDto(currentMonthOffset + 1, closestMonthPrice.get() != null ? closestMonthPrice.get().intValue() : 0)); // 최근 값 유지
-
-                monthlyAveragePriceList.add(monthPriceDto); // 리스트에 추가
+            // 월별 데이터 매핑
+            for (Object[] result : monthlyAverages) {
+                int monthNum = (int) result[0];
+                BigDecimal avgPrice = (BigDecimal) result[1];
+                monthPriceMap.put(monthNum, avgPrice);
             }
-        } else {
-            // 월간 데이터가 없을 경우 최근 값 유지하며 12개월 데이터를 추가
-            AtomicReference<BigDecimal> closestMonthPrice = new AtomicReference<>(null);  // 최근 값 저장
+
             for (int i = 0; i < 12; i++) {
-                monthlyAveragePriceList.add(new DayDto(i + 1, closestMonthPrice.get() != null ? closestMonthPrice.get().intValue() : 0));
+                int targetMonth = today.minusMonths(i).getMonthValue();
+                BigDecimal price = monthPriceMap.get(targetMonth);
+                int monthsAgo = i + 1;
+
+                if (price != null && price.intValue() != 0) {
+                    monthlyAveragePriceList.add(new DayDto(monthsAgo, price.intValue()));
+                } else {
+                    monthlyAveragePriceList.add(new DayDto(monthsAgo, 0)); // 데이터가 없으면 0
+                }
             }
         }
-
         return monthlyAveragePriceList;
     }
 
@@ -317,40 +303,26 @@ public class IngredientService {
         List<Object[]> weeklyAverages = dayPriceRepository.findWeeklyAveragePriceInPast(ingredientId, today);
 
         List<DayDto> weeklyAveragePriceList = new ArrayList<>();
+        Map<Integer, BigDecimal> weekPriceMap = new HashMap<>(); // 주별 가격 매핑
 
         if (weeklyAverages != null && !weeklyAverages.isEmpty()) {
-            AtomicReference<BigDecimal> closestWeekPrice = new AtomicReference<>(null);  // 최근 주간 데이터를 저장할 변수
-            for (int i = 0; i < 12; i++) {
-                final int currentWeekOffset = i;
-                DayDto weekPriceDto = weeklyAverages.stream()
-                        .map(result -> {
-                            int weekNum = (int) result[0];
-                            BigDecimal avgPrice = (BigDecimal) result[1];
-
-                            int currentWeekNum = today.get(ChronoField.ALIGNED_WEEK_OF_YEAR);
-                            int weeksAgo = currentWeekNum - weekNum;
-
-                            if (weeksAgo < 0) {
-                                weeksAgo += 52; // 주간 데이터는 52주로 나누어 처리
-                            }
-
-                            if (weeksAgo == currentWeekOffset && avgPrice != null && avgPrice.intValue() != 0) {
-                                closestWeekPrice.set(avgPrice);  // AtomicReference를 통해 최근 주간 데이터를 저장
-                            }
-
-                            return closestWeekPrice.get() != null ? new DayDto(currentWeekOffset + 1, closestWeekPrice.get().intValue()) : null;
-                        })
-                        .filter(Objects::nonNull)  // null이 아닌 값만 필터링
-                        .findFirst()
-                        .orElse(new DayDto(currentWeekOffset + 1, closestWeekPrice.get() != null ? closestWeekPrice.get().intValue() : 0)); // 최근 값 유지
-
-                weeklyAveragePriceList.add(weekPriceDto); // 리스트에 추가
+            // 주별 데이터 매핑
+            for (Object[] result : weeklyAverages) {
+                int weekNum = (int) result[0];
+                BigDecimal avgPrice = (BigDecimal) result[1];
+                weekPriceMap.put(weekNum, avgPrice);
             }
-        } else {
-            // 주간 데이터가 없을 경우 최근 값 유지하며 12주 데이터를 추가
-            AtomicReference<BigDecimal> closestWeekPrice = new AtomicReference<>(null);  // 최근 값 저장
+
             for (int i = 0; i < 12; i++) {
-                weeklyAveragePriceList.add(new DayDto(i + 1, closestWeekPrice.get() != null ? closestWeekPrice.get().intValue() : 0));
+                int targetWeek = today.minusWeeks(i).get(ChronoField.ALIGNED_WEEK_OF_YEAR);
+                BigDecimal price = weekPriceMap.get(targetWeek);
+                int weeksAgo = i + 1;
+
+                if (price != null && price.intValue() != 0) {
+                    weeklyAveragePriceList.add(new DayDto(weeksAgo, price.intValue()));
+                } else {
+                    weeklyAveragePriceList.add(new DayDto(weeksAgo, 0)); // 데이터가 없으면 0
+                }
             }
         }
 
@@ -363,31 +335,23 @@ public class IngredientService {
         List<DayPrice> findTopDayIngredientPrice = dayPriceRepository.findRecentDays(ingredientId, today, pageable);
 
         List<DayDto> dayPriceList = new ArrayList<>();
-        LocalDateTime currentDate = today;
+        Map<LocalDateTime, Integer> dayPriceMap = new HashMap<>();
 
-        DayPrice closestDayPrice = findTopDayIngredientPrice.isEmpty() ? null : findTopDayIngredientPrice.get(0);
+        // 일간 데이터 매핑
+        for (DayPrice dayPrice : findTopDayIngredientPrice) {
+            dayPriceMap.put(dayPrice.getDay(), dayPrice.getPrice());
+        }
 
         for (int i = 0; i < 12; i++) {
-            LocalDateTime finalCurrentDate = currentDate;
+            LocalDateTime currentDate = today.minusDays(i);
+            Integer price = dayPriceMap.get(currentDate);
+            int daysAgo = i + 1;
 
-            DayPrice currentDayPrice = findTopDayIngredientPrice.stream()
-                    .filter(dp -> dp.getDay().toLocalDate().equals(finalCurrentDate.toLocalDate()))
-                    .findFirst()
-                    .orElse(null);
-
-            if (currentDayPrice != null && currentDayPrice.getPrice() != 0) {
-                closestDayPrice = currentDayPrice;
-            }
-
-            if (closestDayPrice != null) {
-                int daysAgo = i + 1;
-                dayPriceList.add(new DayDto(daysAgo, closestDayPrice.getPrice()));
+            if (price != null && price != 0) {
+                dayPriceList.add(new DayDto(daysAgo, price));
             } else {
-                // 데이터가 없을 경우 null로 처리
-                dayPriceList.add(new DayDto(i + 1, 0));
+                dayPriceList.add(new DayDto(daysAgo, 0)); // 데이터가 없으면 0
             }
-
-            currentDate = currentDate.minusDays(1);
         }
 
         return dayPriceList;
@@ -428,7 +392,7 @@ public class IngredientService {
 
         boolean isAlreadyLiked = userLikeMaterialsRepository.existsByUserIdAndIngredientId(userId, ingredientId);
         if (isAlreadyLiked) {
-                throw new AlreadyLikedException();
+            throw new AlreadyLikedException();
         }
         UserLikeMaterials newLike = UserLikeMaterials.builder()
                 .userId(userId)
@@ -444,9 +408,26 @@ public class IngredientService {
         userLikeMaterialsRepository.deleteByUserIdAndIngredientId(userId, ingredientId);
     }
 
-    public List<Ingredient> findUserLikeIngredients(Long userId) {
+    public List<IngredientUserLikeDto> findUserLikeIngredients(Long userId) {
         List<Long> ingredientList = userLikeMaterialsRepository.findIngredientIdsByUserId(userId);
-        return ingredientRepository.findByIds(ingredientList);
+
+        return ingredientRepository.findByIds(ingredientList)
+                .stream().map(ingredient -> {
+                    Pageable pageable = PageRequest.of(0, 1);
+                    List<DayPrice> recentDays = dayPriceRepository.findRecentDays(ingredient.getId(), LocalDateTime.now(), pageable);
+
+                    int price = recentDays.isEmpty() ? 0 : recentDays.get(0).getPrice();
+                    
+                    return new IngredientUserLikeDto(
+                            ingredient.getId(),
+                            ingredient.getName(),
+                            ingredient.isPriceStatus(),
+                            ingredient.getIngredientImage(),
+                            ingredient.getAllergyNum(),
+                            price
+                    );
+                })
+                .collect(Collectors.toList());
     }
 
     public Ingredient addIngredient(String name) {

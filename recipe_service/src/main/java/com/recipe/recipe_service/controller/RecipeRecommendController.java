@@ -89,10 +89,17 @@ public class RecipeRecommendController {
     @GetMapping("/recommend/season")
     public ResponseEntity<RecipeRecommendResponseWrapperDto> getSeasonRecommendations() {
         // 고정된 recipe_id 목록
-        List<Long> recipeIds = List.of(1L, 12L, 14L, 15L, 16L, 17L, 18L, 20L, 21L,
-                24L, 25L, 26L, 27L, 28L, 29L, 30L, 32L, 33L,
-                34L, 37L, 38L, 39L, 40L, 41L, 43L, 44L, 45L,
-                47L, 50L, 51L);
+        List<Long> recipeIds = List.of(
+                250122L, 250123L, 250125L, 250126L, 250127L, 250128L, 250129L,
+                250130L, 250131L, 250133L, 250134L, 250135L, 250136L, 250137L,
+                250138L, 250139L, 250141L, 250142L, 250143L, 250145L
+//                250146L,
+//                250148L, 250149L, 250150L, 250151L, 250152L, 250153L, 250154L,
+//                250155L, 250156L, 250157L, 250158L, 250159L, 250160L, 250161L,
+//                250162L, 250163L, 250165L, 250166L, 250167L, 250168L, 250169L,
+//                250170L, 250171L, 250172L, 250173L, 250174L, 250175L, 250176L,
+//                250177L, 250178L, 250179L, 250180L, 250181L
+        );
 
         // 해당 레시피 ID 목록을 기반으로 레시피 가져오기
         List<RecipeRecommendResponseDto> recommendedRecipes = recipeRecommendService.getRecipesByIds(recipeIds);
