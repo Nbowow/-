@@ -4,9 +4,9 @@ import Category from "../components/Category/Category";
 import Pagination from "../components/Pagination/Pagination";
 import RecipeCardList from "../components/CardList/RecipeCardList";
 import RecipeCardSkeleton from "../components/SkeletonLoading/RecipeSkeleton";
-import { fetchRecipes, filterRecipes } from "../api/recipe";
 import SearchBar from "../components/SearchBar/SearchBar";
 import * as S from "./Reicpe.styled";
+import { filterRecipes, fetchRecipes } from "./../api/recipe";
 
 const Recipe = () => {
     const navigate = useNavigate();

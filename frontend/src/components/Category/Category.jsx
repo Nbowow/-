@@ -6,7 +6,6 @@ import {
     Container,
 } from "./Category.styled";
 import PropTypes from "prop-types";
-import { useRecipeStore } from "./../../store/recipeStore";
 import { useEffect, useState } from "react";
 import { CATEGORY_TYPES, fetchCategories } from "../../api/category";
 
@@ -15,6 +14,10 @@ const CategoryComponent = ({
     onSituationSelect,
     onIngredientsSelect,
     onMethodSelect,
+    selectedType = "B_0001",
+    selectedSituation = "C_0001",
+    selectedIngredients = "D_0001",
+    selectedMethod = "E_0001",
 }) => {
     const [categories, setCategories] = useState({
         [CATEGORY_TYPES.TYPE]: [],
@@ -22,26 +25,6 @@ const CategoryComponent = ({
         [CATEGORY_TYPES.INGREDIENT]: [],
         [CATEGORY_TYPES.METHOD]: [],
     });
-
-    const {
-        selectedType,
-        selectedSituation,
-        selectedIngredients,
-        selectedMethod,
-        setSelectedType,
-        setSelectedSituation,
-        setSelectedIngredients,
-        setSelectedMethod,
-    } = useRecipeStore((state) => ({
-        selectedType: state.selectedType,
-        selectedSituation: state.selectedSituation,
-        selectedIngredients: state.selectedIngredients,
-        selectedMethod: state.selectedMethod,
-        setSelectedType: state.setSelectedType,
-        setSelectedSituation: state.setSelectedSituation,
-        setSelectedIngredients: state.setSelectedIngredients,
-        setSelectedMethod: state.setSelectedMethod,
-    }));
 
     useEffect(() => {
         const getCategories = async () => {
@@ -52,19 +35,37 @@ const CategoryComponent = ({
     }, []);
 
     const handleCategoryClick = (category, item) => {
-        // 전체 항목을 선택할 수 있도록 수정
         if (category === CATEGORY_TYPES.TYPE) {
-            setSelectedType(item.num);
             onTypeSelect(item.num);
         } else if (category === CATEGORY_TYPES.SITUATION) {
-            setSelectedSituation(item.num);
             onSituationSelect(item.num);
         } else if (category === CATEGORY_TYPES.INGREDIENT) {
-            setSelectedIngredients(item.num);
             onIngredientsSelect(item.num);
         } else if (category === CATEGORY_TYPES.METHOD) {
-            setSelectedMethod(item.num);
             onMethodSelect(item.num);
+        }
+    };
+
+    const isItemSelected = (categoryKey, itemNum) => {
+        switch (categoryKey) {
+            case CATEGORY_TYPES.TYPE:
+                return !selectedType || selectedType === "B_0001"
+                    ? itemNum === "B_0001"
+                    : selectedType === itemNum;
+            case CATEGORY_TYPES.SITUATION:
+                return !selectedSituation || selectedSituation === "C_0001"
+                    ? itemNum === "C_0001"
+                    : selectedSituation === itemNum;
+            case CATEGORY_TYPES.INGREDIENT:
+                return !selectedIngredients || selectedIngredients === "D_0001"
+                    ? itemNum === "D_0001"
+                    : selectedIngredients === itemNum;
+            case CATEGORY_TYPES.METHOD:
+                return !selectedMethod || selectedMethod === "E_0001"
+                    ? itemNum === "E_0001"
+                    : selectedMethod === itemNum;
+            default:
+                return false;
         }
     };
 
@@ -83,19 +84,10 @@ const CategoryComponent = ({
                                 }}
                             >
                                 <CategoryItem
-                                    selected={
-                                        (categoryKey === CATEGORY_TYPES.TYPE &&
-                                            selectedType === item.num) ||
-                                        (categoryKey ===
-                                            CATEGORY_TYPES.SITUATION &&
-                                            selectedSituation === item.num) ||
-                                        (categoryKey ===
-                                            CATEGORY_TYPES.INGREDIENT &&
-                                            selectedIngredients === item.num) ||
-                                        (categoryKey ===
-                                            CATEGORY_TYPES.METHOD &&
-                                            selectedMethod === item.num)
-                                    }
+                                    selected={isItemSelected(
+                                        categoryKey,
+                                        item.num,
+                                    )}
                                     onClick={() =>
                                         handleCategoryClick(categoryKey, item)
                                     }
@@ -119,6 +111,10 @@ CategoryComponent.propTypes = {
     onSituationSelect: PropTypes.func.isRequired,
     onIngredientsSelect: PropTypes.func.isRequired,
     onMethodSelect: PropTypes.func.isRequired,
+    selectedType: PropTypes.string,
+    selectedSituation: PropTypes.string,
+    selectedIngredients: PropTypes.string,
+    selectedMethod: PropTypes.string,
 };
 
 export default CategoryComponent;

@@ -32,6 +32,15 @@ export const useRecommend = () => {
     return useQuery({
         queryKey: ["recommendRecipe"],
         queryFn: fetchRecommend,
+        retry: (failureCount, error) => {
+            if (
+                error.response.status === 400 ||
+                error.response.status === 401
+            ) {
+                return false;
+            }
+            return failureCount < 1;
+        },
     });
 };
 

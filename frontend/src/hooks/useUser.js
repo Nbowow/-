@@ -27,6 +27,10 @@ const useUser = () => {
         queryFn: fetchUser,
         select: (data) => setUser(data),
         staleTime: 30_000,
+        retry: (failureCount, error) => {
+            if (error.response.status === 401) return false;
+            return failureCount < 1;
+        },
     });
 };
 
