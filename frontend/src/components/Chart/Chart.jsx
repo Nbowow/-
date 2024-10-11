@@ -11,8 +11,6 @@ import {
     Legend,
 } from "chart.js";
 import PropTypes from "prop-types";
-import { useTheme } from "styled-components";
-import { lineConfig } from "../../util/get-chart-config";
 
 ChartJS.register(
     CategoryScale,
@@ -25,20 +23,13 @@ ChartJS.register(
     Filler,
 );
 
-const Chart = ({ labels, data, options }) => {
-    const {
-        color: {
-            point: { green },
-        },
-    } = useTheme();
-    const chartConfig = lineConfig(green);
-
+const Chart = ({ labels, data, options, config }) => {
     const chartData = {
         labels,
         datasets: [
             {
                 data: data,
-                ...chartConfig,
+                ...config,
             },
         ],
     };
@@ -50,5 +41,6 @@ Chart.propTypes = {
     labels: PropTypes.array.isRequired,
     data: PropTypes.array.isRequired,
     options: PropTypes.object.isRequired,
+    config: PropTypes.object.isRequired,
 };
 export default Chart;

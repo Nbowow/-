@@ -1,10 +1,13 @@
 import styled from "styled-components";
-import { flexAlignEndStyle, flexBetweenStyle } from "../../../styles/common";
+import {
+    flexAlignEndStyle,
+    flexBetweenStyle,
+    flexStartStyle,
+} from "../../../styles/common";
 
 export const RecipeHeaderContainer = styled.div`
-    width: 80%;
-    height: 10rem;
-
+    width: 90%;
+    margin: 1rem;
     padding: 1rem;
 `;
 
@@ -17,17 +20,24 @@ export const TopSection = styled.div`
 export const Title = styled.div`
     ${flexAlignEndStyle}
     height: 100%;
+    font-size: ${({ theme }) => theme.fontSize.h3};
+    font-family: ${({ theme }) => theme.fontWeight.semiBold};
+    flex-wrap: wrap;
+    max-width: 90%;
+    overflow: hidden;
+    letter-spacing: 0.09rem;
+    line-height: 2rem;
 
-    font-size: ${({ theme }) => theme.fontSize.h1};
-    font-family: ${({ theme }) => theme.fontWeight.bold};
+    @media (max-width: 600px) {
+        font-size: ${({ theme }) => theme.fontSize.h4};
+    }
 `;
-
 export const TagWrapper = styled.div`
-    ${flexAlignEndStyle}
+    ${flexStartStyle}
     height: 100%;
 
     gap: ${({ theme }) => theme.spacing.medium};
-    margin-left: ${({ theme }) => theme.spacing.medium};
+    margin: ${({ theme }) => theme.spacing.medium} 0;
 `;
 
 export const RecipeStats = styled.div`
@@ -36,8 +46,10 @@ export const RecipeStats = styled.div`
 `;
 
 export const RecipeDescription = styled.div`
-    font-size: ${({ theme }) => theme.fontSize.h4};
-    font-family: ${({ theme }) => theme.fontWeight.semiBold};
+    font-size: ${({ theme }) => theme.fontSize.text};
+    font-family: ${({ theme }) => theme.fontWeight.medium};
     color: ${({ theme }) => theme.color.gray.darkest};
-    margin-top: 1rem;
+    line-height: 1.3rem;
+    letter-spacing: 0.05rem;
+    margin-top: 0.3rem;
 `;

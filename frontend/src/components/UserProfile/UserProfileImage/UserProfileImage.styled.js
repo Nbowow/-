@@ -15,5 +15,6 @@ export const ProfileImageIcon = styled.img`
     height: ${({ size }) => size};
     border-radius: 50%;
     object-fit: cover;
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.08);
     object-position: center;
 `;

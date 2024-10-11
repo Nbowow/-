@@ -15,7 +15,7 @@ const ReviewRating = ({ rating }) => {
                         initialValue={avg}
                         readonly
                         allowFraction
-                        size={20}
+                        size={15}
                     />
                 </S.RatingWrapper>
                 <S.BarWrapper>

@@ -1,45 +1,33 @@
-import { useState } from "react";
 import PropTypes from "prop-types";
 import Comment from "./Comment";
-import CommentReply from "./CommentReply";
 import CommentInput from "./CommentInput";
 import * as S from "./Comment.styled";
-function Comments({ comments: initialComments }) {
-    const [showReplies, setShowReplies] = useState({});
-    const [comments, setComments] = useState(initialComments);
+import { useComment } from "../../hooks/useRecipe";
+function Comments({ id }) {
+    const { data: comments = [], isLoading } = useComment(id);
 
-    const addComment = (newComment) => {
-        setComments((prevComments) => [...prevComments, newComment]);
-    };
-
-    const toggleReplies = (index) => {
-        setShowReplies((prev) => ({
-            ...prev,
-            [index]: !prev[index],
-        }));
-    };
-
+    if (isLoading) return <div></div>;
     return (
         <>
-            <CommentInput addFunc={addComment} />
-            {comments.map((comment, index) => (
-                <S.CommentsWrapper key={comment.id}>
-                    <Comment
-                        setShowReplies={() => toggleReplies(index)}
-                        isReply={false}
-                        comment={comment}
-                    />
-                    {showReplies[index] && comment.reply && (
-                        <CommentReply replies={comment.reply} />
-                    )}
-                </S.CommentsWrapper>
-            ))}
+            <S.CommentTitle>댓글 {comments.length}개</S.CommentTitle>
+            <S.CommentInputWrapper>
+                <CommentInput id={id} />
+            </S.CommentInputWrapper>
+            {!isLoading && comments.length > 0 && (
+                <>
+                    {comments.map((comment) => (
+                        <S.CommentsWrapper key={comment.id}>
+                            <Comment comment={comment} />
+                        </S.CommentsWrapper>
+                    ))}
+                </>
+            )}
         </>
     );
 }
 
 Comments.propTypes = {
-    comments: PropTypes.array.isRequired,
+    id: PropTypes.number.isRequired,
 };
 
 export default Comments;

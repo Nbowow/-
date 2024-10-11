@@ -2,8 +2,7 @@ import PropTypes from "prop-types";
 import { useState } from "react";
 import ReviewModal from "./ReviewModal";
 import Modal from "../../Modal/Modal";
-import Button from "../../Button/Button";
-
+import * as S from "./ReviewModal.styled";
 const ReviewModalButton = ({ reviews, recipe }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -17,7 +16,7 @@ const ReviewModalButton = ({ reviews, recipe }) => {
 
     return (
         <>
-            <Button text={"더보기"} onClick={onClick} />
+            <S.MoreReviews onClick={onClick}>더보기 {">"}</S.MoreReviews>
 
             {isModalOpen && (
                 <Modal

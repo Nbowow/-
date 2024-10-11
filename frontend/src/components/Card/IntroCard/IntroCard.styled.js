@@ -9,8 +9,10 @@ import {
 } from "../Card.styled";
 
 export const IntroCard = styled(BaseCard)`
+    margin: 20px;
     width: 17.25rem;
-    height: 22.438rem;
+    height: 300px;
+    background-color: white;
     border-radius: ${cardBorderRadius};
     box-shadow: 0px 0.25rem 1.25rem rgba(0, 0, 0, 0.2);
     cursor: pointer;
@@ -29,24 +31,30 @@ export const IntroCard = styled(BaseCard)`
 `;
 
 export const Thumnail = styled(BaseThumnail)`
-    height: 13.125rem;
+    height: 60%;
     border-top-left-radius: ${cardBorderRadius};
     border-top-right-radius: ${cardBorderRadius};
 `;
 
 export const TextArea = styled(BaseTextArea)`
-    padding: 0.125rem 1.25rem;
-    gap: 0.938rem;
-    justify-content: center;
-    align-items: flex-start;
+    flex: 1;
+    padding-left: 20px;
+    padding-right: 20px;
+    gap: 8px;
 `;
 
 export const Title = styled(BaseTitle)`
+    height: fit-content;
     font-size: ${({ theme }) => theme.fontSize.h4};
 `;
 
 export const Text = styled(BaseText)`
-    height: 4.125rem;
-    line-height: 1.313rem;
+    white-space: normal;
+    flex: 1;
+    width: 100%;
     font-size: ${({ theme }) => theme.fontSize.text};
+    overflow-y: hidden;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    line-height: 19px;
 `;

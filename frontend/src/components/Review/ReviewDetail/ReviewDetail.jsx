@@ -2,11 +2,15 @@ import PropTypes from "prop-types";
 import UserProfileImage from "../../UserProfile/UserProfileImage/UserProfileImage";
 import { Rating } from "react-simple-star-rating";
 import * as S from "./ReviewDetail.styled";
-const ReviewDetail = ({ review, recipe }) => {
+const ReviewDetail = ({ review, recipe, totalRating }) => {
+    const placeholderImage = "/images/placeholder-img.jpg";
     return (
         <S.Wrapper>
             <S.FlexLayout>
-                <UserProfileImage imageUrl={recipe.imgUrl} size={"2.5em"} />
+                <UserProfileImage
+                    imageUrl={recipe.image || placeholderImage}
+                    size={"2.5em"}
+                />
                 <S.FlexInside>
                     <S.RecipeName>{recipe.name}</S.RecipeName>
                     <S.FlexCenter>
@@ -16,29 +20,29 @@ const ReviewDetail = ({ review, recipe }) => {
                             iconsCount={1}
                             size={25}
                         />
-                        <S.RecipeTotalRating>
-                            {recipe.totalRating}
-                        </S.RecipeTotalRating>
+                        <S.RecipeTotalRating>{totalRating}</S.RecipeTotalRating>
                     </S.FlexCenter>
                 </S.FlexInside>
             </S.FlexLayout>
 
-            <S.ReviewImg src={review.imgUrl} alt="리뷰 이미지" />
+            <S.ReviewImg
+                src={review.reviewImage || placeholderImage}
+                alt="리뷰 이미지"
+            />
             <S.FlexLayout>
                 <UserProfileImage
-                    imageUrl={review.author.imgUrl}
+                    imageUrl={review.profileImage}
                     size={"2rem"}
                 />
                 <S.FlexInside>
-                    <S.UserName>{review.author.name}</S.UserName>
+                    <S.UserName>{review.nickname}</S.UserName>
                     <S.FlexBetween>
                         <Rating
-                            initialValue={4.3}
+                            initialValue={review.rating}
                             readonly
                             allowFraction
                             size={17}
                         />
-                        <S.ReviewDate>{review.createdAt}</S.ReviewDate>
                     </S.FlexBetween>
                 </S.FlexInside>
             </S.FlexLayout>
@@ -54,21 +58,19 @@ const ReviewDetail = ({ review, recipe }) => {
 ReviewDetail.propTypes = {
     review: PropTypes.shape({
         id: PropTypes.number.isRequired,
-        imgUrl: PropTypes.string,
+        profileImage: PropTypes.string,
+        reviewImage: PropTypes.string,
+        nickname: PropTypes.string.isRequired,
         rating: PropTypes.number.isRequired,
         title: PropTypes.string.isRequired,
         content: PropTypes.string.isRequired,
-        createdAt: PropTypes.string.isRequired,
-        author: PropTypes.shape({
-            name: PropTypes.string.isRequired,
-            imgUrl: PropTypes.string,
-        }).isRequired,
     }).isRequired,
     recipe: PropTypes.shape({
         id: PropTypes.number.isRequired,
-        imgUrl: PropTypes.string.isRequired,
+        image: PropTypes.string.isRequired,
         totalRating: PropTypes.number.isRequired,
         name: PropTypes.string.isRequired,
     }).isRequired,
+    totalRating: PropTypes.number.isRequired,
 };
 export default ReviewDetail;

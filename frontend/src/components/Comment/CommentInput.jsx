@@ -1,19 +1,44 @@
 import PropTypes from "prop-types";
 import * as S from "./Comment.styled";
+import { useAuthStore } from "../../store/userStore";
 import { useRef } from "react";
-function CommentInput({ addFunc, isReply }) {
+import { useNavigate } from "react-router-dom";
+import styled from "styled-components";
+import { Slide, ToastContainer, toast } from "react-toastify";
+import useUser from "../../hooks/useUser";
+import { useUpdateComment } from "../../hooks/useRecipe";
+import Button from "../Button/Button";
+function CommentInput({ id }) {
     const inputRef = useRef(null);
+    const navigate = useNavigate();
+
+    const CustomToastContainer = styled(ToastContainer)`
+        .Toastify__toast {
+            font-family: "SUITMedium";
+            font-size: 15px;
+            letter-spacing: 0.02rem;
+        }
+    `;
+
+    const { isLoading } = useUser();
+    const { isLoggedIn } = useAuthStore.getState();
+
+    const { mutate: updateComment } = useUpdateComment();
     const submitComment = () => {
-        const input = inputRef.current.value.trim();
-        if (!input) return;
-        const comment = {
-            text: input,
-            user: null,
-            imgUrl: null,
-            date: new Date().toISOString(),
-            reply: [],
-        };
-        addFunc(comment);
+        if (!isLoading && !isLoggedIn) {
+            toast.error("로그인이 필요해요.", {
+                position: "top-center",
+                transition: Slide,
+                autoClose: 2000,
+                onClose: () => {
+                    navigate("/login");
+                },
+            });
+        }
+        const content = inputRef.current.value.trim();
+
+        if (!content) return;
+        updateComment({ id, content });
         inputRef.current.value = "";
     };
 
@@ -32,14 +57,22 @@ function CommentInput({ addFunc, isReply }) {
                 ref={inputRef}
                 onKeyDown={handleKeyPress}
             />
-            <S.SubmitButton onClick={submitComment}>등록</S.SubmitButton>
+            <S.ButtonWrapper>
+                <Button
+                    width="5rem"
+                    height="2rem"
+                    type="small"
+                    onClick={() => submitComment()}
+                    text="등록"
+                />
+            </S.ButtonWrapper>
+            <CustomToastContainer stacked />
         </S.TextAreaWrapper>
     );
 }
 
 CommentInput.propTypes = {
-    addFunc: PropTypes.func.isRequired,
-    isReply: PropTypes.bool,
+    id: PropTypes.number.isRequired,
 };
 
 export default CommentInput;

@@ -4,11 +4,19 @@ import RecipeOverviewItem from "./RecipeOverviewItem";
 
 function RecipeOverview({ recipe }) {
     const recipeDetails = [
-        { icon: "⏰", label: "시간", detail: `${recipe.minute}분` },
-        { icon: "🔥", label: "난이도", detail: recipe.difficulty },
-        { icon: "🏋️‍♂️", label: "예상 칼로리", detail: `${recipe.calories}Kal` },
-        { icon: "💸", label: "예상 가격", detail: `${recipe.cost}원` },
-    ];
+        { icon: "⏰", label: "시간", detail: `${recipe.time}분` },
+        { icon: "🔥", label: "난이도", detail: recipe.level },
+        {
+            icon: "🏋️‍♂️",
+            label: "예상 칼로리 (100g)",
+            detail: recipe.calorie ? `${recipe.calorie}Kal` : null,
+        },
+        {
+            icon: "💸",
+            label: "예상 가격",
+            detail: recipe.price ? `${recipe.price}원` : null,
+        },
+    ].filter((item) => item.detail !== null);
 
     return (
         <S.Wrapper>
@@ -26,10 +34,10 @@ function RecipeOverview({ recipe }) {
 
 RecipeOverview.propTypes = {
     recipe: PropTypes.shape({
-        minute: PropTypes.string,
-        difficulty: PropTypes.string,
-        calories: PropTypes.string,
-        cost: PropTypes.string,
+        time: PropTypes.number,
+        level: PropTypes.string,
+        calorie: PropTypes.number,
+        price: PropTypes.number,
     }).isRequired,
 };
 

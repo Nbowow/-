@@ -1,7 +1,6 @@
 import { useMemo } from "react";
 import PriceDifferenceCell from "./Cell/PriceDifferenceCell";
 import ImageCell from "./Cell/ImageCell";
-import PriceChartCell from "./Cell/PriceChartCell";
 
 export const useIngredientPriceColumns = () => {
     return useMemo(
@@ -39,15 +38,6 @@ export const useIngredientColumn = () => {
             {
                 Header: "가격",
                 accessor: "price",
-            },
-            {
-                Header: "가격 차이",
-                accessor: "priceDifference",
-            },
-            {
-                Header: "가격 변동률",
-                accessor: "priceChangeRate",
-                Cell: PriceChartCell,
             },
         ],
         [],

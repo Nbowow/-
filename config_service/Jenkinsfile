@@ -6,14 +6,12 @@ pipeline {
         DOCKER_IMAGE_BACKEND = 'parkgc0504/config-service:latest'
         GITLAB_CREDENTIALSID = 'gichangssafy'
         DOCKERHUB_CREDENTIALS = 'dockerhub-credentials'
-        SSH_CREDENTIALS = 'EC2_SSH'
-        EC2_SERVER_IP = '13.209.82.34'  // 대상 EC2 서버의 IP 주소
     }
 
     stages {
         stage('Checkout') {
             steps {
-                git credentialsId: GITLAB_CREDENTIALSID, branch: 'release', url: 'https://lab.ssafy.com/s11-bigdata-dist-sub1/S11P21C206.git'
+                git credentialsId: GITLAB_CREDENTIALSID, branch: 'master', url: 'https://lab.ssafy.com/s11-bigdata-dist-sub1/S11P21C206.git'
             }
         }
 

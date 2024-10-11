@@ -1,126 +1,106 @@
-import { useState } from "react";
-import styled from "styled-components";
+import {
+    CategoryItem,
+    CategoryList,
+    CategorySection,
+    CategoryTitle,
+    Container,
+} from "./Category.styled";
+import PropTypes from "prop-types";
+import { useRecipeStore } from "./../../store/recipeStore";
+import { useEffect, useState } from "react";
+import { CATEGORY_TYPES, fetchCategories } from "../../api/category";
 
-const Container = styled.div`
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin: 20px;
-    width: 1440px;
-`;
+const CategoryComponent = ({
+    onTypeSelect,
+    onSituationSelect,
+    onIngredientsSelect,
+    onMethodSelect,
+}) => {
+    const [categories, setCategories] = useState({
+        [CATEGORY_TYPES.TYPE]: [],
+        [CATEGORY_TYPES.SITUATION]: [],
+        [CATEGORY_TYPES.INGREDIENT]: [],
+        [CATEGORY_TYPES.METHOD]: [],
+    });
 
-const CategorySection = styled.div`
-    display: flex;
-    justify-content: flex-start;
-    width: 100%;
-    margin: 10px 0;
-`;
+    const {
+        selectedType,
+        selectedSituation,
+        selectedIngredients,
+        selectedMethod,
+        setSelectedType,
+        setSelectedSituation,
+        setSelectedIngredients,
+        setSelectedMethod,
+    } = useRecipeStore((state) => ({
+        selectedType: state.selectedType,
+        selectedSituation: state.selectedSituation,
+        selectedIngredients: state.selectedIngredients,
+        selectedMethod: state.selectedMethod,
+        setSelectedType: state.setSelectedType,
+        setSelectedSituation: state.setSelectedSituation,
+        setSelectedIngredients: state.setSelectedIngredients,
+        setSelectedMethod: state.setSelectedMethod,
+    }));
 
-const CategoryTitle = styled.h3`
-    font-size: 1.5em;
-    text-align: center;
-    background-color: #4cac67;
-    padding: 20px;
-    color: white;
-`;
+    useEffect(() => {
+        const getCategories = async () => {
+            const categorizedData = await fetchCategories();
+            setCategories(categorizedData);
+        };
+        getCategories();
+    }, []);
 
-const CategoryList = styled.div`
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-`;
-
-const CategoryItem = styled.div`
-    /* background-color: ${(props) =>
-        props.selected ? "#4caf50" : "#e0f7fa"}; // 선택된 경우 색상 변경 */
-    border-radius: 10px;
-    padding: 20px;
-    margin: 5px;
-    text-align: center;
-    /* box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); */
-    cursor: pointer;
-    font-weight: ${(props) => (props.selected ? "bold" : null)};
-    /* &:hover {
-    background-color: #b2ebf2; // 호버 효과
-  } */
-`;
-
-const categories = {
-    종류: [
-        "디저트",
-        "밀반찬",
-        "메인반찬",
-        "국/탕",
-        "찌개",
-        "면/만두",
-        "김치",
-        "양념",
-        "양식",
-    ],
-    상황: [
-        "다이어트",
-        "일상",
-        "초스피드",
-        "손님접대",
-        "술안주",
-        "도시락",
-        "영양식",
-        "간식",
-        "야식",
-        "푸드스타일",
-    ],
-    재료: [
-        "채소류",
-        "소고기",
-        "돼지고기",
-        "육류",
-        "해물류",
-        "달걀",
-        "가공식품",
-        "쌀",
-        "밀가루",
-        "건어물",
-    ],
-    방법: [
-        "볶음",
-        "굽기",
-        "부침",
-        "조림",
-        "무침",
-        "비빔",
-        "찜",
-        "절임",
-        "튀김",
-        "삶기",
-    ],
-};
-
-const CategoryComponent = () => {
-    const [selectionCategory, setSelectionCategory] = useState(null);
-
-    const handleCategoryClick = (item) => {
-        setSelectionCategory(item);
+    const handleCategoryClick = (category, item) => {
+        // 전체 항목을 선택할 수 있도록 수정
+        if (category === CATEGORY_TYPES.TYPE) {
+            setSelectedType(item.num);
+            onTypeSelect(item.num);
+        } else if (category === CATEGORY_TYPES.SITUATION) {
+            setSelectedSituation(item.num);
+            onSituationSelect(item.num);
+        } else if (category === CATEGORY_TYPES.INGREDIENT) {
+            setSelectedIngredients(item.num);
+            onIngredientsSelect(item.num);
+        } else if (category === CATEGORY_TYPES.METHOD) {
+            setSelectedMethod(item.num);
+            onMethodSelect(item.num);
+        }
     };
 
     return (
         <Container>
-            {Object.entries(categories).map(([title, items]) => (
-                <CategorySection key={title}>
-                    <CategoryTitle>{title}</CategoryTitle>
+            {Object.entries(categories).map(([categoryKey, items]) => (
+                <CategorySection key={categoryKey}>
+                    <CategoryTitle>{categoryKey}</CategoryTitle>
                     <CategoryList>
                         {items.map((item, index) => (
                             <div
-                                key={item}
+                                key={item.num}
                                 style={{
                                     display: "flex",
                                     alignItems: "center",
                                 }}
                             >
                                 <CategoryItem
-                                    selected={selectionCategory === item} // 선택된 카테고리인지 확인
-                                    onClick={() => handleCategoryClick(item)}
+                                    selected={
+                                        (categoryKey === CATEGORY_TYPES.TYPE &&
+                                            selectedType === item.num) ||
+                                        (categoryKey ===
+                                            CATEGORY_TYPES.SITUATION &&
+                                            selectedSituation === item.num) ||
+                                        (categoryKey ===
+                                            CATEGORY_TYPES.INGREDIENT &&
+                                            selectedIngredients === item.num) ||
+                                        (categoryKey ===
+                                            CATEGORY_TYPES.METHOD &&
+                                            selectedMethod === item.num)
+                                    }
+                                    onClick={() =>
+                                        handleCategoryClick(categoryKey, item)
+                                    }
                                 >
-                                    {item}
+                                    {item.name}
                                 </CategoryItem>
                                 {index < items.length - 1 && (
                                     <span style={{ margin: "0 5px" }}>|</span>
@@ -130,11 +110,15 @@ const CategoryComponent = () => {
                     </CategoryList>
                 </CategorySection>
             ))}
-            {selectionCategory && (
-                <h4>선택된 카테고리: {selectionCategory}</h4> // 선택된 카테고리 출력
-            )}
         </Container>
     );
+};
+
+CategoryComponent.propTypes = {
+    onTypeSelect: PropTypes.func.isRequired,
+    onSituationSelect: PropTypes.func.isRequired,
+    onIngredientsSelect: PropTypes.func.isRequired,
+    onMethodSelect: PropTypes.func.isRequired,
 };
 
 export default CategoryComponent;

@@ -8,11 +8,10 @@ pipeline {
         DOCKERHUB_CREDENTIALS = 'dockerhub-credentials'
     }
 
-
     stages {
         stage('Checkout') {
             steps {
-                git credentialsId: GITLAB_CREDENTIALSID, branch: 'develop', url: 'https://lab.ssafy.com/s11-bigdata-dist-sub1/S11P21C206.git'
+                git credentialsId: GITLAB_CREDENTIALSID, branch: 'master', url: 'https://lab.ssafy.com/s11-bigdata-dist-sub1/S11P21C206.git'
             }
         }
 
@@ -52,33 +51,32 @@ pipeline {
                     script {
                         docker.withRegistry('https://registry.hub.docker.com', DOCKERHUB_CREDENTIALS) {
                             def frontendImage = docker.build(DOCKER_IMAGE_FRONTEND)
-                            retry(3) { // Push 실패 시 최대 3번 재시도
-                                frontendImage.push()
-                            }
+                            frontendImage.push()
                         }
                     }
                 }
             }
         }
-
 
         stage('Deploy Locally') {
             when {
                 changeset "frontend/**"  // frontend 폴더에 변경 사항이 있을 때만 실행
             }
             steps {
-                dir(FRONTEND_DIR) {
-                    script {
-                        if (fileExists('docker-compose.yml')) {
-                            sh 'docker-compose down'
-                            sh 'docker-compose up -d'
-                        } else {
-                            error "frontend/docker-compose.yml 파일을 찾을 수 없습니다."
-                        }
-                    }
+                script {
+                    // 기존 컨테이너 중지 및 제거
+                    sh 'docker stop frontend || true'
+                    sh 'docker rm frontend || true'
+                    
+                    // 새로운 컨테이너 실행
+                    sh '''
+                    docker run -d -p 3000:3000 --network backendnet \
+                    --name frontend parkgc0504/frontend:latest
+                    '''
                 }
             }
         }
+
     }
 
     post {

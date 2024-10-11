@@ -6,11 +6,11 @@ export const TabContainer = styled.div`
 
 export const TabButtons = styled.div`
     display: flex;
-    justify-content: flex-start;
+    justify-content: center;
 
     gap: 2.625rem;
     border-bottom: 0.063rem solid ${({ theme }) => theme.color.gray.lighter};
-    padding-left: 15.125rem;
+    margin-bottom: 2rem;
 `;
 
 export const TabButton = styled.div`

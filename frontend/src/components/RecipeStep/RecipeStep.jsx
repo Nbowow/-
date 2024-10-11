@@ -1,15 +1,18 @@
 import PropTypes from "prop-types";
-import * as S from "./Recipe.styled";
+import * as S from "./RecipeStep.styled";
 function RecipeStep({ recipe }) {
     return (
         <S.StepContainer>
-            {recipe.map((step, index) => (
-                <S.StepWrapper key={index}>
-                    <S.CircleNumber>{index + 1}</S.CircleNumber>
-                    <S.StepDescription>{step.text}</S.StepDescription>
-                    <S.StepImage src={step.img} alt={`Step ${index + 1}`} />
-                </S.StepWrapper>
-            ))}
+            {recipe &&
+                recipe.map((step, index) => (
+                    <S.StepWrapper key={index}>
+                        <S.CircleNumber>{step.orderNum}</S.CircleNumber>
+                        <S.StepDescription>
+                            {step.orderContent}
+                        </S.StepDescription>
+                        <S.StepImage src={step.orderImg} />
+                    </S.StepWrapper>
+                ))}
         </S.StepContainer>
     );
 }
