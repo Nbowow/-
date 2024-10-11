@@ -7,7 +7,7 @@ import { useState, useEffect, useRef } from "react";
 import { fetchCategories } from "../api/category";
 import { useNavigate } from "react-router-dom";
 import PostModal from "../components/Modal/PostModal";
-import { postRecipe } from "../Api/recipe";
+import { postRecipe } from "../api/recipe";
 
 const CATEGORY_TYPES = {
     TYPE: "종류",
