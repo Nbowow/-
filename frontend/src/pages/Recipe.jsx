@@ -6,7 +6,7 @@ import RecipeCardList from "../components/CardList/RecipeCardList";
 import RecipeCardSkeleton from "../components/SkeletonLoading/RecipeSkeleton";
 import SearchBar from "../components/SearchBar/SearchBar";
 import * as S from "./Reicpe.styled";
-import { filterRecipes, fetchRecipes } from "./../Api/recipe";
+import { filterRecipes, fetchRecipes } from "./../api/recipe";
 
 const Recipe = () => {
     const navigate = useNavigate();
