@@ -5,7 +5,6 @@ import {
     GroupContainer,
     InputField,
     GroupLabel,
-    AddButton,
     TitleContainer,
     SubTitle,
     InputContainer,
@@ -15,37 +14,16 @@ import {
 } from "./MaterialForm.styled";
 
 const MaterialForm = ({ materialGroups, setMaterialGroups }) => {
-    const handleChange = (groupIndex, materialIndex, field, value) => {
+    const handleChange = (groupIndex, field, value) => {
         const newMaterialGroups = [...materialGroups];
-        if (field === "groupName") {
-            newMaterialGroups[groupIndex].name = value;
-        } else {
-            newMaterialGroups[groupIndex].materials[materialIndex][field] =
-                value;
-        }
-        setMaterialGroups(newMaterialGroups);
-    };
-
-    const handleAddMaterial = (groupIndex) => {
-        const newMaterialGroups = [...materialGroups];
-        newMaterialGroups[groupIndex].materials.push({
-            name: "",
-            amount: "",
-            unit: "",
-        });
-        setMaterialGroups(newMaterialGroups);
-    };
-
-    const handleRemoveMaterial = (groupIndex, materialIndex) => {
-        const newMaterialGroups = [...materialGroups];
-        newMaterialGroups[groupIndex].materials.splice(materialIndex, 1);
+        newMaterialGroups[groupIndex][field] = value; // groupName이나 subtitle, amount, unit을 직접 업데이트
         setMaterialGroups(newMaterialGroups);
     };
 
     const handleAddGroup = () => {
         setMaterialGroups([
             ...materialGroups,
-            { name: "재료", materials: [{ name: "", amount: "", unit: "" }] },
+            { name: "재료", subtitle: "", amount: "", unit: "" },
         ]);
     };
 
@@ -69,12 +47,7 @@ const MaterialForm = ({ materialGroups, setMaterialGroups }) => {
                             placeholder="묶음 이름"
                             value={group.name}
                             onChange={(e) =>
-                                handleChange(
-                                    groupIndex,
-                                    null,
-                                    "groupName",
-                                    e.target.value,
-                                )
+                                handleChange(groupIndex, "name", e.target.value)
                             }
                         />
                         {groupIndex > 0 && (
@@ -85,70 +58,44 @@ const MaterialForm = ({ materialGroups, setMaterialGroups }) => {
                                 X
                             </RemoveButton>
                         )}
-                        {group.materials.map((material, materialIndex) => (
-                            <InputContainer key={materialIndex}>
-                                <InputField
-                                    type="text"
-                                    placeholder="재료명"
-                                    value={material.name}
-                                    onChange={(e) =>
-                                        handleChange(
-                                            groupIndex,
-                                            materialIndex,
-                                            "name",
-                                            e.target.value,
-                                        )
-                                    }
-                                />
-                                <InputField
-                                    type="text"
-                                    placeholder="수량"
-                                    value={material.amount}
-                                    onChange={(e) =>
-                                        handleChange(
-                                            groupIndex,
-                                            materialIndex,
-                                            "amount",
-                                            e.target.value,
-                                        )
-                                    }
-                                />
-                                <InputField
-                                    type="text"
-                                    placeholder="단위"
-                                    value={material.unit}
-                                    onChange={(e) =>
-                                        handleChange(
-                                            groupIndex,
-                                            materialIndex,
-                                            "unit",
-                                            e.target.value,
-                                        )
-                                    }
-                                />
-                                {materialIndex > 0 && (
-                                    <RemoveButton
-                                        type="button"
-                                        onClick={() =>
-                                            handleRemoveMaterial(
-                                                groupIndex,
-                                                materialIndex,
-                                            )
-                                        }
-                                    >
-                                        X
-                                    </RemoveButton>
-                                )}
-                            </InputContainer>
-                        ))}
-                        <ButtonContainer>
-                            <AddButton
-                                type="button"
-                                onClick={() => handleAddMaterial(groupIndex)}
-                            >
-                                재료 추가
-                            </AddButton>
-                        </ButtonContainer>
+                        <InputContainer>
+                            <InputField
+                                type="text"
+                                placeholder="재료명"
+                                value={group.subtitle}
+                                onChange={(e) =>
+                                    handleChange(
+                                        groupIndex,
+                                        "subtitle",
+                                        e.target.value,
+                                    )
+                                }
+                            />
+                            <InputField
+                                type="text"
+                                placeholder="수량"
+                                value={group.amount}
+                                onChange={(e) =>
+                                    handleChange(
+                                        groupIndex,
+                                        "amount",
+                                        e.target.value,
+                                    )
+                                }
+                            />
+                            <InputField
+                                type="text"
+                                placeholder="단위"
+                                value={group.unit}
+                                onChange={(e) =>
+                                    handleChange(
+                                        groupIndex,
+                                        "unit",
+                                        e.target.value,
+                                    )
+                                }
+                            />
+                        </InputContainer>
                     </GroupContainer>
                 ))}
                 <ButtonContainer>
@@ -165,13 +112,9 @@ MaterialForm.propTypes = {
     materialGroups: PropTypes.arrayOf(
         PropTypes.shape({
             name: PropTypes.string.isRequired,
-            materials: PropTypes.arrayOf(
-                PropTypes.shape({
-                    name: PropTypes.string.isRequired,
-                    amount: PropTypes.string.isRequired,
-                    unit: PropTypes.string.isRequired,
-                }),
-            ).isRequired,
+            subtitle: PropTypes.string.isRequired,
+            amount: PropTypes.string.isRequired,
+            unit: PropTypes.string.isRequired,
         }),
     ).isRequired,
     setMaterialGroups: PropTypes.func.isRequired,

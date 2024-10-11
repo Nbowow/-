@@ -4,10 +4,10 @@ import MaterialForm from "../components/Post/MaterialForm";
 import OrderForm from "../components/Post/OrderForm";
 import styled from "styled-components";
 import { useState, useEffect, useRef } from "react";
-import { postRecipe } from "../api/recipe";
 import { fetchCategories } from "../api/category";
 import { useNavigate } from "react-router-dom";
 import PostModal from "../components/Modal/PostModal";
+import { postRecipe } from "../Api/recipe";
 
 const CATEGORY_TYPES = {
     TYPE: "종류",
@@ -79,7 +79,9 @@ const PostRecipe = () => {
     const [materialGroups, setMaterialGroups] = useState([
         {
             name: "재료",
-            materials: [{ name: "", amount: "", unit: "" }],
+            subtitle: "",
+            amount: "",
+            unit: "",
         },
     ]);
 
@@ -190,26 +192,24 @@ const PostRecipe = () => {
                 });
             }
 
-            group.materials.forEach((material, materialIndex) => {
-                if (!material.name.trim()) {
-                    errors.push({
-                        field: `material-${groupIndex}-${materialIndex}`,
-                        message: `${groupIndex + 1}번째 그룹의 ${materialIndex + 1}번째 재료명을 입력해주세요`,
-                    });
-                }
-                if (!material.amount.trim()) {
-                    errors.push({
-                        field: `material-${groupIndex}-${materialIndex}`,
-                        message: `${groupIndex + 1}번째 그룹의 ${materialIndex + 1}번째 재료의 수량을 입력해주세요`,
-                    });
-                }
-                if (!material.unit.trim()) {
-                    errors.push({
-                        field: `material-${groupIndex}-${materialIndex}`,
-                        message: `${groupIndex + 1}번째 그룹의 ${materialIndex + 1}번째 재료의 단위를 입력해주세요`,
-                    });
-                }
-            });
+            if (!group.subtitle.trim()) {
+                errors.push({
+                    field: `group-${groupIndex}`,
+                    message: `${groupIndex + 1}번째 그룹의 서브타이틀을 입력해주세요`,
+                });
+            }
+            if (!group.amount.trim()) {
+                errors.push({
+                    field: `group-${groupIndex}`,
+                    message: `${groupIndex + 1}번째 그룹의 수량을 입력해주세요`,
+                });
+            }
+            if (!group.unit.trim()) {
+                errors.push({
+                    field: `group-${groupIndex}`,
+                    message: `${groupIndex + 1}번째 그룹의 단위를 입력해주세요`,
+                });
+            }
         });
 
         return errors;
@@ -233,7 +233,6 @@ const PostRecipe = () => {
                     message: `STEP ${index + 1}의 조리 설명을 입력해주세요`,
                 });
             }
-            // 이미지는 선택사항으로 처리
         });
 
         return errors;
@@ -312,11 +311,9 @@ const PostRecipe = () => {
             method: recipeFormData.method,
             recipeMaterials: materialGroups.map((group) => ({
                 materialName: group.name,
-                materials: group.materials.map((m) => ({
-                    materialSubtitle: m.name,
-                    materialAmount: m.amount,
-                    materialUnit: m.unit,
-                })),
+                materialSubtitle: group.subtitle,
+                materialAmount: group.amount,
+                materialUnit: group.unit,
             })),
             recipeOrders: orderSteps.map((step, index) => ({
                 orderNum: index + 1,
@@ -354,7 +351,7 @@ const PostRecipe = () => {
 
         return false;
     };
-    // 모달 확인 버튼 처리 함수 수정
+
     const handleConfirm = () => {
         setIsModalOpen(false);
         if (!isError) {
@@ -362,18 +359,19 @@ const PostRecipe = () => {
         }
         setIsError(false);
     };
+
     const closeModal = () => {
         setIsModalOpen(false);
         setIsError(false);
     };
 
-    // 레시피 등록 버튼 클릭 핸들러
     const handleRegister = async () => {
         const success = await handleSubmit();
         if (success) {
             // handleConfirm은 모달이 닫힐 때 자동으로 호출됩니다
         }
     };
+
     return (
         <div>
             {isModalOpen && (

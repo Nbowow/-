@@ -40,7 +40,7 @@ export const filterRecipes = async (
     }
 
     // pageNumber는 이미 올바른 값으로 전달됨을 가정
-    params.append("pageNumber", pageNumber);
+    params.append("pageNumber", pageNumber - 1);
     params.append("pageSize", pageSize);
 
     const response = await axios.get(
