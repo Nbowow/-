@@ -22,10 +22,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoField;
+import java.time.temporal.TemporalAdjusters;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 @Service
@@ -40,10 +43,13 @@ public class IngredientService {
 
     private final NaverSearchClient naverSearchClient;
 
-    private JaroWinkler jaroWinkler = new JaroWinkler();
+    private final JaroWinkler jaroWinkler = new JaroWinkler();
     // 알러지 매핑 데이터
-    private Map<String, List<String>> allergyMapping = new HashMap<>();
-    private Map<String, String> allergyCodeMapping = new HashMap<>();
+    private final Map<String, List<String>> allergyMapping = new HashMap<>();
+    private final Map<String, String> allergyCodeMapping = new HashMap<>();
+
+    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
 
     // 초기화 블록에서 매핑 데이터 설정
     {
@@ -284,14 +290,14 @@ public class IngredientService {
             }
 
             for (int i = 0; i < 12; i++) {
-                int targetMonth = today.minusMonths(i).getMonthValue();
-                BigDecimal price = monthPriceMap.get(targetMonth);
-                int monthsAgo = i + 1;
+                LocalDate firstDayOfMonth = today.minusMonths(i).with(TemporalAdjusters.firstDayOfMonth()).toLocalDate();
+                String formattedDate = firstDayOfMonth.format(formatter);
+                BigDecimal price = monthPriceMap.get(today.minusMonths(i).getMonthValue());
 
                 if (price != null && price.intValue() != 0) {
-                    monthlyAveragePriceList.add(new DayDto(monthsAgo, price.intValue()));
+                    monthlyAveragePriceList.add(new DayDto(formattedDate, price.intValue()));
                 } else {
-                    monthlyAveragePriceList.add(new DayDto(monthsAgo, 0)); // 데이터가 없으면 0
+                    monthlyAveragePriceList.add(new DayDto(formattedDate, 0));
                 }
             }
         }
@@ -314,14 +320,14 @@ public class IngredientService {
             }
 
             for (int i = 0; i < 12; i++) {
-                int targetWeek = today.minusWeeks(i).get(ChronoField.ALIGNED_WEEK_OF_YEAR);
-                BigDecimal price = weekPriceMap.get(targetWeek);
-                int weeksAgo = i + 1;
+                LocalDate firstDayOfWeek = today.minusWeeks(i).with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)).toLocalDate();
+                String formattedDate = firstDayOfWeek.format(formatter);
+                BigDecimal price = weekPriceMap.get(today.minusWeeks(i).get(ChronoField.ALIGNED_WEEK_OF_YEAR));
 
                 if (price != null && price.intValue() != 0) {
-                    weeklyAveragePriceList.add(new DayDto(weeksAgo, price.intValue()));
+                    weeklyAveragePriceList.add(new DayDto(formattedDate, price.intValue()));
                 } else {
-                    weeklyAveragePriceList.add(new DayDto(weeksAgo, 0)); // 데이터가 없으면 0
+                    weeklyAveragePriceList.add(new DayDto(formattedDate, 0)); // 데이터가 없으면 0
                 }
             }
         }
@@ -335,22 +341,13 @@ public class IngredientService {
         List<DayPrice> findTopDayIngredientPrice = dayPriceRepository.findRecentDays(ingredientId, today, pageable);
 
         List<DayDto> dayPriceList = new ArrayList<>();
-        Map<LocalDateTime, Integer> dayPriceMap = new HashMap<>();
-
-        // 일간 데이터 매핑
-        for (DayPrice dayPrice : findTopDayIngredientPrice) {
-            dayPriceMap.put(dayPrice.getDay(), dayPrice.getPrice());
-        }
-
         for (int i = 0; i < 12; i++) {
-            LocalDateTime currentDate = today.minusDays(i);
-            Integer price = dayPriceMap.get(currentDate);
-            int daysAgo = i + 1;
-
-            if (price != null && price != 0) {
-                dayPriceList.add(new DayDto(daysAgo, price));
+            if (findTopDayIngredientPrice.size() > i) {
+                dayPriceList.add(new DayDto(
+                        findTopDayIngredientPrice.get(i).getDay().format(formatter),
+                        findTopDayIngredientPrice.get(i).getPrice()));
             } else {
-                dayPriceList.add(new DayDto(daysAgo, 0)); // 데이터가 없으면 0
+                dayPriceList.add(new DayDto("", 0));
             }
         }
 
@@ -417,7 +414,7 @@ public class IngredientService {
                     List<DayPrice> recentDays = dayPriceRepository.findRecentDays(ingredient.getId(), LocalDateTime.now(), pageable);
 
                     int price = recentDays.isEmpty() ? 0 : recentDays.get(0).getPrice();
-                    
+
                     return new IngredientUserLikeDto(
                             ingredient.getId(),
                             ingredient.getName(),

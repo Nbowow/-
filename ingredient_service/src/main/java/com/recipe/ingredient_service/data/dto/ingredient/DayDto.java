@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Builder
 public class DayDto {
 
-    private int day;
+    private String day;
 
     private int price;
 }
