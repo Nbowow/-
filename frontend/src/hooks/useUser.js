@@ -106,6 +106,8 @@ export const useOtherUserRecipe = (id) => {
     return useQuery({
         queryKey: [`otherUserRecipe`],
         queryFn: () => fetchOtherUserRecipe(id),
+        staleTime: 0,
+        refetchOnMount: true,
     });
 };
 
