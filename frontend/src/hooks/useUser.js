@@ -82,21 +82,23 @@ export const useOtherUserInfo = (id) => {
     });
 };
 
-export const useUserLikes = () => {
+export const useUserLikes = (isLoggedIn) => {
     return useQuery({
         queryKey: [`userLike`],
         queryFn: getUserLike,
         staleTime: 0,
         refetchOnMount: true,
+        enabled: isLoggedIn,
     });
 };
 
-export const useUserScraps = () => {
+export const useUserScraps = (isLoggedIn) => {
     return useQuery({
         queryKey: [`userScrap`],
         queryFn: getUserScrap,
         staleTime: 0,
         refetchOnMount: true,
+        enabled: isLoggedIn,
     });
 };
 

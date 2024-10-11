@@ -24,8 +24,10 @@ const ActionToggleGroup = ({ recipe }) => {
     const [scrapCount, setScrapCount] = useState(0);
 
     const { isLoggedIn } = useAuthStore();
-    const { isLoading: isUserLoading, data: likes } = useUserLikes();
-    const { isLoading: isRecipeLoading, data: scraps } = useUserScraps();
+
+    const { isLoading: isUserLoading, data: likes } = useUserLikes(isLoggedIn);
+    const { isLoading: isRecipeLoading, data: scraps } =
+        useUserScraps(isLoggedIn);
     const { isLoading: isCommentLoading, data: comments } = useComment(
         recipe.id,
     );
